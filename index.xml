@@ -5,20 +5,20 @@
     <link>https://wang-zoo.github.io/</link>
     <description>Recent content on 码 字 坞</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 28 Sep 2014 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>复习目录</title>
+      <title>开篇致辞</title>
       <link>https://wang-zoo.github.io/post/first/</link>
-      <pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://wang-zoo.github.io/post/first/</guid>
-      <description>Android 应用层部分 1.Okhttp AsyncHttp AsyncHttp参考资料
-1.AsyncHttp中的框架模型 2.HttpRoute的作用 3.ExecutorService线程池 4.AsyncHttp的请求过程深入理解 5.AsyncHttp关于http请求头参数的设定 6.AsyncHttp为什么要设置代理后才能抓包  okhttp参考资料
-1.Okhttp的流程理解 2.Okhttp的分层结构 3.Okhttp的Dispacher的深入理解 4.Okhttp的五大拦截器的深入理解 5.Okhttp的连接与连接池是如何建立和维护的 6.Okhttp库类的深入理解 7.Okhttp的请求头使用 8.Okhttp的拦截头使用 9.三次握手  2.Fresco 1.图片的封装格式和图片的编码格式 https://www.jianshu.com/p/4d8cace82028  3.LitePal https://blog.csdn.net/lingdianalex/article/details/80068203  4.cordova 与 webview ，JsBrige 1.js回调数组的回收与限制问题 2.cordova 打包时间较长 3.webpack打包优化 4.webview性能优化 5.插件线上管理 6.启动优化  5.Luban 6.gradle与仓库管理 1.如何解决依赖的传导问题，使用aar  7.多线程 8.dagger 9.databing 10.EventBus 与 BroadcastReceiver 11.butterKnife 1.插桩技术 2.AOP 3.AspectJ 与 AspectJX 与 Hugo  12.Rxjava kotlin 13.FreeLine 14.DLPlugin 15.LeakCanary 16.Tinker 17.FrameWork 1.GG陆晓明 2.</description>
+      <description> 看了看时间，下午7点整，我熟练的拿出手机，打了一下卡，今天算是就这样结束了。出了公司门，迎面而来的是一阵热浪，忽然间又回味起了办公室的冷气。顶着热气，我涌进人潮，开始回家。地铁站大老远就排起了长队，想起早上也是这般拥挤，心中也开始重复着那莫名的焦虑。
+三年光景,日日如此，此刻在电脑旁，心中千言万语，键落键起，娓娓道来.
+昨天 </description>
     </item>
     
   </channel>
