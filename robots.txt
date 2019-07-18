@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://wang-zoo.github.io/sitemap.xml

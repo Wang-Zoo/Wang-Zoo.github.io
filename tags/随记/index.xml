@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>随记 on WangZoo - 码字坞</title>
+    <link>https://wang-zoo.github.io/tags/%E9%9A%8F%E8%AE%B0/</link>
+    <description>Recent content in 随记 on WangZoo - 码字坞</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 15 Jul 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://wang-zoo.github.io/tags/%E9%9A%8F%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>开篇随记</title>
+      <link>https://wang-zoo.github.io/post/first/</link>
+      <pubDate>Mon, 15 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/first/</guid>
+      <description>看了看时间，下午7点整，我熟练的拿出手机，打了一下卡，今天算是就这样结束了。出了公司门，迎面而来的是一阵热浪，忽然间又回味起了办公室的冷气。</description>
+    </item>
+    
+  </channel>
+</rss>
