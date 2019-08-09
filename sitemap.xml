@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://wang-zoo.github.io/post/hybird-cordova-1/</loc>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/litepal_source/</loc>
     <lastmod>2019-07-21T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -23,31 +30,49 @@
   </url>
   
   <url>
+    <loc>https://wang-zoo.github.io/tags/hybird/</loc>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/</loc>
-    <lastmod>2019-07-21T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/tags/</loc>
-    <lastmod>2019-07-21T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/</loc>
-    <lastmod>2019-07-21T00:00:00+00:00</lastmod>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://wang-zoo.github.io/tags/litepal/</loc>
-    <lastmod>2019-07-21T00:00:00+00:00</lastmod>
+    <loc>https://wang-zoo.github.io/tags/cordova/</loc>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/jsbrige/</loc>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</loc>
+    <lastmod>2019-08-09T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/litepal/</loc>
     <lastmod>2019-07-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

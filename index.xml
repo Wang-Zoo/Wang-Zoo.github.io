@@ -6,10 +6,76 @@
     <description>Recent content on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 21 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 09 Aug 2019 00:00:00 +0000</lastBuildDate>
     
         <atom:link href="https://wang-zoo.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hybird开发之cordova(1)</title>
+      <link>https://wang-zoo.github.io/post/hybird-cordova-1/</link>
+      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/hybird-cordova-1/</guid>
+      
+        <description>
+
+&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;hybird 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得，
+由于目前项目所使用的是cordova的方案，于是便决定先跟cordova这个比较奇葩的框架一磕到底&lt;/p&gt;
+
+&lt;h2 id=&#34;1-hybird-与-js&#34;&gt;1.Hybird 与 JS&lt;/h2&gt;
+
+&lt;p&gt;经常听同事说，“js是最好的语言”，“js会一统天下”。不得不承认在pc网站发展中，js一路披荆斩棘，到如今的前后端通吃
+发展历程着实令人瞩目，移动端兴起时，js也想快速入侵，完成新大陆的统一，不过这里，由于Google的遏制，js的在移动端
+android上的发展遭受了一些阻力，臭名昭著的WebView让js等前端技术到了现在也并没有完全拿下这块要地。当然大公司有
+大公司的政策，民间有民间的对策，为了推动移动端H5技术的发展，其中也涌现了不少优秀的JSBrige框架。&lt;/p&gt;
+
+&lt;h3 id=&#34;1-1-何为jsbrige&#34;&gt;1.1 何为JSBrige&lt;/h3&gt;
+
+&lt;p&gt;在android 原生开发中，UI开发只是其中一部分，但H5开发再怎么厉害，最多只能解决这一部分的问题，但是app开发不同于
+pc开发，多变的应用场景，让app需要适配各种场景，webview在这一部分拙荆见肘。webview为了弥补这一短板，提供了JS与
+原生调用通道，原生提供各种各样的插件通过这个通道供js调用。这其中逻辑交错，框架便应运而生。&lt;/p&gt;
+
+&lt;h3 id=&#34;1-2-cordova&#34;&gt;1.2 Cordova&lt;/h3&gt;
+
+&lt;p&gt;cordova，Apache基金维护的一个开源项目，其提供了一套app的JS插件编写标准，让H5与原生交互变得优雅起来。&lt;/p&gt;
+
+
+
+&lt;div class=&#34;box&#34;&gt;
+&lt;figure  itemprop=&#34;associatedMedia&#34;
+  itemscope itemtype=&#34;http://schema.org/ImageObject&#34; &gt;
+    &lt;div class=&#34;img&#34;&gt;
+      &lt;img itemprop=&#34;thumbnail&#34; src=&#34;https://wang-zoo.github.io/imgs/cordova_structure.png&#34; /&gt;
+    &lt;/div&gt;
+    &lt;a href=&#34;https://wang-zoo.github.io/imgs/cordova_structure.png&#34; itemprop=&#34;contentUrl&#34;&gt;&lt;/a&gt;
+      &lt;figcaption&gt;&lt;h4&gt;cordova 架构图&lt;/h4&gt;
+      &lt;/figcaption&gt;
+  &lt;/figure&gt;
+&lt;/div&gt;
+
+
+&lt;h2 id=&#34;2-实现原理&#34;&gt;2.实现原理&lt;/h2&gt;
+
+&lt;p&gt;分析这些插件原理，还是要从webview与JS调用过程中来下手，最后将插件框架分为 JS层标准和原生层 两个部分来实现即可。
+(笔者android原生开发出身，ios开发不甚了解，故不多言)&lt;/p&gt;
+
+&lt;h3 id=&#34;2-1-webview与js通信&#34;&gt;2.1 webview与JS通信&lt;/h3&gt;
+
+&lt;h4 id=&#34;2-1-1-addjavascriptinterface-对象注入的方式&#34;&gt;2.1.1 addJavascriptInterface 对象注入的方式&lt;/h4&gt;
+
+&lt;h4 id=&#34;2-1-2-shouldoverrideurlloading-拦截的方式&#34;&gt;2.1.2 shouldOverrideUrlLoading 拦截的方式&lt;/h4&gt;
+
+&lt;h4 id=&#34;2-1-3-对-onjsconfirm-等方法拦截的方式&#34;&gt;2.1.3 对 onJsConfirm 等方法拦截的方式&lt;/h4&gt;
+
+&lt;h3 id=&#34;2-2-cordova-js层分析&#34;&gt;2.2 cordova JS层分析&lt;/h3&gt;
+
+&lt;h3 id=&#34;2-2-cordova-原生层分析&#34;&gt;2.2 cordova 原生层分析&lt;/h3&gt;
+</description>
+      
+    </item>
     
     <item>
       <title>LitePal源码分析</title>
@@ -93,26 +159,12 @@
 &lt;/div&gt;
 
 原文大意如下&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;    处理一对多关系的的情况。比如Song Alum，一个Alum有多首Song，一首
-    Song属于一个Alum。所以如果Song中定义一个私有Alum变量，Alum中有
-    个关于Song的List或者Set的私有变量，那么Alum与Song就有一对多的关
-    系。如果Alum中没有关于Song的List或者Set，或者只有一个Song私有变
-    量，那么Alum对于Song就是一对一的关系。处理多对一关系的情况。Song
-    这边只需要关于Alum的FK即可。如果是多对多的关系，就需要中间表来处理，
-    并且中间表的名字是根据两个表名字的字母顺序来创建的&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+
+&lt;p&gt;处理一对多关系的的情况。比如Song Alum，一个Alum有多首Song，一首Song属于一个Alum。所以如果Song中定义一个私有Alum变量，Alum中有
+个关于Song的List或者Set的私有变量，那么Alum与Song就有一对多的关系。如果Alum中没有关于Song的List或者Set，或者只有一个Song私有变
+量，那么Alum对于Song就是一对一的关系。处理多对一关系的情况。Song这边只需要关于Alum的FK即可。如果是多对多的关系，就需要中间表来处理，
+并且中间表的名字是根据两个表名字的字母顺序来创建的&lt;/p&gt;
+
 &lt;p&gt;一图胜千言&lt;/p&gt;
 
 
