@@ -17,7 +17,7 @@
       <pubDate>Sun, 21 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://wang-zoo.github.io/post/litepal_source/</guid>
-      <description>1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.2 实体目录加载 1.3 表的创建 2.增删改查的逻辑实现 2.1 映射关系的处理(重点) 介绍增删</description>
+      <description>1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.3 表的创建与分类 作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式</description>
     </item>
     
     <item>

@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="WangZoo" />
-  <meta name="description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.2 实体目录加载 1.3 表的创建 2.增删改查的逻辑实现 2.1 映射关系的处理(重点) 介绍增删" />
+  <meta name="description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.3 表的创建与分类 作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式" />
 
   <meta name="keywords" content="Hugo, theme, jane" />
 
@@ -58,26 +58,26 @@
 
 
 <meta property="og:title" content="LitePal源码分析" />
-<meta property="og:description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.2 实体目录加载 1.3 表的创建 2.增删改查的逻辑实现 2.1 映射关系的处理(重点) 介绍增删" />
+<meta property="og:description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.3 表的创建与分类 作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://wang-zoo.github.io/post/litepal_source/" />
 <meta property="article:published_time" content="2019-07-21T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2019-07-21T00:00:00&#43;00:00"/>
 
 <meta itemprop="name" content="LitePal源码分析">
-<meta itemprop="description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.2 实体目录加载 1.3 表的创建 2.增删改查的逻辑实现 2.1 映射关系的处理(重点) 介绍增删">
+<meta itemprop="description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.3 表的创建与分类 作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式">
 
 
 <meta itemprop="datePublished" content="2019-07-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-07-21T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="3445">
+<meta itemprop="wordCount" content="5438">
 
 
 
 <meta itemprop="keywords" content="源码,litepal," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="LitePal源码分析"/>
-<meta name="twitter:description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.2 实体目录加载 1.3 表的创建 2.增删改查的逻辑实现 2.1 映射关系的处理(重点) 介绍增删"/>
+<meta name="twitter:description" content="1.结构分析 1.1 UML类图 litepal 类关联图 1.2 UML时序图 litepal 初始化时序图 1.3 表的创建与分类 作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -325,13 +325,9 @@
 <ul>
 <li><a href="#1-结构分析">1.结构分析</a>
 <ul>
-<li>
-<ul>
 <li><a href="#1-1-uml类图">1.1 UML类图</a></li>
 <li><a href="#1-2-uml时序图">1.2 UML时序图</a></li>
-<li><a href="#1-2-实体目录加载">1.2 实体目录加载</a></li>
-<li><a href="#1-3-表的创建">1.3 表的创建</a></li>
-</ul></li>
+<li><a href="#1-3-表的创建与分类">1.3 表的创建与分类</a></li>
 </ul></li>
 <li><a href="#2-增删改查的逻辑实现">2.增删改查的逻辑实现</a>
 <ul>
@@ -343,11 +339,8 @@
 </ul></li>
 <li><a href="#4-分析器">4.分析器</a>
 <ul>
-<li><a href="#4-1-many2oneanalyzer">4.1 Many2OneAnalyzer</a></li>
+<li><a href="#4-1-作用分析">4.1 作用分析</a></li>
 </ul></li>
-<li><a href="#4-异步操作">4.异步操作</a></li>
-<li><a href="#5-issaved-方法的分析">5.isSaved()方法的分析</a></li>
-<li><a href="#6-fluentquery">6.FluentQuery</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -360,7 +353,7 @@
 
 <h2 id="1-结构分析">1.结构分析</h2>
 
-<h4 id="1-1-uml类图">1.1 UML类图</h4>
+<h3 id="1-1-uml类图">1.1 UML类图</h3>
 
 
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
@@ -377,7 +370,7 @@
 </div>
 
 
-<h4 id="1-2-uml时序图">1.2 UML时序图</h4>
+<h3 id="1-2-uml时序图">1.2 UML时序图</h3>
 
 
 
@@ -394,9 +387,22 @@
 </div>
 
 
-<h4 id="1-2-实体目录加载">1.2 实体目录加载</h4>
+<h3 id="1-3-表的创建与分类">1.3 表的创建与分类</h3>
 
-<h4 id="1-3-表的创建">1.3 表的创建</h4>
+<p>作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">1.本体基本数据类型和一对多和多对一关联外键表，这个是主体表，表名字是className
+2.本体基本数据集合类型表(list或者set类型字段)，这个是第二张表，表名是className_fieldName
+4.本体多对多关系的中间表，这个是第三张表，表名是className_associationClassName</pre></td></tr></table>
+</div>
+</div>
+<p>其中比较重要的解释就是关联表的处理，下文继续解释</p>
 
 <h2 id="2-增删改查的逻辑实现">2.增删改查的逻辑实现</h2>
 
@@ -1078,16 +1084,220 @@ SaveHandler来处理，以下截图为SaveHandler中onSave()的代码逻辑。</
 </div>
 <h3 id="2-3-删操作的逻辑分析">2.3 删操作的逻辑分析</h3>
 
+<p>有了对增操作的逻辑的理解，对于删除操作的逻辑基本也能猜到个大概了。基本流程如下</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/litepal_delete.png" />
+    </div>
+    <a href="/imgs/litepal_delete.png" itemprop="contentUrl"></a>
+      <figcaption><h4>delete时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>基本业务实现还是在DeleteHandler，针对每个操作，Litepal都有相应的命名的Handler</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kt">int</span> <span class="nf">onDelete</span><span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">baseObj</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">isSaved</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">//1.获取基本类型的集合的数据集
+</span><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span> <span class="n">supportedGenericFields</span> <span class="o">=</span> <span class="n">getSupportedGenericFields</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getClassName</span><span class="o">());</span>
+        <span class="c1">//2.删除基本类型集合的数据库记录
+</span><span class="c1"></span>        <span class="n">deleteGenericData</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">supportedGenericFields</span><span class="o">,</span> <span class="n">baseObj</span><span class="o">.</span><span class="na">getBaseObjId</span><span class="o">());</span>
+        <span class="c1">//3.分析得到关联类的关系集合
+</span><span class="c1"></span>        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">AssociationsInfo</span><span class="o">&gt;</span> <span class="n">associationInfos</span> <span class="o">=</span> <span class="n">analyzeAssociations</span><span class="o">(</span><span class="n">baseObj</span><span class="o">);</span>
+        <span class="c1">//4.删除外键记录和中间表记录
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">rowsAffected</span> <span class="o">=</span> <span class="n">deleteCascade</span><span class="o">(</span><span class="n">baseObj</span><span class="o">);</span>
+        <span class="c1">//5.删除自身
+</span><span class="c1"></span>        <span class="n">rowsAffected</span> <span class="o">+=</span> <span class="n">mDatabase</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getTableName</span><span class="o">(),</span> <span class="s">&#34;id = &#34;</span><span class="o">+</span> <span class="n">baseObj</span><span class="o">.</span><span class="na">getBaseObjId</span><span class="o">(),</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="c1">//6.将自身的关联的类对象的存储id都清除
+</span><span class="c1"></span>        <span class="n">clearAssociatedModelSaveState</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfos</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">rowsAffected</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">0</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
 <h3 id="2-4-改操作的逻辑分析">2.4 改操作的逻辑分析</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kt">int</span> <span class="nf">onUpdate</span><span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">baseObj</span><span class="o">,</span> <span class="kt">long</span> <span class="n">id</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SecurityException</span><span class="o">,</span> <span class="n">IllegalArgumentException</span><span class="o">,</span><span class="n">NoSuchMethodException</span><span class="o">,</span><span class="n">IllegalAccessException</span><span class="o">,</span> <span class="n">InvocationTargetException</span> <span class="o">{</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span> <span class="n">supportedFields</span> <span class="o">=</span> <span class="n">getSupportedFields</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getClassName</span><span class="o">());</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span> <span class="n">supportedGenericFields</span> <span class="o">=</span> <span class="n">getSupportedGenericFields</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getClassName</span><span class="o">());</span>
+    <span class="c1">//1.用将baseObj中的基本集合数据来更新主键为id的baseObj表数据的记录
+</span><span class="c1"></span>    <span class="n">updateGenericTables</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">supportedGenericFields</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+    <span class="n">ContentValues</span> <span class="n">values</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentValues</span><span class="o">();</span>
+    <span class="c1">//2.将baseObj的数据转换成ContentValues
+</span><span class="c1"></span>    <span class="n">putFieldsValue</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">supportedFields</span><span class="o">,</span> <span class="n">values</span><span class="o">);</span>
+    <span class="n">putFieldsToDefaultValue</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">values</span><span class="o">,</span> <span class="n">id</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">values</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//3.使用上边准备的ContentValues更新操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">mDatabase</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getTableName</span><span class="o">(),</span> <span class="n">values</span><span class="o">,</span> <span class="s">&#34;id = &#34;</span> <span class="o">+</span> <span class="n">id</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">0</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>更新操作比较特殊的地方，他不支持直接更新关联表的数据，关联表的数据需要使用当前关联对象自己的update方法来完成更新</p>
 
 <h3 id="2-5-查操作的逻辑分析">2.5 查操作的逻辑分析</h3>
+
+<p>查询操作可以完全看作是增操作的逆操作了。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/litepal_query.png" />
+    </div>
+    <a href="/imgs/litepal_query.png" itemprop="contentUrl"></a>
+      <figcaption><h4>query时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">protected</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">query</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">modelClass</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">columns</span><span class="o">,</span> <span class="n">String</span> <span class="n">selection</span><span class="o">,</span><span class="n">String</span><span class="o">[]</span> <span class="n">selectionArgs</span><span class="o">,</span> <span class="n">String</span> <span class="n">groupBy</span><span class="o">,</span> <span class="n">String</span> <span class="n">having</span><span class="o">,</span> <span class="n">String</span> <span class="n">orderBy</span><span class="o">,</span> <span class="n">String</span> <span class="n">limit</span><span class="o">,</span>
+			<span class="n">List</span><span class="o">&lt;</span><span class="n">AssociationsInfo</span><span class="o">&gt;</span> <span class="n">foreignKeyAssociations</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dataList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
+        <span class="n">Cursor</span> <span class="n">cursor</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">List</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span> <span class="n">supportedFields</span> <span class="o">=</span> <span class="n">getSupportedFields</span><span class="o">(</span><span class="n">modelClass</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+            <span class="n">List</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">&gt;</span> <span class="n">supportedGenericFields</span> <span class="o">=</span> <span class="n">getSupportedGenericFields</span><span class="o">(</span><span class="n">modelClass</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+            <span class="n">String</span><span class="o">[]</span> <span class="n">customizedColumns</span> <span class="o">=</span> <span class="n">DBUtility</span><span class="o">.</span><span class="na">convertSelectClauseToValidNames</span><span class="o">(</span><span class="n">getCustomizedColumns</span><span class="o">(</span><span class="n">columns</span><span class="o">,</span> <span class="n">supportedGenericFields</span><span class="o">,</span> <span class="n">foreignKeyAssociations</span><span class="o">));</span>
+            <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">getTableName</span><span class="o">(</span><span class="n">modelClass</span><span class="o">);</span>
+            <span class="c1">//查找符合条件的数据库记录
+</span><span class="c1"></span>            <span class="n">cursor</span> <span class="o">=</span> <span class="n">mDatabase</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="n">tableName</span><span class="o">,</span> <span class="n">customizedColumns</span><span class="o">,</span> <span class="n">selection</span><span class="o">,</span> <span class="n">selectionArgs</span><span class="o">,</span><span class="n">groupBy</span><span class="o">,</span> <span class="n">having</span><span class="o">,</span> <span class="n">orderBy</span><span class="o">,</span> <span class="n">limit</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToFirst</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">SparseArray</span><span class="o">&lt;</span><span class="n">QueryInfoCache</span><span class="o">&gt;</span> <span class="n">queryInfoCacheSparseArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SparseArray</span><span class="o">&lt;</span><span class="n">QueryInfoCache</span><span class="o">&gt;();</span>
+                <span class="n">Map</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">,</span> <span class="n">GenericModel</span><span class="o">&gt;</span> <span class="n">genericModelMap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Field</span><span class="o">,</span> <span class="n">GenericModel</span><span class="o">&gt;();</span>
+                <span class="k">do</span> <span class="o">{</span>
+                    <span class="c1">//反射创建对象
+</span><span class="c1"></span>                    <span class="n">T</span> <span class="n">modelInstance</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">)</span> <span class="n">createInstanceFromClass</span><span class="o">(</span><span class="n">modelClass</span><span class="o">);</span>
+                    <span class="c1">//填补对象id
+</span><span class="c1"></span>                    <span class="n">giveBaseObjIdValue</span><span class="o">((</span><span class="n">LitePalSupport</span><span class="o">)</span> <span class="n">modelInstance</span><span class="o">,</span><span class="n">cursor</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">getColumnIndexOrThrow</span><span class="o">(</span><span class="s">&#34;id&#34;</span><span class="o">)));</span>
+                    <span class="c1">//填补对象的基本类型数据
+</span><span class="c1"></span>                    <span class="n">setValueToModel</span><span class="o">(</span><span class="n">modelInstance</span><span class="o">,</span> <span class="n">supportedFields</span><span class="o">,</span> <span class="n">foreignKeyAssociations</span><span class="o">,</span> <span class="n">cursor</span><span class="o">,</span> <span class="n">queryInfoCacheSparseArray</span><span class="o">);</span>
+                    <span class="c1">//填补对象的基本类型集合数据
+</span><span class="c1"></span>                    <span class="n">setGenericValueToModel</span><span class="o">((</span><span class="n">LitePalSupport</span><span class="o">)</span> <span class="n">modelInstance</span><span class="o">,</span> <span class="n">supportedGenericFields</span><span class="o">,</span> <span class="n">genericModelMap</span><span class="o">);</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">foreignKeyAssociations</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="c1">//填补关联表对象
+</span><span class="c1"></span>                        <span class="n">setAssociatedModel</span><span class="o">((</span><span class="n">LitePalSupport</span><span class="o">)</span> <span class="n">modelInstance</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    <span class="n">dataList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">modelInstance</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">cursor</span><span class="o">.</span><span class="na">moveToNext</span><span class="o">());</span>
+                <span class="n">queryInfoCacheSparseArray</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+                <span class="n">genericModelMap</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="n">dataList</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">LitePalSupportException</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">(),</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cursor</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里在分析过程发现一个比较迷惑的地方，填补基本数据类型时，后边有段代码是将关联表的对象也填补上，这个地方感觉比较冗余
+因为后续会对关联表数据填充做专项处理，目前不太明白作者的意图</p>
 
 <h2 id="4-分析器">4.分析器</h2>
 
 <p>在上边几个操作中都用到了分析器，分析器的作用主要是将当前对象所关联的表的信息更新到当前对象，主要涉及了外键的更新
 这些外键的信息在每个对象之后的存储更新等操作提供了更加准确的依据，让数据库的信息更加准确。</p>
 
-<h3 id="4-1-many2oneanalyzer">4.1 Many2OneAnalyzer</h3>
+<h3 id="4-1-作用分析">4.1 作用分析</h3>
 
 <p>直接进入代码分析,如下图的判断中，按照作者在之前表关联的关系注释说明中，这个判断应该不是表示baseObj到底是一对多还是
 多对一，而不是单纯的多对一(看类的命名的话容易误解)，因为作者将一对多和多对一化作同一种类型了，用getClassHoldsForeignKey
@@ -1095,33 +1305,177 @@ SaveHandler来处理，以下截图为SaveHandler中onSave()的代码逻辑。</
 反之就是一对多</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kt">void</span> <span class="nf">analyze</span><span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">baseObj</span><span class="o">,</span> <span class="n">AssociationsInfo</span> <span class="n">associationInfo</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SecurityException</span><span class="o">,</span>
 			<span class="n">IllegalArgumentException</span><span class="o">,</span> <span class="n">NoSuchMethodException</span><span class="o">,</span> <span class="n">IllegalAccessException</span><span class="o">,</span>
 			<span class="n">InvocationTargetException</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">baseObj</span><span class="o">.</span><span class="na">getClassName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">associationInfo</span><span class="o">.</span><span class="na">getClassHoldsForeignKey</span><span class="o">()))</span> <span class="o">{</span>
-        <span class="n">analyzeManySide</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+        <span class="c1">//多对一
+</span><span class="c1"></span>        <span class="n">analyzeManySide</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="n">analyzeOneSide</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+        <span class="c1">//一对多
+</span><span class="c1"></span>        <span class="n">analyzeOneSide</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">analyzeManySide</span><span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">baseObj</span><span class="o">,</span> <span class="n">AssociationsInfo</span> <span class="n">associationInfo</span><span class="o">)</span><span class="kd">throws</span> <span class="n">SecurityException</span><span class="o">,</span> <span class="n">IllegalArgumentException</span><span class="o">,</span> <span class="n">NoSuchMethodException</span><span class="o">,</span><span class="n">IllegalAccessException</span><span class="o">,</span> <span class="n">InvocationTargetException</span> <span class="o">{</span>
+    <span class="n">LitePalSupport</span> <span class="n">associatedModel</span> <span class="o">=</span> <span class="n">getAssociatedModel</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">associatedModel</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//获得关联类对象中的baseObj类型的集合
+</span><span class="c1"></span>        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">LitePalSupport</span><span class="o">&gt;</span> <span class="n">tempCollection</span> <span class="o">=</span> <span class="n">getReverseAssociatedModels</span><span class="o">(</span><span class="n">associatedModel</span><span class="o">,</span><span class="n">associationInfo</span><span class="o">);</span>
+        <span class="c1">//检查集合对象是否属于List或者Set类型并且还原为实际类型
+</span><span class="c1"></span>        <span class="n">Collection</span><span class="o">&lt;</span><span class="n">LitePalSupport</span><span class="o">&gt;</span> <span class="n">reverseAssociatedModels</span> <span class="o">=</span> <span class="n">checkAssociatedModelCollection</span><span class="o">(</span><span class="n">tempCollection</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">.</span><span class="na">getAssociateSelfFromOtherModel</span><span class="o">());</span>
+        <span class="c1">//将还原后的集合类型重新设置给关联类
+</span><span class="c1"></span>        <span class="n">setReverseAssociatedModels</span><span class="o">(</span><span class="n">associatedModel</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">,</span> <span class="n">reverseAssociatedModels</span><span class="o">);</span>
+        <span class="c1">//检查baseObj是否在集合数据中，没有就添加上；并且判断关联类对象是否已经存在于数据库，存在就给baseObj更新外键
+</span><span class="c1"></span>        <span class="n">dealAssociatedModelOnManySide</span><span class="o">(</span><span class="n">reverseAssociatedModels</span><span class="o">,</span> <span class="n">baseObj</span><span class="o">,</span> <span class="n">associatedModel</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="c1">//如果关联类对象是空的，就需要将该对象信息添加到外键清理的集合中，用于之后的数据清理工作
+</span><span class="c1"></span>        <span class="n">mightClearFKValue</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">analyzeOneSide</span><span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">baseObj</span><span class="o">,</span> <span class="n">AssociationsInfo</span> <span class="n">associationInfo</span><span class="o">)</span><span class="kd">throws</span> <span class="n">SecurityException</span><span class="o">,</span> <span class="n">IllegalArgumentException</span><span class="o">,</span> <span class="n">NoSuchMethodException</span><span class="o">,</span><span class="n">IllegalAccessException</span><span class="o">,</span> <span class="n">InvocationTargetException</span> <span class="o">{</span>
+    <span class="c1">//获得关联类的集合
+</span><span class="c1"></span>    <span class="n">Collection</span><span class="o">&lt;</span><span class="n">LitePalSupport</span><span class="o">&gt;</span> <span class="n">associatedModels</span> <span class="o">=</span> <span class="n">getAssociatedModels</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">associatedModels</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">associatedModels</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">//如果集合为空，表示外键需要得到清理，先将其添加到相关集合，用作后续清理使用
+</span><span class="c1"></span>        <span class="n">String</span> <span class="n">tableName</span> <span class="o">=</span> <span class="n">DBUtility</span><span class="o">.</span><span class="na">getTableNameByClassName</span><span class="o">(</span><span class="n">associationInfo</span><span class="o">.</span><span class="na">getAssociatedClassName</span><span class="o">());</span>
+        <span class="n">baseObj</span><span class="o">.</span><span class="na">addAssociatedTableNameToClearFK</span><span class="o">(</span><span class="n">tableName</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">LitePalSupport</span> <span class="n">associatedModel</span> <span class="o">:</span> <span class="n">associatedModels</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//将关联类集合中的每条数据中的baseObj类型的字段都进行赋值
+</span><span class="c1"></span>        <span class="n">buildBidirectionalAssociations</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associatedModel</span><span class="o">,</span> <span class="n">associationInfo</span><span class="o">);</span>
+        <span class="c1">//处理关联关系，根据是否存储过来处理外键的存储位置
+</span><span class="c1"></span>        <span class="n">dealAssociatedModelOnOneSide</span><span class="o">(</span><span class="n">baseObj</span><span class="o">,</span> <span class="n">associatedModel</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></td></tr></table>
 </div>
 </div>
-<h2 id="4-异步操作">4.异步操作</h2>
+<p>看到这里，其他几步都还好理解，对对象之间的赋值是为了巩固关联关系，而这几个外键记录操作可能分析起来不是很明朗。
+我们先看LitepalSupport中对于这几个关于外键的集合的解释</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="cm">/*** A map contains all the associated models&#39; id with M2O or O2O
+</span><span class="cm">* associations. Each corresponding table of these models contains a foreign
+</span><span class="cm">* key column.*/</span>
+<span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;&gt;</span> <span class="n">associatedModelsMapWithFK</span><span class="o">;</span>
 
-<h2 id="5-issaved-方法的分析">5.isSaved()方法的分析</h2>
+<span class="cm">/*** A map contains all the associated models&#39; id with M2O or O2O association.
+</span><span class="cm">* Each corresponding table of these models doesn&#39;t contain foreign key
+</span><span class="cm">* column. Instead self model has a foreign key column in the corresponding
+</span><span class="cm">* table.*/</span>
+<span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="n">associatedModelsMapWithoutFK</span><span class="o">;</span>
 
-<h2 id="6-fluentquery">6.FluentQuery</h2>
+<span class="cm">/*** A map contains all the associated models&#39; id with M2M association.*/</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;&gt;</span> <span class="n">associatedModelsMapForJoinTable</span><span class="o">;</span>
+
+<span class="cm">/*** When updating a model and the associations breaks between current model
+</span><span class="cm">* and others, if current model holds a foreign key, it need to be cleared.
+</span><span class="cm">* This list holds all the foreign key names that need to clear.*/</span>
+<span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">listToClearSelfFK</span><span class="o">;</span>
+
+<span class="cm">/*** When updating a model and the associations breaks between current model
+</span><span class="cm">* and others, clear all the associated models&#39; foreign key value if it
+</span><span class="cm">* exists. This list holds all the associated table names that need to
+</span><span class="cm">* clear.*/</span>
+<span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">listToClearAssociatedFK</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>1.associatedModelsMapWithFK 从注释上来看，应该是表示双向关联时的存储关系
+存储完当前对象之后还需要将当前对象的存储id更新到关联对象的表记录中</p>
+
+<p>2.associatedModelsMapWithoutFK  从注释上来看，应该表示单向关联时的存储关系
+存储玩当前对象之后不需要管关联对象的存储记录的外键更新</p>
+
+<p>3.associatedModelsMapForJoinTable 中间表记录，这是双向的</p>
+
+<p>4.listToClearSelfFK 表示当前对象需要清除的外键集合，用于关联类对象被清除或者不存在时清理
+本对象的外键使用</p>
+
+<p>5.listToClearAssociatedFK 表示当前对象与关联对象关系破除时，关联类对象对于当前类外键需要清理的集合</p>
+
+<p>由此可见分析器的作用就是负责更新关联类的关系，对象在存储等操作前后都会导致关联关系的外键的更新，
+这块集中记录，在后续集中处理</p>
 
     </div>
 
