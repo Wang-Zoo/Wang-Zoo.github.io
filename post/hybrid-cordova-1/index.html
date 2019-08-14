@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Hybrid开发之cordova(1) - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 Hybrid 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得， 由于目前项目所使用的是cord" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/hybrid-cordova-1/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Hybrid开发之cordova(1)" />
+<meta property="og:description" content="前言 Hybrid 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得， 由于目前项目所使用的是cord" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/hybrid-cordova-1/" />
+<meta property="article:published_time" content="2019-08-09T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-08-09T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Hybrid开发之cordova(1)">
+<meta itemprop="description" content="前言 Hybrid 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得， 由于目前项目所使用的是cord">
+
+
+<meta itemprop="datePublished" content="2019-08-09T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-08-09T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="5247">
+
+
+
+<meta itemprop="keywords" content="源码,Hybrid,cordova,jsbrige," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Hybrid开发之cordova(1)"/>
+<meta name="twitter:description" content="前言 Hybrid 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得， 由于目前项目所使用的是cord"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Hybrid开发之cordova(1)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-08-09" class="post-time">
+          2019-08-09
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#1-hybrid-与-js">1.Hybrid 与 JS</a>
+<ul>
+<li><a href="#1-1-何为jsbrige">1.1 何为JSBrige</a></li>
+<li><a href="#1-2-cordova">1.2 Cordova</a></li>
+</ul></li>
+<li><a href="#2-实现原理">2.实现原理</a>
+<ul>
+<li><a href="#2-1-webview与js通信">2.1 webview与JS通信</a>
+<ul>
+<li><a href="#2-1-1-js调用webview">2.1.1 JS调用webview</a></li>
+<li><a href="#2-1-2-webview调用js">2.1.2 webview调用JS</a></li>
+</ul></li>
+<li><a href="#2-2-cordova-js层分析">2.2 cordova JS层分析</a>
+<ul>
+<li><a href="#1-插件的注册">1.插件的注册</a></li>
+<li><a href="#2-插件的调用">2.插件的调用</a></li>
+<li><a href="#3-回调方法数组">3.回调方法数组</a></li>
+</ul></li>
+<li><a href="#2-3-cordova-原生层分析">2.3 cordova 原生层分析</a>
+<ul>
+<li><a href="#1-插件注册">1.插件注册</a></li>
+<li><a href="#2-插件调用">2.插件调用</a></li>
+<li><a href="#3-插件回调">3.插件回调</a></li>
+<li><a href="#4-onlineeventsbridgemode的逻辑分析">4.OnlineEventsBridgeMode的逻辑分析</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>Hybrid 话题比较大，但是这是app以后的主流开发趋势，本着不落后于时代的初心，笔者也开始一步一步的记录学习心得，
+由于目前项目所使用的是cordova的方案，于是便决定先跟cordova这个比较奇葩的框架一磕到底</p>
+
+<h2 id="1-hybrid-与-js">1.Hybrid 与 JS</h2>
+
+<p>经常听同事说，“js是最好的语言”，“js会一统天下”。不得不承认在pc网站发展中，js一路披荆斩棘，到如今的前后端通吃
+发展历程着实令人瞩目，移动端兴起时，js也想快速入侵，完成新大陆的统一，不过这里，由于Google的遏制，js的在移动端
+android上的发展遭受了一些阻力，臭名昭著的WebView让js等前端技术到了现在也并没有完全拿下这块要地。当然大公司有
+大公司的政策，民间有民间的对策，为了推动移动端H5技术的发展，其中也涌现了不少优秀的JSBrige框架。</p>
+
+<h3 id="1-1-何为jsbrige">1.1 何为JSBrige</h3>
+
+<p>在android 原生开发中，UI开发只是其中一部分，但H5开发再怎么厉害，最多只能解决这一部分的问题，但是app开发不同于
+pc开发，多变的应用场景，让app需要适配各种场景，webview在这一部分拙荆见肘。webview为了弥补这一短板，提供了JS与
+原生调用通道，原生提供各种各样的插件通过这个通道供js调用。这其中逻辑交错，框架便应运而生。</p>
+
+<h3 id="1-2-cordova">1.2 Cordova</h3>
+
+<p>cordova，Apache基金维护的一个开源项目，其提供了一套app的JS插件编写标准，让H5与原生交互变得优雅起来。</p>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_structure.png" />
+    </div>
+    <a href="/imgs/cordova_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova 架构图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h2 id="2-实现原理">2.实现原理</h2>
+
+<p>分析这些插件原理，还是要从webview与JS调用过程中来下手，最后将插件框架分为 JS层标准和原生层 两个部分来实现即可。
+(笔者android原生开发出身，ios开发不甚了解，故不多言)</p>
+
+<h3 id="2-1-webview与js通信">2.1 webview与JS通信</h3>
+
+<h4 id="2-1-1-js调用webview">2.1.1 JS调用webview</h4>
+
+<p><strong>1.addJavascriptInterface 实体注册</strong></p>
+
+<p>首先我们创建一个原生实体对象，并用JavascriptInterface来进行安全注解
+使用了改注解，才能将方法安全的暴漏给JS去调用，防止JS随便通过直接访问
+对象的getClass等方法来进行反射操作。在api17之后生效。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BrigeBean</span> <span class="o">{</span>
+
+    <span class="nd">@JavascriptInterface</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">connect</span><span class="o">(</span><span class="n">String</span> <span class="n">msg</span><span class="o">){</span>
+        <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&#34;BrigeBean&#34;</span><span class="o">,</span><span class="n">msg</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后配置webview，并且注册实体对象,实体注册之后，第二个参数“Brige”就是JS调用webview的句柄</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">initView</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">webview</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">webview</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebChromeClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebChromeClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebViewClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebViewClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;file:////android_asset/index.html&#34;</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">getSettings</span><span class="o">().</span><span class="na">setJavaScriptEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="c1">//实体注册
+</span><span class="c1"></span>    <span class="n">webview</span><span class="o">.</span><span class="na">addJavascriptInterface</span><span class="o">(</span><span class="k">new</span> <span class="n">BrigeBean</span><span class="o">(),</span><span class="s">&#34;Brige&#34;</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后在H5进行调用即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"> <span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+    <span class="kd">function</span> <span class="nx">callAndroid</span><span class="p">(){</span>
+        <span class="c1">//JS调用
+</span><span class="c1"></span>        <span class="nx">Brige</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s2">&#34;js调用了android中的connect方法&#34;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/script&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>这种方法是官方提供的，是比较正规的方法。</p>
+
+<p><strong>2.拦截url方法</strong></p>
+
+<p>webview配置，主要是在WebViewClient中重写shouldOverrideUrlLoading方法，具体如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">initView_withUrl</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">webview</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">webview</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebChromeClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebChromeClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebViewClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebViewClient</span><span class="o">(){</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">shouldOverrideUrlLoading</span><span class="o">(</span><span class="n">WebView</span> <span class="n">view</span><span class="o">,</span> <span class="n">WebResourceRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//在该方法中可以获取全部uri的信息
+</span><span class="c1"></span>            <span class="n">String</span> <span class="n">scheme</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getUrl</span><span class="o">().</span><span class="na">getScheme</span><span class="o">();</span>
+            <span class="n">String</span> <span class="n">authority</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getUrl</span><span class="o">().</span><span class="na">getAuthority</span><span class="o">();</span>
+            <span class="n">String</span> <span class="n">arg1</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getUrl</span><span class="o">().</span><span class="na">getQueryParameter</span><span class="o">(</span><span class="s">&#34;arg1&#34;</span><span class="o">);</span>
+            <span class="n">String</span> <span class="n">arg2</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getUrl</span><span class="o">().</span><span class="na">getQueryParameter</span><span class="o">(</span><span class="s">&#34;arg2&#34;</span><span class="o">);</span>
+            <span class="n">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">&#34;webviewurl&#34;</span><span class="o">,</span><span class="n">scheme</span><span class="o">+</span><span class="s">&#34;--&#34;</span><span class="o">+</span><span class="n">authority</span><span class="o">+</span><span class="s">&#34;--&#34;</span><span class="o">+</span><span class="n">arg1</span><span class="o">+</span><span class="s">&#34;--&#34;</span><span class="o">+</span><span class="n">arg2</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;file:////android_asset/index_url.html&#34;</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">getSettings</span><span class="o">().</span><span class="na">setJavaScriptEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebContentsDebuggingEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在js中通过如下方式调用,遵循一个uri的标准方式书写即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+    <span class="kd">function</span> <span class="nx">callAndroid</span><span class="p">(){</span>
+        <span class="c1">//JS调用
+</span><span class="c1"></span>        <span class="nb">document</span><span class="p">.</span><span class="nx">location</span> <span class="o">=</span> <span class="s2">&#34;js://webview?arg1=111&amp;arg2=222&#34;</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/script&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>3.通过prompt方法拦截</strong></p>
+
+<p>webview配置如下，对WebChromeClient中的onJsPrompt方法进行重写,js传下来的值在message参数字段中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">initView_withPrompt</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">webview</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">webview</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebChromeClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebChromeClient</span><span class="o">(){</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onJsPrompt</span><span class="o">(</span><span class="n">WebView</span> <span class="n">view</span><span class="o">,</span> <span class="n">String</span> <span class="n">url</span><span class="o">,</span> <span class="n">String</span> <span class="n">message</span><span class="o">,</span> <span class="n">String</span> <span class="n">defaultValue</span><span class="o">,</span> <span class="n">JsPromptResult</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">result</span><span class="o">.</span><span class="na">confirm</span><span class="o">(</span><span class="s">&#34;webviewtojs&#34;</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+    <span class="o">});</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebViewClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebViewClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;file:////android_asset/index_prompt.html&#34;</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">getSettings</span><span class="o">().</span><span class="na">setJavaScriptEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebContentsDebuggingEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>JS调用代码如下,通过调用confirm，alert或者prompt来分别对webview中的方法进行调用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+    <span class="kd">function</span> <span class="nx">callAndroid</span><span class="p">(){</span>
+        <span class="c1">//JS调用
+</span><span class="c1"></span>        <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="s2">&#34;jstowebview&#34;</span><span class="p">);</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/script&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>那么这几个方法各自的优缺点呢？</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">实体注册：
+    优点-配置标准化且方便,并且可以直接获取到来自原生的返回值
+    缺点-存在安全隐患，在api17以前需要通过其他方式来规避
+        
+拦截url：
+    优点-不存在安全隐患
+    缺点-配置麻烦，且不能直接获得返回值
+
+拦截prompt：
+    优点-不存在安全隐患
+    缺点-配置麻烦，prompt可以直接设置返回值，需要对弹出框进行重写处理</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-1-2-webview调用js">2.1.2 webview调用JS</h4>
+
+<p><strong>1.通过loadUrl的方式</strong></p>
+
+<p>在h5中先声明一个js方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="o">&lt;</span><span class="nx">script</span><span class="o">&gt;</span>
+    <span class="kd">function</span> <span class="nx">callFromWebview</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
+        <span class="c1">//JS调用
+</span><span class="c1"></span>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/script&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>在原生通过loadUrl方法去调用，注意要等主体h5渲染完成之后才能进行调用，所以这里
+使用了一个延时操作来模拟</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">initView_loadUrltojs</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">webview</span> <span class="o">=</span> <span class="o">(</span><span class="n">WebView</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">webview</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebChromeClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebChromeClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">setWebViewClient</span><span class="o">(</span><span class="k">new</span> <span class="n">WebViewClient</span><span class="o">());</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;file:////android_asset/index.html&#34;</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">getSettings</span><span class="o">().</span><span class="na">setJavaScriptEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">webview</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="c1">//调用js的声明方法
+</span><span class="c1"></span>            <span class="n">webview</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;javascript:callFromWebview(123)&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">},</span><span class="n">5000</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>2.使用evaluateJavascript方法</strong></p>
+
+<p>h5同上，这里重点是webview的调用改变一下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">webview</span><span class="o">.</span><span class="na">evaluateJavascript</span><span class="o">(</span><span class="s">&#34;javascript:callFromWebview(123)&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">ValueCallback</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceiveValue</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">});</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在onReceiveValue中会得到js返回的数据，这一点，比前者要方便的多。</p>
+
+<p>那么corodva会用那种方式来完成js调用呢？</p>
+
+<h3 id="2-2-cordova-js层分析">2.2 cordova JS层分析</h3>
+
+<p>cordova在js层最关键的一个文件就是cordova.js文件。想要调用原生插件，在index.html挂载该文件即可。</p>
+
+<h4 id="1-插件的注册">1.插件的注册</h4>
+
+<p>大致过程如下</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_plugin_init_timer.png" />
+    </div>
+    <a href="/imgs/cordova_plugin_init_timer.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova 插件初始化时序</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>这里需要先了解一下cordova的h5资源被打包之后的目录结构，如下</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_package.png" />
+    </div>
+    <a href="/imgs/cordova_package.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova 目录结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在本地会加载cordova.js文件，cordova.js会加载cordova_plugins.js文件，cordova_plugins.js同时
+里面包含插件信息的集合数据，每条数据都包含插件对象的js的路径，然后就根据这些路径将plugin文件夹下的插件
+一并加入，这里我们以其中一个Device插件为例。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="c1">//cordova_plugins.js的内容
+</span><span class="c1"></span><span class="p">...</span>
+<span class="p">{</span>
+    <span class="s2">&#34;id&#34;</span><span class="o">:</span> <span class="s2">&#34;cordova-plugin-device.device&#34;</span><span class="p">,</span>
+    <span class="c1">//插件路径，相对地址
+</span><span class="c1"></span>    <span class="s2">&#34;file&#34;</span><span class="o">:</span> <span class="s2">&#34;plugins/cordova-plugin-device/www/device.js&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;pluginId&#34;</span><span class="o">:</span> <span class="s2">&#34;cordova-plugin-device&#34;</span><span class="p">,</span>
+    <span class="s2">&#34;clobbers&#34;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&#34;device&#34;</span>
+    <span class="p">]</span>
+<span class="p">},</span>
+<span class="p">...</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_plugins_path.png" />
+    </div>
+    <a href="/imgs/cordova_plugins_path.png" itemprop="contentUrl"></a>
+      <figcaption><h4>插件路径</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>而不管是cordova_plugins.js还是插件js文件，在cordova.js中都是通过document操作添加到h5运行环境的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="c1">//corodva.js文件中 injectScript 方法是最终的插件添加操作。
+</span><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">injectScript</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">onload</span><span class="p">,</span> <span class="nx">onerror</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">script</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;script&#34;</span><span class="p">);</span>
+    <span class="nx">script</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="nx">onload</span><span class="p">;</span>
+    <span class="nx">script</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">onerror</span><span class="p">;</span>
+    <span class="nx">script</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">url</span><span class="p">;</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">head</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-插件的调用">2.插件的调用</h4>
+
+<p>经过如上的插件注册过程之后，h5运行环境中，应该都存在了关于所有插件的调用句柄了，这里还是以Device插件的调用为
+例子。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_device_plugin.png" />
+    </div>
+    <a href="/imgs/cordova_device_plugin.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova 调用流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>关键方法androidExec，注意注释的地方。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="kd">function</span> <span class="nx">androidExec</span><span class="p">(</span><span class="nx">success</span><span class="p">,</span> <span class="nx">fail</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">bridgeSecret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;exec() called without bridgeSecret&#39;</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">jsToNativeBridgeMode</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">androidExec</span><span class="p">.</span><span class="nx">setJsToNativeBridgeMode</span><span class="p">(</span><span class="nx">jsToNativeModes</span><span class="p">.</span><span class="nx">JS_OBJECT</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">args</span> <span class="o">=</span> <span class="nx">args</span> <span class="o">||</span> <span class="p">[];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">args</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">utils</span><span class="p">.</span><span class="nx">typeName</span><span class="p">(</span><span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;ArrayBuffer&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">base64</span><span class="p">.</span><span class="nx">fromArrayBuffer</span><span class="p">(</span><span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">//回调方法数组建立
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">callbackId</span> <span class="o">=</span> <span class="nx">service</span> <span class="o">+</span> <span class="nx">cordova</span><span class="p">.</span><span class="nx">callbackId</span><span class="o">++</span><span class="p">,</span>
+        <span class="nx">argsJson</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">success</span> <span class="o">||</span> <span class="nx">fail</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">cordova</span><span class="p">.</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">callbackId</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nx">success</span><span class="o">:</span><span class="nx">success</span><span class="p">,</span> <span class="nx">fail</span><span class="o">:</span><span class="nx">fail</span><span class="p">};</span>
+    <span class="p">}</span>
+    <span class="c1">//启动调用插件方法，与webview交互
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">msgs</span> <span class="o">=</span> <span class="nx">nativeApiProvider</span><span class="p">.</span><span class="nx">get</span><span class="p">().</span><span class="nx">exec</span><span class="p">(</span><span class="nx">bridgeSecret</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">callbackId</span><span class="p">,</span> <span class="nx">argsJson</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">jsToNativeBridgeMode</span> <span class="o">==</span> <span class="nx">jsToNativeModes</span><span class="p">.</span><span class="nx">JS_OBJECT</span> <span class="o">&amp;&amp;</span> <span class="nx">msgs</span> <span class="o">===</span> <span class="s2">&#34;@Null arguments.&#34;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">androidExec</span><span class="p">.</span><span class="nx">setJsToNativeBridgeMode</span><span class="p">(</span><span class="nx">jsToNativeModes</span><span class="p">.</span><span class="nx">PROMPT</span><span class="p">);</span>
+        <span class="nx">androidExec</span><span class="p">(</span><span class="nx">success</span><span class="p">,</span> <span class="nx">fail</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+        <span class="nx">androidExec</span><span class="p">.</span><span class="nx">setJsToNativeBridgeMode</span><span class="p">(</span><span class="nx">jsToNativeModes</span><span class="p">.</span><span class="nx">JS_OBJECT</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">msgs</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">messagesFromNative</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msgs</span><span class="p">);</span>
+        <span class="nx">nextTick</span><span class="p">(</span><span class="nx">processMessages</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>上图中的cordova 和 nativeapiprovider都是cordova.js文件中提供的调用对象。那么根据流程图介绍。
+我们已经知道了cordova采用了两种方式来跟webviw交互，至于到底用哪种，是根据配置去决定的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="nx">define</span><span class="p">(</span><span class="s2">&#34;cordova/android/nativeapiprovider&#34;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">//从代码来看，应该默认使用_cordovaNative，如果没有，再使用prompt的方式
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">nativeApi</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_cordovaNative</span> <span class="o">||</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cordova/android/promptbasednativeapi&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">currentApi</span> <span class="o">=</span> <span class="nx">nativeApi</span><span class="p">;</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">currentApi</span><span class="p">;</span> <span class="p">},</span>
+    <span class="nx">setPreferPrompt</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">currentApi</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">?</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;cordova/android/promptbasednativeapi&#39;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">nativeApi</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">set</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">currentApi</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="p">});</span>
+<span class="nx">define</span><span class="p">(</span><span class="s2">&#34;cordova/android/promptbasednativeapi&#34;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">require</span><span class="p">,</span> <span class="nx">exports</span><span class="p">,</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">exec</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">bridgeSecret</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">callbackId</span><span class="p">,</span> <span class="nx">argsJson</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">prompt</span><span class="p">(</span><span class="nx">argsJson</span><span class="p">,</span> <span class="s1">&#39;gap:&#39;</span><span class="o">+</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">([</span><span class="nx">bridgeSecret</span><span class="p">,</span> <span class="nx">service</span><span class="p">,</span> <span class="nx">action</span><span class="p">,</span> <span class="nx">callbackId</span><span class="p">]));</span>
+    <span class="p">},</span>
+    <span class="nx">setNativeToJsBridgeMode</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">bridgeSecret</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">prompt</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="s1">&#39;gap_bridge_mode:&#39;</span> <span class="o">+</span> <span class="nx">bridgeSecret</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="nx">retrieveJsMessages</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">bridgeSecret</span><span class="p">,</span> <span class="nx">fromOnlineEvent</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">prompt</span><span class="p">(</span><span class="o">+</span><span class="nx">fromOnlineEvent</span><span class="p">,</span> <span class="s1">&#39;gap_poll:&#39;</span> <span class="o">+</span> <span class="nx">bridgeSecret</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>而代码中的_cordovaNative是什么呢，如果猜的没错的话，应该是webview在原生代码的注册实体。下文会继续揭晓</p>
+
+<h4 id="3-回调方法数组">3.回调方法数组</h4>
+
+<p>在上述分析中，作者特意将回调方法数组作为一个步骤列出，这个地方在后续webview回调js时会起到非常重要的作用。
+我们先大致看看整个cordova插件调用系统的架构图</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_plugin_structure.png" />
+    </div>
+    <a href="/imgs/cordova_plugin_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova 插件调用流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>如图，后缀js和java只是为了表示是属于js层还是android原生的代码，不是具体插件文件标准。可以看到其中的
+中转组件plugin_manager承担了所有插件所有的向下分发和向上回传的任务，所以，在回传时一定需要准确的回传给对应的
+插件调用，这里使用了一个集合来保存所有的调用记录的回调方法，在回传时只需要根据相应的id就能取出相应的回调方法
+完成js接收webview的调用插件情况的反馈，具体的id是根据插件名字和一个不断递增的数字拼接而成，在androidExec代码
+注释中就能看到。</p>
+
+<h3 id="2-3-cordova-原生层分析">2.3 cordova 原生层分析</h3>
+
+<h4 id="1-插件注册">1.插件注册</h4>
+
+<p>还是少说废话，直接上时序图</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_android_plugin_init.png" />
+    </div>
+    <a href="/imgs/cordova_android_plugin_init.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova-android 插件初始化</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>cordova 的android 原生工程中，有个config.xml文件，这个文件就是插件的注册表。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-XML" data-lang="XML"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-XML" data-lang="XML"><span class="nt">&lt;feature</span> <span class="na">name=</span><span class="s">&#34;Device&#34;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">&#34;android-package&#34;</span> <span class="na">value=</span><span class="s">&#34;com.cordova.utils.Device&#34;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">&#34;onload&#34;</span> <span class="na">value=</span><span class="s">&#34;false&#34;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/feature&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述配置中，feature-name就是js在调用exec方法时传递的ServiceName；com.cordova.utils.Device一目了然，表示
+java文件Device的DeviceclassName，用作反射使用；onload表示是否懒加载。</p>
+
+<h4 id="2-插件调用">2.插件调用</h4>
+
+<p>在前面的js层分析中，我们得出了结论，cordova 的js和webview交互使用了实体注册和prompt两种方式，其中实体注册在webview
+的配置中一定存在相应的代码。就是如下代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">exposedJsApi</span> <span class="o">=</span> <span class="k">new</span> <span class="n">X5ExposedJsApi</span><span class="o">(</span><span class="n">bridge</span><span class="o">);</span>
+<span class="n">webView</span><span class="o">.</span><span class="na">addJavascriptInterface</span><span class="o">(</span><span class="n">exposedJsApi</span><span class="o">,</span> <span class="s">&#34;_cordovaNative&#34;</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>所以，当通过实体注册的方式来调用插件时一定会调用到X5ExposedJsApi的exec方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="nd">@JavascriptInterface</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">exec</span><span class="o">(</span><span class="kt">int</span> <span class="n">bridgeSecret</span><span class="o">,</span> <span class="n">String</span> <span class="n">service</span><span class="o">,</span> <span class="n">String</span> <span class="n">action</span><span class="o">,</span> <span class="n">String</span> <span class="n">callbackId</span><span class="o">,</span> <span class="n">String</span> <span class="n">arguments</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">JSONException</span><span class="o">,</span><span class="n">IllegalAccessException</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">bridge</span><span class="o">.</span><span class="na">jsExec</span><span class="o">(</span><span class="n">bridgeSecret</span><span class="o">,</span> <span class="n">service</span><span class="o">,</span> <span class="n">action</span><span class="o">,</span> <span class="n">callbackId</span><span class="o">,</span> <span class="n">arguments</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>接着就会调用CordovaBrige的jsExec方法，在jsExec中会直接调用到pluginManager的exec方法,pluginManager根据具体的servciename
+找到具体的插件，然后执行插件的逻辑</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_android_plugin_get.png" />
+    </div>
+    <a href="/imgs/cordova_android_plugin_get.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova-android 插件调用流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>这个就是实体注册的插件调用流程。那prompt的流程如何呢？</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onJsPrompt</span><span class="o">(</span><span class="n">WebView</span> <span class="n">view</span><span class="o">,</span> <span class="n">String</span> <span class="n">origin</span><span class="o">,</span> <span class="n">String</span> <span class="n">message</span><span class="o">,</span> <span class="n">String</span> <span class="n">defaultValue</span><span class="o">,</span> <span class="kd">final</span> <span class="n">JsPromptResult</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">handledRet</span> <span class="o">=</span> <span class="n">parentEngine</span><span class="o">.</span><span class="na">bridge</span><span class="o">.</span><span class="na">promptOnJsPrompt</span><span class="o">(</span><span class="n">origin</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">defaultValue</span><span class="o">);</span>
+    <span class="o">...</span>
+ <span class="o">}</span>
+
+<span class="c1">//CordovaBrige中的promptOnJsPrompt方法
+</span><span class="c1"></span>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">promptOnJsPrompt</span><span class="o">(</span><span class="n">String</span> <span class="n">origin</span><span class="o">,</span> <span class="n">String</span> <span class="n">message</span><span class="o">,</span> <span class="n">String</span> <span class="n">defaultValue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">defaultValue</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">defaultValue</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">3</span> <span class="o">&amp;&amp;</span> <span class="n">defaultValue</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">&#34;gap:&#34;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">JSONArray</span> <span class="n">array</span><span class="o">;</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">array</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="o">(</span><span class="n">defaultValue</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">4</span><span class="o">));</span>
+                <span class="kt">int</span> <span class="n">bridgeSecret</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="n">0</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">service</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">action</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
+                <span class="n">String</span> <span class="n">callbackId</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">3</span><span class="o">);</span>
+                <span class="c1">//实际还是调用的CordovaBrige的jsExec方法
+</span><span class="c1"></span>                <span class="n">String</span> <span class="n">r</span> <span class="o">=</span> <span class="n">jsExec</span><span class="o">(</span><span class="n">bridgeSecret</span><span class="o">,</span> <span class="n">service</span><span class="o">,</span> <span class="n">action</span><span class="o">,</span> <span class="n">callbackId</span><span class="o">,</span> <span class="n">message</span><span class="o">);</span>
+         <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上图的代码我们看到了实际prompt方式最后还是调用了CordovaBrige中的jsExec方法，跟实体注册最后逻辑一样的</p>
+
+<p>而且根据cordova.js中有一段注释，可以得知，实体注册是主要方式，当实体注册无法把参数传下去时，就会使用prompt作为备用方法</p>
+
+<h4 id="3-插件回调">3.插件回调</h4>
+
+<p>前面的分析，我们可以看到，cordova使用的两种方式都是可以直接获得返回值的，那么为什么cordova还是使用注册回调的方式来获得返回值呢？</p>
+
+<p>首先我们看看还是Cordova是怎么将返回值回传给js的。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_plugin_android_callback.png" />
+    </div>
+    <a href="/imgs/cordova_plugin_android_callback.png" itemprop="contentUrl"></a>
+      <figcaption><h4>cordova-android 插件回调流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>从图中我们可以看到最终的发送者是BridgeMode，BridgeMode是个抽象类，具体的实现者有效的有三个个</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_android_brige.png" />
+    </div>
+    <a href="/imgs/cordova_android_brige.png" itemprop="contentUrl"></a>
+      <figcaption><h4>BrigeMode继承关系</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>四个继承者在处理消息时会调用onNativeToJsMessageAvailable方法。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//LoadUrlBridgeMode
+</span><span class="c1"></span><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onNativeToJsMessageAvailable</span><span class="o">(</span><span class="kd">final</span> <span class="n">NativeToJsMessageQueue</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">engine</span><span class="o">.</span><span class="na">loadUrl</span><span class="o">(</span><span class="s">&#34;javascript:&#34;</span> <span class="o">+</span> <span class="n">js</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+<span class="c1">//OnlineEventsBridgeMode
+</span><span class="c1"></span><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onNativeToJsMessageAvailable</span><span class="o">(</span><span class="kd">final</span> <span class="n">NativeToJsMessageQueue</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">delegate</span><span class="o">.</span><span class="na">setNetworkAvailable</span><span class="o">(</span><span class="n">online</span><span class="o">);</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+<span class="c1">//EvalBridgeMode
+</span><span class="c1"></span><span class="nd">@Override</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onNativeToJsMessageAvailable</span><span class="o">(</span><span class="kd">final</span> <span class="n">NativeToJsMessageQueue</span> <span class="n">queue</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">engine</span><span class="o">.</span><span class="na">evaluateJavascript</span><span class="o">(</span><span class="n">js</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>可以看到loadUrl 和 evaluateJavascript都存在了，并且程序默认使用EvalBridgeMode的方式。
+在调用到这两个地方时，js的回传数据如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="nx">cordova</span><span class="p">.</span><span class="nx">callbackFromNative</span><span class="p">(</span><span class="s1">&#39;AndUtilPlugin1390149997&#39;</span><span class="p">,</span><span class="kc">true</span><span class="p">,</span><span class="mi">1</span><span class="p">,[</span><span class="s2">&#34;OK&#34;</span><span class="p">],</span><span class="kc">false</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>在cordova.js里面一定有一个callbackFromNative的方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="nx">callbackFromNative</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callbackId</span><span class="p">,</span> <span class="nx">isSuccess</span><span class="p">,</span> <span class="nx">status</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">keepCallback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="c1">//从之前的回调数组取出相应的回调对象
+</span><span class="c1"></span>    <span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">cordova</span><span class="p">.</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">callbackId</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">isSuccess</span> <span class="o">&amp;&amp;</span> <span class="nx">status</span> <span class="o">==</span> <span class="nx">cordova</span><span class="p">.</span><span class="nx">callbackStatus</span><span class="p">.</span><span class="nx">OK</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">callback</span><span class="p">.</span><span class="nx">success</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">success</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isSuccess</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">callback</span><span class="p">.</span><span class="nx">fail</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">fail</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="c1">//表示这个回调保留与否，有些场景下，需要js一直保留，有些场景只需要js调用一次就行。删除数据，减少内存消耗
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">keepCallback</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">delete</span> <span class="nx">cordova</span><span class="p">.</span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">callbackId</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="4-onlineeventsbridgemode的逻辑分析">4.OnlineEventsBridgeMode的逻辑分析</h4>
+
+<p>上一节中我们算是分析清楚了一次js调用的闭环流程。但是作者也注意到了一个细节，那就是关于OnlineEventsBridgeMode的作用疑惑。</p>
+
+<p>在cordova.js找到了一处注释。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-JavaScript" data-lang="JavaScript"><span class="c1">//CB-11828
+</span><span class="c1">//This failsafe checks the version of Android and if it&#39;s Jellybean, it switches it to
+</span><span class="c1">//using the Online Event bridge for communicating from Native to JS
+</span><span class="c1">//It&#39;s ugly, but it&#39;s necessary.
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">check</span> <span class="o">=</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">match</span><span class="p">(</span><span class="sr">/android\s[0-9].[0-9]/</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">version_code</span> <span class="o">=</span> <span class="nx">check</span> <span class="o">&amp;&amp;</span> <span class="nx">check</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">match</span><span class="p">(</span><span class="sr">/4.[0-3].*/</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">version_code</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">nativeToJsBridgeMode</span> <span class="o">==</span> <span class="nx">nativeToJsModes</span><span class="p">.</span><span class="nx">EVAL_BRIDGE</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">nativeToJsBridgeMode</span> <span class="o">=</span> <span class="nx">nativeToJsModes</span><span class="p">.</span><span class="nx">ONLINE_EVENT</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>从注释里面来看，应该是用来适配android 4.系列的，如果是这个系列的sdk，就默认使用ONLINE_EVENT模式来完成回调</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/cordova_android_online_event.png" />
+    </div>
+    <a href="/imgs/cordova_android_online_event.png" itemprop="contentUrl"></a>
+      <figcaption><h4>OnlineEventsBridgeMode的流程分析</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>上图就是具体的分析流程。可以看到绕了一大圈，实际上还是调用了js的callbackFromNative来处理。只不过按照注释来看，这样实现处理逻辑
+确实不太优雅，但是似乎是为了适配android 4.x的某些手机。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>1.cordova 使用了实体注册和prompt两种方式来进行js插件调用。</p>
+
+<p>2.返回值没有直接通过这两种方式返回，而是采用了异步回调，也是为了避免插件调用的并发问题。比如有些情况下，原生需要等待才能将数据返回，而不应该让插件管理器
+在此处阻塞。</p>
+
+<p>3.cordova 考虑的多种使用场景，封装结构化，这次分析只是分析了核心机制实现原理，后续会继续深入了解其架构代码。</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-08-09
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/hybrid/">Hybrid</a>
+          <a href="https://wang-zoo.github.io/tags/cordova/">cordova</a>
+          <a href="https://wang-zoo.github.io/tags/jsbrige/">jsbrige</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/litepal_source/">
+            <span class="next-text nav-default">LitePal源码分析</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="http://localhost:1313" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

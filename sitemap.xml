@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://wang-zoo.github.io/post/hybird-cordova-1/</loc>
+    <loc>https://wang-zoo.github.io/post/hybrid-cordova-1/</loc>
     <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -30,7 +30,7 @@
   </url>
   
   <url>
-    <loc>https://wang-zoo.github.io/tags/hybird/</loc>
+    <loc>https://wang-zoo.github.io/tags/hybrid/</loc>
     <lastmod>2019-08-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
