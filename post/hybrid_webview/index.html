@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Hybrid开发之cordova(2) - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/hybrid_webview/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Hybrid开发之cordova(2)" />
+<meta property="og:description" content="前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/hybrid_webview/" />
+<meta property="article:published_time" content="2019-08-15T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-08-15T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Hybrid开发之cordova(2)">
+<meta itemprop="description" content="前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc">
+
+
+<meta itemprop="datePublished" content="2019-08-15T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-08-15T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="4966">
+
+
+
+<meta itemprop="keywords" content="源码,Hybrid,cordova,webview," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Hybrid开发之cordova(2)"/>
+<meta name="twitter:description" content="前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Hybrid开发之cordova(2)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-08-15" class="post-time">
+          2019-08-15
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#1-websettings">1.WebSettings</a>
+<ul>
+<li><a href="#1-setnavdump">1.setNavDump</a></li>
+<li><a href="#2-setsupportzoom">2.setSupportZoom</a></li>
+<li><a href="#3-setmediaplaybackrequiresusergesture">3.setMediaPlaybackRequiresUserGesture</a></li>
+<li><a href="#4-setbuiltinzoomcontrols">4.setBuiltInZoomControls</a></li>
+<li><a href="#5-setdisplayzoomcontrols">5.setDisplayZoomControls</a></li>
+<li><a href="#6-setallowfileaccess">6.setAllowFileAccess</a></li>
+<li><a href="#7-setallowcontentaccess">7.setAllowContentAccess</a></li>
+<li><a href="#8-setloadwithoverviewmode">8.setLoadWithOverviewMode</a></li>
+<li><a href="#9-setenablesmoothtransition">9.setEnableSmoothTransition</a></li>
+<li><a href="#10-setusewebviewbackgroundforoverscrollbackground">10.setUseWebViewBackgroundForOverscrollBackground</a></li>
+<li><a href="#11-setsaveformdata">11.setSaveFormData</a></li>
+<li><a href="#12-setsavepassword">12.setSavePassword</a></li>
+<li><a href="#13-settextzoom">13.setTextZoom</a></li>
+<li><a href="#14-setacceptthirdpartycookies">14.setAcceptThirdPartyCookies</a></li>
+<li><a href="#15-setdefaultzoom">15.setDefaultZoom</a></li>
+<li><a href="#16-setlighttouchenabled">16.setLightTouchEnabled</a></li>
+<li><a href="#17-setusedoubletree">17.setUseDoubleTree</a></li>
+<li><a href="#18-setuseragent">18.setUserAgent</a></li>
+<li><a href="#19-setusewideviewport">19.setUseWideViewPort</a></li>
+<li><a href="#20-setsupportmultiplewindows">20.setSupportMultipleWindows</a></li>
+<li><a href="#21-setlayoutalgorithm">21.setLayoutAlgorithm</a></li>
+<li><a href="#22-setstandardfontfamily">22.setStandardFontFamily</a></li>
+<li><a href="#23-setfixedfontfamily">23.setFixedFontFamily</a></li>
+<li><a href="#24-setminimumfontsize">24.setMinimumFontSize</a></li>
+<li><a href="#25-setminimumlogicalfontsize">25.setMinimumLogicalFontSize</a></li>
+<li><a href="#26-setdefaultfontsize">26.setDefaultFontSize</a></li>
+<li><a href="#27-setdefaultfixedfontsize">27.setDefaultFixedFontSize</a></li>
+<li><a href="#28-setloadsimagesautomatically">28.setLoadsImagesAutomatically</a></li>
+<li><a href="#29-setblocknetworkimage">29.setBlockNetworkImage</a></li>
+<li><a href="#30-setjavascriptenabled">30.setJavaScriptEnabled</a></li>
+<li><a href="#31-setallowuniversalaccessfromfileurls">31.setAllowUniversalAccessFromFileURLs</a></li>
+<li><a href="#32-setallowfileaccessfromfileurls">32.setAllowFileAccessFromFileURLs</a></li>
+<li><a href="#33-setpluginsenabled">33.setPluginsEnabled</a></li>
+<li><a href="#34-setpluginstate">34.setPluginState</a></li>
+<li><a href="#35-setpluginspath">35.setPluginsPath</a></li>
+<li><a href="#36-setdatabasepath">36.setDatabasePath</a></li>
+<li><a href="#37-setgeolocationdatabasepath">37.setGeolocationDatabasePath</a></li>
+<li><a href="#38-setappcacheenabled">38.setAppCacheEnabled</a></li>
+<li><a href="#39-setappcachepath">39.setAppCachePath</a></li>
+<li><a href="#40-setappcachemaxsize">40.setAppCacheMaxSize</a></li>
+<li><a href="#41-setdatabaseenabled">41.setDatabaseEnabled</a></li>
+<li><a href="#42-setdomstorageenabled">42.setDomStorageEnabled</a></li>
+<li><a href="#43-setjavascriptcanopenwindowsautomatically">43.setJavaScriptCanOpenWindowsAutomatically</a></li>
+<li><a href="#44-setdefaulttextencodingname">44.setDefaultTextEncodingName</a></li>
+<li><a href="#45-setuseragentstring">45.setUserAgentString</a></li>
+<li><a href="#46-setneedinitialfocus">46.setNeedInitialFocus</a></li>
+<li><a href="#47-setrenderpriority">47.setRenderPriority</a></li>
+<li><a href="#48-setcachemode">48.setCacheMode</a></li>
+<li><a href="#49-setmixedcontentmode">49.setMixedContentMode</a></li>
+<li><a href="#50-setvideooverlayforembeddedencryptedvideoenabled">50.setVideoOverlayForEmbeddedEncryptedVideoEnabled</a></li>
+<li><a href="#51-setoffscreenpreraster">51.setOffscreenPreRaster</a></li>
+<li><a href="#52-setsafebrowsingenabled">52.setSafeBrowsingEnabled</a></li>
+<li><a href="#53-setdisabledactionmodemenuitems">53.setDisabledActionModeMenuItems</a></li>
+</ul></li>
+<li><a href="#2-webchromeclient">2.WebChromeClient</a>
+<ul>
+<li><a href="#1-onprogresschanged">1.onProgressChanged</a></li>
+<li><a href="#2-onreceivedtitle">2.onReceivedTitle</a></li>
+<li><a href="#3-onreceivedicon">3.onReceivedIcon</a></li>
+<li><a href="#4-onreceivedtouchiconurl">4.onReceivedTouchIconUrl</a></li>
+<li><a href="#5-onshowcustomview">5.onShowCustomView</a></li>
+<li><a href="#6-onhidecustomview">6.onHideCustomView</a></li>
+<li><a href="#7-oncreatewindow">7.onCreateWindow</a></li>
+<li><a href="#8-onrequestfocus">8.onRequestFocus</a></li>
+<li><a href="#9-onclosewindow">9.onCloseWindow</a></li>
+<li><a href="#10-onjsalert">10.onJsAlert</a></li>
+<li><a href="#11-onjsconfirm">11.onJsConfirm</a></li>
+<li><a href="#12-onjsprompt">12.onJsPrompt</a></li>
+<li><a href="#13-onjsbeforeunload">13.onJsBeforeUnload</a></li>
+<li><a href="#14-onexceededdatabasequota">14.onExceededDatabaseQuota</a></li>
+<li><a href="#15-onreachedmaxappcachesize">15.onReachedMaxAppCacheSize</a></li>
+<li><a href="#16-ongeolocationpermissionsshowprompt">16.onGeolocationPermissionsShowPrompt</a></li>
+<li><a href="#17-onpermissionrequest">17.onPermissionRequest</a></li>
+<li><a href="#18-onpermissionrequestcanceled">18.onPermissionRequestCanceled</a></li>
+<li><a href="#19-onjstimeout">19.onJsTimeout</a></li>
+<li><a href="#20-onconsolemessage">20.onConsoleMessage</a></li>
+<li><a href="#21-getdefaultvideoposter">21.getDefaultVideoPoster</a></li>
+<li><a href="#22-getvideoloadingprogressview">22.getVideoLoadingProgressView</a></li>
+<li><a href="#23-getvisitedhistory">23.getVisitedHistory</a></li>
+<li><a href="#24-onshowfilechooser">24.onShowFileChooser</a></li>
+<li><a href="#25-setupautofill">25.setupAutoFill</a></li>
+</ul></li>
+<li><a href="#3-webviewclient">3.WebViewClient</a>
+<ul>
+<li><a href="#1-shouldoverrideurlloading">1.shouldOverrideUrlLoading</a></li>
+<li><a href="#2-onpagestarted">2.onPageStarted</a></li>
+<li><a href="#3-onpagefinished">3.onPageFinished</a></li>
+<li><a href="#4-onloadresource">4.onLoadResource</a></li>
+<li><a href="#5-onpagecommitvisible">5.onPageCommitVisible</a></li>
+<li><a href="#6-shouldinterceptrequest">6.shouldInterceptRequest</a></li>
+<li><a href="#7-ontoomanyredirects">7.onTooManyRedirects</a></li>
+<li><a href="#8-onreceivederror">8.onReceivedError</a></li>
+<li><a href="#9-onreceivedhttperror">9.onReceivedHttpError</a></li>
+<li><a href="#10-onformresubmission">10.onFormResubmission</a></li>
+<li><a href="#11-doupdatevisitedhistory">11.doUpdateVisitedHistory</a></li>
+<li><a href="#12-onreceivedsslerror">12.onReceivedSslError</a></li>
+<li><a href="#13-onreceivedclientcertrequest">13.onReceivedClientCertRequest</a></li>
+<li><a href="#14-onreceivedhttpauthrequest">14.onReceivedHttpAuthRequest</a></li>
+<li><a href="#15-shouldoverridekeyevent">15.shouldOverrideKeyEvent</a></li>
+<li><a href="#16-onunhandledkeyevent">16.onUnhandledKeyEvent</a></li>
+<li><a href="#17-onscalechanged">17.onScaleChanged</a></li>
+<li><a href="#18-onreceivedloginrequest">18.onReceivedLoginRequest</a></li>
+<li><a href="#19-onrenderprocessgone">19.onRenderProcessGone</a></li>
+<li><a href="#20-onsafebrowsinghit">20.onSafeBrowsingHit</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewclient。
+对这三者做一些合理的配置，我们的webview才能更好的适配网页渲染。本篇文章会对这三个类的api进行详细的解说。
+可能会略显枯燥，但是每条Api配置都有其作用，这也是学习webview的必经之路。</p>
+
+<h2 id="1-websettings">1.WebSettings</h2>
+
+<p>WebSettings里面看到了大量的@Deprecated的注解，随着Android SDK升级，webview也做了大量调整，如果这些
+Deprecated注解以后都成现实，以后的webview配置也越来越不灵活。可能Google是出于安全性这个大主题去考虑。
+限制部分API也许也是一种选择</p>
+
+<h3 id="1-setnavdump">1.setNavDump</h3>
+
+<p>设置是否dump页面导航缓存到文件系统</p>
+
+<h3 id="2-setsupportzoom">2.setSupportZoom</h3>
+
+<p>设置是否支持屏上控制或者手势控制的缩放，setBuiltInZoomControls会提供通用的缩放控制方式。并且改设置不会影响
+zoomIn和zoomOut的表现。</p>
+
+<h3 id="3-setmediaplaybackrequiresusergesture">3.setMediaPlaybackRequiresUserGesture</h3>
+
+<p>设置是否由用户手势来触发媒体播放行为</p>
+
+<h3 id="4-setbuiltinzoomcontrols">4.setBuiltInZoomControls</h3>
+
+<p>设置是否使用内置的缩放工具。内置的缩放工具包括显示在webview内容之上的屏上缩放控制和通过两点手势来实现缩放控制。
+setDisplayZoomControls来设置是否显示屏上缩放按钮。并且内置缩放设备是目前唯一被支持的缩放设施。</p>
+
+<h3 id="5-setdisplayzoomcontrols">5.setDisplayZoomControls</h3>
+
+<p>设置是否显示屏上缩放按钮</p>
+
+<h3 id="6-setallowfileaccess">6.setAllowFileAccess</h3>
+
+<p>设置是否开启文件系统访问权限，而Assets和resources还是可以直接通过file:///android_asset 和
+file:///android_res来访问</p>
+
+<h3 id="7-setallowcontentaccess">7.setAllowContentAccess</h3>
+
+<p>设置是否允许webview去加载一个系统上安装的内容提供者提供的资源URL</p>
+
+<h3 id="8-setloadwithoverviewmode">8.setLoadWithOverviewMode</h3>
+
+<p>设置是否用概览方式来加载url，概览方式就是让页面在宽度上全部显示的方式。</p>
+
+<h3 id="9-setenablesmoothtransition">9.setEnableSmoothTransition</h3>
+
+<p>设置是否在webview中拖拽，缩放或者当webview失去焦点时进行平滑转化渲染。如果是true，webview就会
+使用某些手段来维持渲染性能，就好像在转化中webview的内容不曾更新一样。如果是false，那么渲染过程就看上去
+比较实时，比较保真。</p>
+
+<h3 id="10-setusewebviewbackgroundforoverscrollbackground">10.setUseWebViewBackgroundForOverscrollBackground</h3>
+
+<p>设置是否在过度滑动时将背景显示为webview的背景，如果不是true就使用内部模式</p>
+
+<h3 id="11-setsaveformdata">11.setSaveFormData</h3>
+
+<p>设置是否会存储表单数据，在android O 之后有全新的功能来实现存储表单的功能。</p>
+
+<h3 id="12-setsavepassword">12.setSavePassword</h3>
+
+<p>设置是否可以存储密码</p>
+
+<h3 id="13-settextzoom">13.setTextZoom</h3>
+
+<p>设置文本缩放值</p>
+
+<h3 id="14-setacceptthirdpartycookies">14.setAcceptThirdPartyCookies</h3>
+
+<p>设置是否支持接收第三方cookies</p>
+
+<h3 id="15-setdefaultzoom">15.setDefaultZoom</h3>
+
+<p>设置一个默认的缩放参数，并且实在UI线程使用。这个方法是不推荐继续使用的，以后会被废弃。在H5页面也可以通过
+使用meta标签中的width和initial-scale来达到同样的效果的。</p>
+
+<h3 id="16-setlighttouchenabled">16.setLightTouchEnabled</h3>
+
+<p>开启使用轻触就能达到选择和有效鼠标事件的功能</p>
+
+<h3 id="17-setusedoubletree">17.setUseDoubleTree</h3>
+
+<p>暂无解释</p>
+
+<h3 id="18-setuseragent">18.setUserAgent</h3>
+
+<p>给0表示显示Android 的User-Agent的字符串字样
+给1表示显示Desktop 的User-Agent的字符串字样</p>
+
+<h3 id="19-setusewideviewport">19.setUseWideViewPort</h3>
+
+<p>设置是否支持viewport的meta标签，当这个值是false，布局宽度取决于webview的css像素；
+如果是值为true并且也使用了viewport的属性，那么布局宽度取决于meta提供的width值；如果
+没有使用mate标签或者没有提供一个宽度，那么就会显示一个较宽的视图。</p>
+
+<h3 id="20-setsupportmultiplewindows">20.setSupportMultipleWindows</h3>
+
+<p>设置是否支持多窗口，如果支持，WebChromeClient中的onCreateWindow需要被实现。</p>
+
+<h3 id="21-setlayoutalgorithm">21.setLayoutAlgorithm</h3>
+
+<p>设置布局排列算法。具体值如下
+NORMAL &ndash; 默认选择
+SINGLE_COLUMN &ndash; 将布局放在一个view的宽度的一列中
+NARROW_COLUMNS &ndash; 所有列的宽度都不能超过屏幕宽度
+TEXT_AUTOSIZING &ndash; 在概览模式下，一个较宽视图的字体大小能自适应来保持文字的可读性</p>
+
+<h3 id="22-setstandardfontfamily">22.setStandardFontFamily</h3>
+
+<p>设置字体样式，默认值是“sans-serif”</p>
+
+<h3 id="23-setfixedfontfamily">23.setFixedFontFamily</h3>
+
+<p>设置固定的字体样式，默认值是“monospace”</p>
+
+<h3 id="24-setminimumfontsize">24.setMinimumFontSize</h3>
+
+<p>设置字体大小最小值</p>
+
+<h3 id="25-setminimumlogicalfontsize">25.setMinimumLogicalFontSize</h3>
+
+<p>设置一个合理的最小字体大小</p>
+
+<h3 id="26-setdefaultfontsize">26.setDefaultFontSize</h3>
+
+<p>设置默认的字体大小</p>
+
+<h3 id="27-setdefaultfixedfontsize">27.setDefaultFixedFontSize</h3>
+
+<p>设置默认固定的字体大小</p>
+
+<h3 id="28-setloadsimagesautomatically">28.setLoadsImagesAutomatically</h3>
+
+<p>控制是否显示图片资源，也包括那些内置的使用了URI的scheme的数据，可以通过setBlockNetworkImage
+来控制只显示网络图片资源。并且如果这个值从false变成true，图片资源也会立马重新加载</p>
+
+<h3 id="29-setblocknetworkimage">29.setBlockNetworkImage</h3>
+
+<p>设置是否显示网络图片资源，setLoadsImagesAutomatically设置true时，这个方法不起作用。</p>
+
+<h3 id="30-setjavascriptenabled">30.setJavaScriptEnabled</h3>
+
+<p>设置是否允许js执行</p>
+
+<h3 id="31-setallowuniversalaccessfromfileurls">31.setAllowUniversalAccessFromFileURLs</h3>
+
+<p>设置js是否拥有加载文件不同来源的权限，为了保证一些安全性，这个应该被关掉。这个设置只会影响文件权限
+对于像image标签挂载的资源是不受影响的。</p>
+
+<h3 id="32-setallowfileaccessfromfileurls">32.setAllowFileAccessFromFileURLs</h3>
+
+<p>设置文件访问权限。作用域比setAllowUniversalAccessFromFileURLs小。</p>
+
+<h3 id="33-setpluginsenabled">33.setPluginsEnabled</h3>
+
+<p>开始插件功能与否</p>
+
+<h3 id="34-setpluginstate">34.setPluginState</h3>
+
+<p>设置插件的存在状态
+ON &ndash; 即使插件不存在，相应的对象也会出现
+ON_DEMAND &ndash; 插件如果是安装过的，就会先出现一个占位，然后点了这个占位插件才会生效
+OFF &ndash; 表示所有插件都会失效并且所有的备用方案都会被使用</p>
+
+<h3 id="35-setpluginspath">35.setPluginsPath</h3>
+
+<p>给插件自定义一个加载路径</p>
+
+<h3 id="36-setdatabasepath">36.setDatabasePath</h3>
+
+<p>database storage的存储路径，路径要可写，并且只能调用一次，多次调用会被忽略</p>
+
+<h3 id="37-setgeolocationdatabasepath">37.setGeolocationDatabasePath</h3>
+
+<p>Geolocation database storage的存储路径，路径要可写</p>
+
+<h3 id="38-setappcacheenabled">38.setAppCacheEnabled</h3>
+
+<p>设置storage缓存的使用。</p>
+
+<h3 id="39-setappcachepath">39.setAppCachePath</h3>
+
+<p>storage缓存的路径</p>
+
+<h3 id="40-setappcachemaxsize">40.setAppCacheMaxSize</h3>
+
+<p>storage的最大存储值，所允许的值大概跟database所支持的值大致相近，所以这个只是提供一个参照，不是
+硬性规定。设置一个小点的值不会影响database的存储。默认值是Integer.MAX_VALUE,推荐使用默认值</p>
+
+<h3 id="41-setdatabaseenabled">41.setDatabaseEnabled</h3>
+
+<p>设置是否使用database storage API</p>
+
+<h3 id="42-setdomstorageenabled">42.setDomStorageEnabled</h3>
+
+<p>设置使用Dom storage api ，包括sessionStorage和localstorage等</p>
+
+<h3 id="43-setjavascriptcanopenwindowsautomatically">43.setJavaScriptCanOpenWindowsAutomatically</h3>
+
+<p>自动开启window.open()功能</p>
+
+<h3 id="44-setdefaulttextencodingname">44.setDefaultTextEncodingName</h3>
+
+<p>设置默认的编码方式（默认是UTF-8）</p>
+
+<h3 id="45-setuseragentstring">45.setUserAgentString</h3>
+
+<p>设置user-agent的值，没有设置的话就使用系统的默认值</p>
+
+<h3 id="46-setneedinitialfocus">46.setNeedInitialFocus</h3>
+
+<p>告诉webview是否在当requestFocus被调用时去设置一个节点</p>
+
+<h3 id="47-setrenderpriority">47.setRenderPriority</h3>
+
+<p>设置渲染线程的优先级，这个在每个进程只需要调用一次</p>
+
+<h3 id="48-setcachemode">48.setCacheMode</h3>
+
+<p>设置Cache的模式，cache的方式取决于导航类型，一个正常的页面加载，回去尽量检查cache和让页面重新生效，
+如果导航后退时，就不是让页面重新生效而是从cache得到缓存内容。这个方法可以改变缓存模式。具体参数如下</p>
+
+<p>LOAD_DEFAULT &ndash; 默认模式
+LOAD_CACHE_ELSE_NETWORK &ndash; 尽量使用缓存的数据，即使这个数据已经过期，否则就是从网络去加载
+LOAD_NO_CACHE &ndash; 不使用缓存，从网络加载
+LOAD_CACHE_ONLY &ndash; 不使用网络加载，只使用缓存</p>
+
+<h3 id="49-setmixedcontentmode">49.setMixedContentMode</h3>
+
+<p>用来配置当一个安全的资源去加载一个不安全资源时的情况。参数如下
+MIXED_CONTENT_ALWAYS_ALLOW &ndash; 总是允许加载
+MIXED_CONTENT_NEVER_ALLOW &ndash; 不允许加载不安全内容 （推荐）
+MIXED_CONTENT_COMPATIBILITY_MODE &ndash; 兼容模式</p>
+
+<h3 id="50-setvideooverlayforembeddedencryptedvideoenabled">50.setVideoOverlayForEmbeddedEncryptedVideoEnabled</h3>
+
+<p>是否允许H5播放内置加密视频</p>
+
+<h3 id="51-setoffscreenpreraster">51.setOffscreenPreRaster</h3>
+
+<p>当webview是关联于window并且还是在屏幕之外的是否需要被栅格化，打开这个设置就能避免在屏幕上活跃一个屏幕
+之外的webview时去渲染工件。</p>
+
+<h3 id="52-setsafebrowsingenabled">52.setSafeBrowsingEnabled</h3>
+
+<p>设置安全浏览模式，通过对链接的认证来防止一些恶意软件和网络攻击</p>
+
+<h3 id="53-setdisabledactionmodemenuitems">53.setDisabledActionModeMenuItems</h3>
+
+<p>对菜单功能的设置。具体参数如下
+MENU_ITEM_NONE &ndash; 不能禁止菜单
+MENU_ITEM_SHARE &ndash; 禁止“Share”菜单
+MENU_ITEM_WEB_SEARCH &ndash; 禁止“Web Search”菜单
+MENU_ITEM_PROCESS_TEXT &ndash; 禁止所有的文本处理菜单</p>
+
+<h2 id="2-webchromeclient">2.WebChromeClient</h2>
+
+<h3 id="1-onprogresschanged">1.onProgressChanged</h3>
+
+<p>通知宿主app，当前webview加载资源的进度</p>
+
+<h3 id="2-onreceivedtitle">2.onReceivedTitle</h3>
+
+<p>通知当前宿主app，document上的标题变化</p>
+
+<h3 id="3-onreceivedicon">3.onReceivedIcon</h3>
+
+<p>通知当前宿主app，当前页面的icon</p>
+
+<h3 id="4-onreceivedtouchiconurl">4.onReceivedTouchIconUrl</h3>
+
+<p>通知宿主app，响应apple-touch-icon的url跳转</p>
+
+<h3 id="5-onshowcustomview">5.onShowCustomView</h3>
+
+<p>通知宿主app当前页面进入全屏模式，要使用自定义的全屏布局来显示页面，视频等</p>
+
+<h3 id="6-onhidecustomview">6.onHideCustomView</h3>
+
+<p>通知宿主app当前页面推出全屏模式</p>
+
+<h3 id="7-oncreatewindow">7.onCreateWindow</h3>
+
+<p>请求宿主app创建一个window，如果宿主app选择接收这个请求，返回true，并且创建一个新的webview来
+把持这个window，并把他挂载在视图系统上，并且将新webview携带成参数通过resultMsg来发送给目标</p>
+
+<h3 id="8-onrequestfocus">8.onRequestFocus</h3>
+
+<p>请求显示并且为当前webview获取焦点。当另外一个webview要打开一个当前webview中的一个链接并且请求它
+这个webview已经显示时调用</p>
+
+<h3 id="9-onclosewindow">9.onCloseWindow</h3>
+
+<p>通知宿主app关闭window并且从view系统中移除它</p>
+
+<h3 id="10-onjsalert">10.onJsAlert</h3>
+
+<p>js调用alert时触发</p>
+
+<h3 id="11-onjsconfirm">11.onJsConfirm</h3>
+
+<p>js调用confirm时触发</p>
+
+<h3 id="12-onjsprompt">12.onJsPrompt</h3>
+
+<p>js调用prompt时触发</p>
+
+<h3 id="13-onjsbeforeunload">13.onJsBeforeUnload</h3>
+
+<p>从当前导航从页面离开时会弹出一个弹框来确认，这个就是没有加载之前的js事件的返回值。如果返回true，WebView
+就会认为客户端这边确定这个弹框并且调用了JsResult的方法来返回结果，如果返回false，一个默认值就会直接返回给
+js来同意离开当前页面路由。</p>
+
+<h3 id="14-onexceededdatabasequota">14.onExceededDatabaseQuota</h3>
+
+<p>告诉客户端这边对于一个特定来源的数据库database操作已经超出指标了，需要另外分配指标。并且需要反射
+WebStorage.QuotaUpdater#updateQuota方法来重新配额。</p>
+
+<h3 id="15-onreachedmaxappcachesize">15.onReachedMaxAppCacheSize</h3>
+
+<p>告诉客户端这边cache的配额已经超额了，需要请求WebStorage.QuotaUpdater#updateQuota方法来重新配额</p>
+
+<h3 id="16-ongeolocationpermissionsshowprompt">16.onGeolocationPermissionsShowPrompt</h3>
+
+<p>通知宿主app web内容请求Geolocation方面的api，但是没有权限，客户端这边需要获取该权限</p>
+
+<h3 id="17-onpermissionrequest">17.onPermissionRequest</h3>
+
+<p>通知宿主app web中目前在请求一些权限。</p>
+
+<h3 id="18-onpermissionrequestcanceled">18.onPermissionRequestCanceled</h3>
+
+<p>通知宿主app，web的一些权限请求行为被拒绝了。</p>
+
+<h3 id="19-onjstimeout">19.onJsTimeout</h3>
+
+<p>当js的执行器执行超时了，会通知客户端，如果客户端返回true，表示中断js执行，如果返回false，表示继续执行，
+并且会重置计时器，如果下一个即使周期还是超时会继续回调该方法</p>
+
+<h3 id="20-onconsolemessage">20.onConsoleMessage</h3>
+
+<p>通知宿主app，js有console日志</p>
+
+<h3 id="21-getdefaultvideoposter">21.getDefaultVideoPoster</h3>
+
+<p>客户端这边返回一个图标，用于在视频缓冲时显示的封面</p>
+
+<h3 id="22-getvideoloadingprogressview">22.getVideoLoadingProgressView</h3>
+
+<p>客户端这边返回一个view，用于在视频缓冲时显示的loadding效果</p>
+
+<h3 id="23-getvisitedhistory">23.getVisitedHistory</h3>
+
+<p>返回所有的浏览历史</p>
+
+<h3 id="24-onshowfilechooser">24.onShowFileChooser</h3>
+
+<p>通知宿主app显示一个文件显示器。这个是用来处理包含file的input标签的。如果要取消这个请求，
+通过filePathCallback.onReceiveValue(null)并且返回true。</p>
+
+<h3 id="25-setupautofill">25.setupAutoFill</h3>
+
+<p>通知客户端，渲染过的也页面包含一个自动填充的表格，客户端这边可以为其建立简介</p>
+
+<h2 id="3-webviewclient">3.WebViewClient</h2>
+
+<h3 id="1-shouldoverrideurlloading">1.shouldOverrideUrlLoading</h3>
+
+<p>让webview参与到url跳转过程中来。如果webviewclient没有提供这个方法，那么就会让ActivityManager
+来寻找合适的handler来处理这个url。返回true表示需要经过客户端处理，返回false表示不经过。
+并且post请求不会经过这里。</p>
+
+<h3 id="2-onpagestarted">2.onPageStarted</h3>
+
+<p>通知客户端，一个页面已经开始加载，在每个渲染过程只会调用一次，并且iframes和framesets也是如此。
+一个内置页面也会调用一次该方法。</p>
+
+<h3 id="3-onpagefinished">3.onPageFinished</h3>
+
+<p>通知宿主app，一个页面加载完成了。只在主线程中调用。调用时，图片不会得到更新，如果需要得到新图片的通知
+使用WebView.PictureListener#onNewPicture</p>
+
+<h3 id="4-onloadresource">4.onLoadResource</h3>
+
+<p>通知宿主app，在url中回去加载一些资源。</p>
+
+<h3 id="5-onpagecommitvisible">5.onPageCommitVisible</h3>
+
+<p>这个回调主要是得出重新使一个webview可见时精确时机，来确保没有旧的内容被显示。这个时机一般比确保前一个
+路由的内容不再被渲染时还要提前一点。下一个渲染对象不是webview的背景颜色就是新的页面的内容。</p>
+
+<h3 id="6-shouldinterceptrequest">6.shouldInterceptRequest</h3>
+
+<p>通知宿主app有一个资源请求，希望客户端返回一个数据。如果返回为null，webview会继续加载资源，否则返回的
+数据就会被应用，注意这个方法是在非UI线程中调用，所以要格外注意获取私密资源和UI系统</p>
+
+<h3 id="7-ontoomanyredirects">7.onTooManyRedirects</h3>
+
+<p>通知客户端当前存在大量的重定向操作，让客户端决定是否继续执行。</p>
+
+<h3 id="8-onreceivederror">8.onReceivedError</h3>
+
+<p>通知客户端这边有一些错误，并且这些错误是不可恢复的。错误码是定义过的常量，可以对比查找</p>
+
+<h3 id="9-onreceivedhttperror">9.onReceivedHttpError</h3>
+
+<p>通知客户端加载服务器资源错误，这个会在加载ifranms，image等任何资源错误是调用。不推荐在该回调方法中
+做太多的处理工作，并且返回内容可能没有提供错误码</p>
+
+<h3 id="10-onformresubmission">10.onFormResubmission</h3>
+
+<p>在WebView需要重新提交表单时触发（使用POST请求）</p>
+
+<h3 id="11-doupdatevisitedhistory">11.doUpdateVisitedHistory</h3>
+
+<p>通知客户端更新浏览历史</p>
+
+<h3 id="12-onreceivedsslerror">12.onReceivedSslError</h3>
+
+<p>通知客户端在加载资源时又一个ssl错误出现，客户端可以选择使用cancel proceed来选择处理</p>
+
+<h3 id="13-onreceivedclientcertrequest">13.onReceivedClientCertRequest</h3>
+
+<p>通知WebView处理SSL客户端证书请求，使用cancel proceed来处理，并且系统会记住该次选择，以后就按照这个
+选择进行处理，该方法会在UI线程调用</p>
+
+<h3 id="14-onreceivedhttpauthrequest">14.onReceivedHttpAuthRequest</h3>
+
+<p>通知客户端有http的认证请求</p>
+
+<h3 id="15-shouldoverridekeyevent">15.shouldOverrideKeyEvent</h3>
+
+<p>通知应用处理按键点击事件，返回true，webivew不处理该事件，返回false，webview已经处理过了</p>
+
+<h3 id="16-onunhandledkeyevent">16.onUnhandledKeyEvent</h3>
+
+<p>如果shouldOverrideKeyEvent返回true，按键点击事件就会触发这个方法，在这个方法中可以执行一些自定义的操作。</p>
+
+<h3 id="17-onscalechanged">17.onScaleChanged</h3>
+
+<p>当缩放比改变时触发</p>
+
+<h3 id="18-onreceivedloginrequest">18.onReceivedLoginRequest</h3>
+
+<p>当有登陆请求时会触发</p>
+
+<h3 id="19-onrenderprocessgone">19.onRenderProcessGone</h3>
+
+<p>通知客户端渲染线程退出了</p>
+
+<h3 id="20-onsafebrowsinghit">20.onSafeBrowsingHit</h3>
+
+<p>一个正在加载的链接在安全浏览模式下被标记</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-08-15
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/hybrid/">Hybrid</a>
+          <a href="https://wang-zoo.github.io/tags/cordova/">cordova</a>
+          <a href="https://wang-zoo.github.io/tags/webview/">webview</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/fangzhongyan/">
+            <span class="next-text nav-default">人物随记-希文</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -6,10 +6,478 @@
     <description>Recent content on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 14 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
     
         <atom:link href="https://wang-zoo.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hybrid开发之cordova(2)</title>
+      <link>https://wang-zoo.github.io/post/hybrid_webview/</link>
+      <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/hybrid_webview/</guid>
+      
+        <description>
+
+&lt;h2 id=&#34;前言&#34;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewclient。
+对这三者做一些合理的配置，我们的webview才能更好的适配网页渲染。本篇文章会对这三个类的api进行详细的解说。
+可能会略显枯燥，但是每条Api配置都有其作用，这也是学习webview的必经之路。&lt;/p&gt;
+
+&lt;h2 id=&#34;1-websettings&#34;&gt;1.WebSettings&lt;/h2&gt;
+
+&lt;p&gt;WebSettings里面看到了大量的@Deprecated的注解，随着Android SDK升级，webview也做了大量调整，如果这些
+Deprecated注解以后都成现实，以后的webview配置也越来越不灵活。可能Google是出于安全性这个大主题去考虑。
+限制部分API也许也是一种选择&lt;/p&gt;
+
+&lt;h3 id=&#34;1-setnavdump&#34;&gt;1.setNavDump&lt;/h3&gt;
+
+&lt;p&gt;设置是否dump页面导航缓存到文件系统&lt;/p&gt;
+
+&lt;h3 id=&#34;2-setsupportzoom&#34;&gt;2.setSupportZoom&lt;/h3&gt;
+
+&lt;p&gt;设置是否支持屏上控制或者手势控制的缩放，setBuiltInZoomControls会提供通用的缩放控制方式。并且改设置不会影响
+zoomIn和zoomOut的表现。&lt;/p&gt;
+
+&lt;h3 id=&#34;3-setmediaplaybackrequiresusergesture&#34;&gt;3.setMediaPlaybackRequiresUserGesture&lt;/h3&gt;
+
+&lt;p&gt;设置是否由用户手势来触发媒体播放行为&lt;/p&gt;
+
+&lt;h3 id=&#34;4-setbuiltinzoomcontrols&#34;&gt;4.setBuiltInZoomControls&lt;/h3&gt;
+
+&lt;p&gt;设置是否使用内置的缩放工具。内置的缩放工具包括显示在webview内容之上的屏上缩放控制和通过两点手势来实现缩放控制。
+setDisplayZoomControls来设置是否显示屏上缩放按钮。并且内置缩放设备是目前唯一被支持的缩放设施。&lt;/p&gt;
+
+&lt;h3 id=&#34;5-setdisplayzoomcontrols&#34;&gt;5.setDisplayZoomControls&lt;/h3&gt;
+
+&lt;p&gt;设置是否显示屏上缩放按钮&lt;/p&gt;
+
+&lt;h3 id=&#34;6-setallowfileaccess&#34;&gt;6.setAllowFileAccess&lt;/h3&gt;
+
+&lt;p&gt;设置是否开启文件系统访问权限，而Assets和resources还是可以直接通过file:///android_asset 和
+file:///android_res来访问&lt;/p&gt;
+
+&lt;h3 id=&#34;7-setallowcontentaccess&#34;&gt;7.setAllowContentAccess&lt;/h3&gt;
+
+&lt;p&gt;设置是否允许webview去加载一个系统上安装的内容提供者提供的资源URL&lt;/p&gt;
+
+&lt;h3 id=&#34;8-setloadwithoverviewmode&#34;&gt;8.setLoadWithOverviewMode&lt;/h3&gt;
+
+&lt;p&gt;设置是否用概览方式来加载url，概览方式就是让页面在宽度上全部显示的方式。&lt;/p&gt;
+
+&lt;h3 id=&#34;9-setenablesmoothtransition&#34;&gt;9.setEnableSmoothTransition&lt;/h3&gt;
+
+&lt;p&gt;设置是否在webview中拖拽，缩放或者当webview失去焦点时进行平滑转化渲染。如果是true，webview就会
+使用某些手段来维持渲染性能，就好像在转化中webview的内容不曾更新一样。如果是false，那么渲染过程就看上去
+比较实时，比较保真。&lt;/p&gt;
+
+&lt;h3 id=&#34;10-setusewebviewbackgroundforoverscrollbackground&#34;&gt;10.setUseWebViewBackgroundForOverscrollBackground&lt;/h3&gt;
+
+&lt;p&gt;设置是否在过度滑动时将背景显示为webview的背景，如果不是true就使用内部模式&lt;/p&gt;
+
+&lt;h3 id=&#34;11-setsaveformdata&#34;&gt;11.setSaveFormData&lt;/h3&gt;
+
+&lt;p&gt;设置是否会存储表单数据，在android O 之后有全新的功能来实现存储表单的功能。&lt;/p&gt;
+
+&lt;h3 id=&#34;12-setsavepassword&#34;&gt;12.setSavePassword&lt;/h3&gt;
+
+&lt;p&gt;设置是否可以存储密码&lt;/p&gt;
+
+&lt;h3 id=&#34;13-settextzoom&#34;&gt;13.setTextZoom&lt;/h3&gt;
+
+&lt;p&gt;设置文本缩放值&lt;/p&gt;
+
+&lt;h3 id=&#34;14-setacceptthirdpartycookies&#34;&gt;14.setAcceptThirdPartyCookies&lt;/h3&gt;
+
+&lt;p&gt;设置是否支持接收第三方cookies&lt;/p&gt;
+
+&lt;h3 id=&#34;15-setdefaultzoom&#34;&gt;15.setDefaultZoom&lt;/h3&gt;
+
+&lt;p&gt;设置一个默认的缩放参数，并且实在UI线程使用。这个方法是不推荐继续使用的，以后会被废弃。在H5页面也可以通过
+使用meta标签中的width和initial-scale来达到同样的效果的。&lt;/p&gt;
+
+&lt;h3 id=&#34;16-setlighttouchenabled&#34;&gt;16.setLightTouchEnabled&lt;/h3&gt;
+
+&lt;p&gt;开启使用轻触就能达到选择和有效鼠标事件的功能&lt;/p&gt;
+
+&lt;h3 id=&#34;17-setusedoubletree&#34;&gt;17.setUseDoubleTree&lt;/h3&gt;
+
+&lt;p&gt;暂无解释&lt;/p&gt;
+
+&lt;h3 id=&#34;18-setuseragent&#34;&gt;18.setUserAgent&lt;/h3&gt;
+
+&lt;p&gt;给0表示显示Android 的User-Agent的字符串字样
+给1表示显示Desktop 的User-Agent的字符串字样&lt;/p&gt;
+
+&lt;h3 id=&#34;19-setusewideviewport&#34;&gt;19.setUseWideViewPort&lt;/h3&gt;
+
+&lt;p&gt;设置是否支持viewport的meta标签，当这个值是false，布局宽度取决于webview的css像素；
+如果是值为true并且也使用了viewport的属性，那么布局宽度取决于meta提供的width值；如果
+没有使用mate标签或者没有提供一个宽度，那么就会显示一个较宽的视图。&lt;/p&gt;
+
+&lt;h3 id=&#34;20-setsupportmultiplewindows&#34;&gt;20.setSupportMultipleWindows&lt;/h3&gt;
+
+&lt;p&gt;设置是否支持多窗口，如果支持，WebChromeClient中的onCreateWindow需要被实现。&lt;/p&gt;
+
+&lt;h3 id=&#34;21-setlayoutalgorithm&#34;&gt;21.setLayoutAlgorithm&lt;/h3&gt;
+
+&lt;p&gt;设置布局排列算法。具体值如下
+NORMAL &amp;ndash; 默认选择
+SINGLE_COLUMN &amp;ndash; 将布局放在一个view的宽度的一列中
+NARROW_COLUMNS &amp;ndash; 所有列的宽度都不能超过屏幕宽度
+TEXT_AUTOSIZING &amp;ndash; 在概览模式下，一个较宽视图的字体大小能自适应来保持文字的可读性&lt;/p&gt;
+
+&lt;h3 id=&#34;22-setstandardfontfamily&#34;&gt;22.setStandardFontFamily&lt;/h3&gt;
+
+&lt;p&gt;设置字体样式，默认值是“sans-serif”&lt;/p&gt;
+
+&lt;h3 id=&#34;23-setfixedfontfamily&#34;&gt;23.setFixedFontFamily&lt;/h3&gt;
+
+&lt;p&gt;设置固定的字体样式，默认值是“monospace”&lt;/p&gt;
+
+&lt;h3 id=&#34;24-setminimumfontsize&#34;&gt;24.setMinimumFontSize&lt;/h3&gt;
+
+&lt;p&gt;设置字体大小最小值&lt;/p&gt;
+
+&lt;h3 id=&#34;25-setminimumlogicalfontsize&#34;&gt;25.setMinimumLogicalFontSize&lt;/h3&gt;
+
+&lt;p&gt;设置一个合理的最小字体大小&lt;/p&gt;
+
+&lt;h3 id=&#34;26-setdefaultfontsize&#34;&gt;26.setDefaultFontSize&lt;/h3&gt;
+
+&lt;p&gt;设置默认的字体大小&lt;/p&gt;
+
+&lt;h3 id=&#34;27-setdefaultfixedfontsize&#34;&gt;27.setDefaultFixedFontSize&lt;/h3&gt;
+
+&lt;p&gt;设置默认固定的字体大小&lt;/p&gt;
+
+&lt;h3 id=&#34;28-setloadsimagesautomatically&#34;&gt;28.setLoadsImagesAutomatically&lt;/h3&gt;
+
+&lt;p&gt;控制是否显示图片资源，也包括那些内置的使用了URI的scheme的数据，可以通过setBlockNetworkImage
+来控制只显示网络图片资源。并且如果这个值从false变成true，图片资源也会立马重新加载&lt;/p&gt;
+
+&lt;h3 id=&#34;29-setblocknetworkimage&#34;&gt;29.setBlockNetworkImage&lt;/h3&gt;
+
+&lt;p&gt;设置是否显示网络图片资源，setLoadsImagesAutomatically设置true时，这个方法不起作用。&lt;/p&gt;
+
+&lt;h3 id=&#34;30-setjavascriptenabled&#34;&gt;30.setJavaScriptEnabled&lt;/h3&gt;
+
+&lt;p&gt;设置是否允许js执行&lt;/p&gt;
+
+&lt;h3 id=&#34;31-setallowuniversalaccessfromfileurls&#34;&gt;31.setAllowUniversalAccessFromFileURLs&lt;/h3&gt;
+
+&lt;p&gt;设置js是否拥有加载文件不同来源的权限，为了保证一些安全性，这个应该被关掉。这个设置只会影响文件权限
+对于像image标签挂载的资源是不受影响的。&lt;/p&gt;
+
+&lt;h3 id=&#34;32-setallowfileaccessfromfileurls&#34;&gt;32.setAllowFileAccessFromFileURLs&lt;/h3&gt;
+
+&lt;p&gt;设置文件访问权限。作用域比setAllowUniversalAccessFromFileURLs小。&lt;/p&gt;
+
+&lt;h3 id=&#34;33-setpluginsenabled&#34;&gt;33.setPluginsEnabled&lt;/h3&gt;
+
+&lt;p&gt;开始插件功能与否&lt;/p&gt;
+
+&lt;h3 id=&#34;34-setpluginstate&#34;&gt;34.setPluginState&lt;/h3&gt;
+
+&lt;p&gt;设置插件的存在状态
+ON &amp;ndash; 即使插件不存在，相应的对象也会出现
+ON_DEMAND &amp;ndash; 插件如果是安装过的，就会先出现一个占位，然后点了这个占位插件才会生效
+OFF &amp;ndash; 表示所有插件都会失效并且所有的备用方案都会被使用&lt;/p&gt;
+
+&lt;h3 id=&#34;35-setpluginspath&#34;&gt;35.setPluginsPath&lt;/h3&gt;
+
+&lt;p&gt;给插件自定义一个加载路径&lt;/p&gt;
+
+&lt;h3 id=&#34;36-setdatabasepath&#34;&gt;36.setDatabasePath&lt;/h3&gt;
+
+&lt;p&gt;database storage的存储路径，路径要可写，并且只能调用一次，多次调用会被忽略&lt;/p&gt;
+
+&lt;h3 id=&#34;37-setgeolocationdatabasepath&#34;&gt;37.setGeolocationDatabasePath&lt;/h3&gt;
+
+&lt;p&gt;Geolocation database storage的存储路径，路径要可写&lt;/p&gt;
+
+&lt;h3 id=&#34;38-setappcacheenabled&#34;&gt;38.setAppCacheEnabled&lt;/h3&gt;
+
+&lt;p&gt;设置storage缓存的使用。&lt;/p&gt;
+
+&lt;h3 id=&#34;39-setappcachepath&#34;&gt;39.setAppCachePath&lt;/h3&gt;
+
+&lt;p&gt;storage缓存的路径&lt;/p&gt;
+
+&lt;h3 id=&#34;40-setappcachemaxsize&#34;&gt;40.setAppCacheMaxSize&lt;/h3&gt;
+
+&lt;p&gt;storage的最大存储值，所允许的值大概跟database所支持的值大致相近，所以这个只是提供一个参照，不是
+硬性规定。设置一个小点的值不会影响database的存储。默认值是Integer.MAX_VALUE,推荐使用默认值&lt;/p&gt;
+
+&lt;h3 id=&#34;41-setdatabaseenabled&#34;&gt;41.setDatabaseEnabled&lt;/h3&gt;
+
+&lt;p&gt;设置是否使用database storage API&lt;/p&gt;
+
+&lt;h3 id=&#34;42-setdomstorageenabled&#34;&gt;42.setDomStorageEnabled&lt;/h3&gt;
+
+&lt;p&gt;设置使用Dom storage api ，包括sessionStorage和localstorage等&lt;/p&gt;
+
+&lt;h3 id=&#34;43-setjavascriptcanopenwindowsautomatically&#34;&gt;43.setJavaScriptCanOpenWindowsAutomatically&lt;/h3&gt;
+
+&lt;p&gt;自动开启window.open()功能&lt;/p&gt;
+
+&lt;h3 id=&#34;44-setdefaulttextencodingname&#34;&gt;44.setDefaultTextEncodingName&lt;/h3&gt;
+
+&lt;p&gt;设置默认的编码方式（默认是UTF-8）&lt;/p&gt;
+
+&lt;h3 id=&#34;45-setuseragentstring&#34;&gt;45.setUserAgentString&lt;/h3&gt;
+
+&lt;p&gt;设置user-agent的值，没有设置的话就使用系统的默认值&lt;/p&gt;
+
+&lt;h3 id=&#34;46-setneedinitialfocus&#34;&gt;46.setNeedInitialFocus&lt;/h3&gt;
+
+&lt;p&gt;告诉webview是否在当requestFocus被调用时去设置一个节点&lt;/p&gt;
+
+&lt;h3 id=&#34;47-setrenderpriority&#34;&gt;47.setRenderPriority&lt;/h3&gt;
+
+&lt;p&gt;设置渲染线程的优先级，这个在每个进程只需要调用一次&lt;/p&gt;
+
+&lt;h3 id=&#34;48-setcachemode&#34;&gt;48.setCacheMode&lt;/h3&gt;
+
+&lt;p&gt;设置Cache的模式，cache的方式取决于导航类型，一个正常的页面加载，回去尽量检查cache和让页面重新生效，
+如果导航后退时，就不是让页面重新生效而是从cache得到缓存内容。这个方法可以改变缓存模式。具体参数如下&lt;/p&gt;
+
+&lt;p&gt;LOAD_DEFAULT &amp;ndash; 默认模式
+LOAD_CACHE_ELSE_NETWORK &amp;ndash; 尽量使用缓存的数据，即使这个数据已经过期，否则就是从网络去加载
+LOAD_NO_CACHE &amp;ndash; 不使用缓存，从网络加载
+LOAD_CACHE_ONLY &amp;ndash; 不使用网络加载，只使用缓存&lt;/p&gt;
+
+&lt;h3 id=&#34;49-setmixedcontentmode&#34;&gt;49.setMixedContentMode&lt;/h3&gt;
+
+&lt;p&gt;用来配置当一个安全的资源去加载一个不安全资源时的情况。参数如下
+MIXED_CONTENT_ALWAYS_ALLOW &amp;ndash; 总是允许加载
+MIXED_CONTENT_NEVER_ALLOW &amp;ndash; 不允许加载不安全内容 （推荐）
+MIXED_CONTENT_COMPATIBILITY_MODE &amp;ndash; 兼容模式&lt;/p&gt;
+
+&lt;h3 id=&#34;50-setvideooverlayforembeddedencryptedvideoenabled&#34;&gt;50.setVideoOverlayForEmbeddedEncryptedVideoEnabled&lt;/h3&gt;
+
+&lt;p&gt;是否允许H5播放内置加密视频&lt;/p&gt;
+
+&lt;h3 id=&#34;51-setoffscreenpreraster&#34;&gt;51.setOffscreenPreRaster&lt;/h3&gt;
+
+&lt;p&gt;当webview是关联于window并且还是在屏幕之外的是否需要被栅格化，打开这个设置就能避免在屏幕上活跃一个屏幕
+之外的webview时去渲染工件。&lt;/p&gt;
+
+&lt;h3 id=&#34;52-setsafebrowsingenabled&#34;&gt;52.setSafeBrowsingEnabled&lt;/h3&gt;
+
+&lt;p&gt;设置安全浏览模式，通过对链接的认证来防止一些恶意软件和网络攻击&lt;/p&gt;
+
+&lt;h3 id=&#34;53-setdisabledactionmodemenuitems&#34;&gt;53.setDisabledActionModeMenuItems&lt;/h3&gt;
+
+&lt;p&gt;对菜单功能的设置。具体参数如下
+MENU_ITEM_NONE &amp;ndash; 不能禁止菜单
+MENU_ITEM_SHARE &amp;ndash; 禁止“Share”菜单
+MENU_ITEM_WEB_SEARCH &amp;ndash; 禁止“Web Search”菜单
+MENU_ITEM_PROCESS_TEXT &amp;ndash; 禁止所有的文本处理菜单&lt;/p&gt;
+
+&lt;h2 id=&#34;2-webchromeclient&#34;&gt;2.WebChromeClient&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-onprogresschanged&#34;&gt;1.onProgressChanged&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，当前webview加载资源的进度&lt;/p&gt;
+
+&lt;h3 id=&#34;2-onreceivedtitle&#34;&gt;2.onReceivedTitle&lt;/h3&gt;
+
+&lt;p&gt;通知当前宿主app，document上的标题变化&lt;/p&gt;
+
+&lt;h3 id=&#34;3-onreceivedicon&#34;&gt;3.onReceivedIcon&lt;/h3&gt;
+
+&lt;p&gt;通知当前宿主app，当前页面的icon&lt;/p&gt;
+
+&lt;h3 id=&#34;4-onreceivedtouchiconurl&#34;&gt;4.onReceivedTouchIconUrl&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，响应apple-touch-icon的url跳转&lt;/p&gt;
+
+&lt;h3 id=&#34;5-onshowcustomview&#34;&gt;5.onShowCustomView&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app当前页面进入全屏模式，要使用自定义的全屏布局来显示页面，视频等&lt;/p&gt;
+
+&lt;h3 id=&#34;6-onhidecustomview&#34;&gt;6.onHideCustomView&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app当前页面推出全屏模式&lt;/p&gt;
+
+&lt;h3 id=&#34;7-oncreatewindow&#34;&gt;7.onCreateWindow&lt;/h3&gt;
+
+&lt;p&gt;请求宿主app创建一个window，如果宿主app选择接收这个请求，返回true，并且创建一个新的webview来
+把持这个window，并把他挂载在视图系统上，并且将新webview携带成参数通过resultMsg来发送给目标&lt;/p&gt;
+
+&lt;h3 id=&#34;8-onrequestfocus&#34;&gt;8.onRequestFocus&lt;/h3&gt;
+
+&lt;p&gt;请求显示并且为当前webview获取焦点。当另外一个webview要打开一个当前webview中的一个链接并且请求它
+这个webview已经显示时调用&lt;/p&gt;
+
+&lt;h3 id=&#34;9-onclosewindow&#34;&gt;9.onCloseWindow&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app关闭window并且从view系统中移除它&lt;/p&gt;
+
+&lt;h3 id=&#34;10-onjsalert&#34;&gt;10.onJsAlert&lt;/h3&gt;
+
+&lt;p&gt;js调用alert时触发&lt;/p&gt;
+
+&lt;h3 id=&#34;11-onjsconfirm&#34;&gt;11.onJsConfirm&lt;/h3&gt;
+
+&lt;p&gt;js调用confirm时触发&lt;/p&gt;
+
+&lt;h3 id=&#34;12-onjsprompt&#34;&gt;12.onJsPrompt&lt;/h3&gt;
+
+&lt;p&gt;js调用prompt时触发&lt;/p&gt;
+
+&lt;h3 id=&#34;13-onjsbeforeunload&#34;&gt;13.onJsBeforeUnload&lt;/h3&gt;
+
+&lt;p&gt;从当前导航从页面离开时会弹出一个弹框来确认，这个就是没有加载之前的js事件的返回值。如果返回true，WebView
+就会认为客户端这边确定这个弹框并且调用了JsResult的方法来返回结果，如果返回false，一个默认值就会直接返回给
+js来同意离开当前页面路由。&lt;/p&gt;
+
+&lt;h3 id=&#34;14-onexceededdatabasequota&#34;&gt;14.onExceededDatabaseQuota&lt;/h3&gt;
+
+&lt;p&gt;告诉客户端这边对于一个特定来源的数据库database操作已经超出指标了，需要另外分配指标。并且需要反射
+WebStorage.QuotaUpdater#updateQuota方法来重新配额。&lt;/p&gt;
+
+&lt;h3 id=&#34;15-onreachedmaxappcachesize&#34;&gt;15.onReachedMaxAppCacheSize&lt;/h3&gt;
+
+&lt;p&gt;告诉客户端这边cache的配额已经超额了，需要请求WebStorage.QuotaUpdater#updateQuota方法来重新配额&lt;/p&gt;
+
+&lt;h3 id=&#34;16-ongeolocationpermissionsshowprompt&#34;&gt;16.onGeolocationPermissionsShowPrompt&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app web内容请求Geolocation方面的api，但是没有权限，客户端这边需要获取该权限&lt;/p&gt;
+
+&lt;h3 id=&#34;17-onpermissionrequest&#34;&gt;17.onPermissionRequest&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app web中目前在请求一些权限。&lt;/p&gt;
+
+&lt;h3 id=&#34;18-onpermissionrequestcanceled&#34;&gt;18.onPermissionRequestCanceled&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，web的一些权限请求行为被拒绝了。&lt;/p&gt;
+
+&lt;h3 id=&#34;19-onjstimeout&#34;&gt;19.onJsTimeout&lt;/h3&gt;
+
+&lt;p&gt;当js的执行器执行超时了，会通知客户端，如果客户端返回true，表示中断js执行，如果返回false，表示继续执行，
+并且会重置计时器，如果下一个即使周期还是超时会继续回调该方法&lt;/p&gt;
+
+&lt;h3 id=&#34;20-onconsolemessage&#34;&gt;20.onConsoleMessage&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，js有console日志&lt;/p&gt;
+
+&lt;h3 id=&#34;21-getdefaultvideoposter&#34;&gt;21.getDefaultVideoPoster&lt;/h3&gt;
+
+&lt;p&gt;客户端这边返回一个图标，用于在视频缓冲时显示的封面&lt;/p&gt;
+
+&lt;h3 id=&#34;22-getvideoloadingprogressview&#34;&gt;22.getVideoLoadingProgressView&lt;/h3&gt;
+
+&lt;p&gt;客户端这边返回一个view，用于在视频缓冲时显示的loadding效果&lt;/p&gt;
+
+&lt;h3 id=&#34;23-getvisitedhistory&#34;&gt;23.getVisitedHistory&lt;/h3&gt;
+
+&lt;p&gt;返回所有的浏览历史&lt;/p&gt;
+
+&lt;h3 id=&#34;24-onshowfilechooser&#34;&gt;24.onShowFileChooser&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app显示一个文件显示器。这个是用来处理包含file的input标签的。如果要取消这个请求，
+通过filePathCallback.onReceiveValue(null)并且返回true。&lt;/p&gt;
+
+&lt;h3 id=&#34;25-setupautofill&#34;&gt;25.setupAutoFill&lt;/h3&gt;
+
+&lt;p&gt;通知客户端，渲染过的也页面包含一个自动填充的表格，客户端这边可以为其建立简介&lt;/p&gt;
+
+&lt;h2 id=&#34;3-webviewclient&#34;&gt;3.WebViewClient&lt;/h2&gt;
+
+&lt;h3 id=&#34;1-shouldoverrideurlloading&#34;&gt;1.shouldOverrideUrlLoading&lt;/h3&gt;
+
+&lt;p&gt;让webview参与到url跳转过程中来。如果webviewclient没有提供这个方法，那么就会让ActivityManager
+来寻找合适的handler来处理这个url。返回true表示需要经过客户端处理，返回false表示不经过。
+并且post请求不会经过这里。&lt;/p&gt;
+
+&lt;h3 id=&#34;2-onpagestarted&#34;&gt;2.onPageStarted&lt;/h3&gt;
+
+&lt;p&gt;通知客户端，一个页面已经开始加载，在每个渲染过程只会调用一次，并且iframes和framesets也是如此。
+一个内置页面也会调用一次该方法。&lt;/p&gt;
+
+&lt;h3 id=&#34;3-onpagefinished&#34;&gt;3.onPageFinished&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，一个页面加载完成了。只在主线程中调用。调用时，图片不会得到更新，如果需要得到新图片的通知
+使用WebView.PictureListener#onNewPicture&lt;/p&gt;
+
+&lt;h3 id=&#34;4-onloadresource&#34;&gt;4.onLoadResource&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app，在url中回去加载一些资源。&lt;/p&gt;
+
+&lt;h3 id=&#34;5-onpagecommitvisible&#34;&gt;5.onPageCommitVisible&lt;/h3&gt;
+
+&lt;p&gt;这个回调主要是得出重新使一个webview可见时精确时机，来确保没有旧的内容被显示。这个时机一般比确保前一个
+路由的内容不再被渲染时还要提前一点。下一个渲染对象不是webview的背景颜色就是新的页面的内容。&lt;/p&gt;
+
+&lt;h3 id=&#34;6-shouldinterceptrequest&#34;&gt;6.shouldInterceptRequest&lt;/h3&gt;
+
+&lt;p&gt;通知宿主app有一个资源请求，希望客户端返回一个数据。如果返回为null，webview会继续加载资源，否则返回的
+数据就会被应用，注意这个方法是在非UI线程中调用，所以要格外注意获取私密资源和UI系统&lt;/p&gt;
+
+&lt;h3 id=&#34;7-ontoomanyredirects&#34;&gt;7.onTooManyRedirects&lt;/h3&gt;
+
+&lt;p&gt;通知客户端当前存在大量的重定向操作，让客户端决定是否继续执行。&lt;/p&gt;
+
+&lt;h3 id=&#34;8-onreceivederror&#34;&gt;8.onReceivedError&lt;/h3&gt;
+
+&lt;p&gt;通知客户端这边有一些错误，并且这些错误是不可恢复的。错误码是定义过的常量，可以对比查找&lt;/p&gt;
+
+&lt;h3 id=&#34;9-onreceivedhttperror&#34;&gt;9.onReceivedHttpError&lt;/h3&gt;
+
+&lt;p&gt;通知客户端加载服务器资源错误，这个会在加载ifranms，image等任何资源错误是调用。不推荐在该回调方法中
+做太多的处理工作，并且返回内容可能没有提供错误码&lt;/p&gt;
+
+&lt;h3 id=&#34;10-onformresubmission&#34;&gt;10.onFormResubmission&lt;/h3&gt;
+
+&lt;p&gt;在WebView需要重新提交表单时触发（使用POST请求）&lt;/p&gt;
+
+&lt;h3 id=&#34;11-doupdatevisitedhistory&#34;&gt;11.doUpdateVisitedHistory&lt;/h3&gt;
+
+&lt;p&gt;通知客户端更新浏览历史&lt;/p&gt;
+
+&lt;h3 id=&#34;12-onreceivedsslerror&#34;&gt;12.onReceivedSslError&lt;/h3&gt;
+
+&lt;p&gt;通知客户端在加载资源时又一个ssl错误出现，客户端可以选择使用cancel proceed来选择处理&lt;/p&gt;
+
+&lt;h3 id=&#34;13-onreceivedclientcertrequest&#34;&gt;13.onReceivedClientCertRequest&lt;/h3&gt;
+
+&lt;p&gt;通知WebView处理SSL客户端证书请求，使用cancel proceed来处理，并且系统会记住该次选择，以后就按照这个
+选择进行处理，该方法会在UI线程调用&lt;/p&gt;
+
+&lt;h3 id=&#34;14-onreceivedhttpauthrequest&#34;&gt;14.onReceivedHttpAuthRequest&lt;/h3&gt;
+
+&lt;p&gt;通知客户端有http的认证请求&lt;/p&gt;
+
+&lt;h3 id=&#34;15-shouldoverridekeyevent&#34;&gt;15.shouldOverrideKeyEvent&lt;/h3&gt;
+
+&lt;p&gt;通知应用处理按键点击事件，返回true，webivew不处理该事件，返回false，webview已经处理过了&lt;/p&gt;
+
+&lt;h3 id=&#34;16-onunhandledkeyevent&#34;&gt;16.onUnhandledKeyEvent&lt;/h3&gt;
+
+&lt;p&gt;如果shouldOverrideKeyEvent返回true，按键点击事件就会触发这个方法，在这个方法中可以执行一些自定义的操作。&lt;/p&gt;
+
+&lt;h3 id=&#34;17-onscalechanged&#34;&gt;17.onScaleChanged&lt;/h3&gt;
+
+&lt;p&gt;当缩放比改变时触发&lt;/p&gt;
+
+&lt;h3 id=&#34;18-onreceivedloginrequest&#34;&gt;18.onReceivedLoginRequest&lt;/h3&gt;
+
+&lt;p&gt;当有登陆请求时会触发&lt;/p&gt;
+
+&lt;h3 id=&#34;19-onrenderprocessgone&#34;&gt;19.onRenderProcessGone&lt;/h3&gt;
+
+&lt;p&gt;通知客户端渲染线程退出了&lt;/p&gt;
+
+&lt;h3 id=&#34;20-onsafebrowsinghit&#34;&gt;20.onSafeBrowsingHit&lt;/h3&gt;
+
+&lt;p&gt;一个正在加载的链接在安全浏览模式下被标记&lt;/p&gt;
+</description>
+      
+    </item>
     
     <item>
       <title>人物随记-希文</title>

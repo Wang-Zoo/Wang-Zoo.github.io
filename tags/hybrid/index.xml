@@ -6,10 +6,19 @@
     <description>Recent content in Hybrid on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 09 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/hybrid/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hybrid开发之cordova(2)</title>
+      <link>https://wang-zoo.github.io/post/hybrid_webview/</link>
+      <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/hybrid_webview/</guid>
+      <description>前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc</description>
+    </item>
     
     <item>
       <title>Hybrid开发之cordova(1)</title>

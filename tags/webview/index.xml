@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>webview on WangZoo - 码字坞</title>
+    <link>https://wang-zoo.github.io/tags/webview/</link>
+    <description>Recent content in webview on WangZoo - 码字坞</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://wang-zoo.github.io/tags/webview/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hybrid开发之cordova(2)</title>
+      <link>https://wang-zoo.github.io/post/hybrid_webview/</link>
+      <pubDate>Thu, 15 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/hybrid_webview/</guid>
+      <description>前言 想要舒服的使用webview，就不得不了解webview三剑客，websettings，webchromeclient，webviewc</description>
+    </item>
+    
+  </channel>
+</rss>
