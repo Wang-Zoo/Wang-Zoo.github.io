@@ -6,10 +6,19 @@
     <description>Recent content in Posts on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 15 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 20 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Okhttp源码分析</title>
+      <link>https://wang-zoo.github.io/post/okhttp_source/</link>
+      <pubDate>Tue, 20 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/okhttp_source/</guid>
+      <description>前言 探寻一个事物的组成，不妨事先自我设想一下，这样才能真正明白自己的想法与他人的想法的区别 源码分析 1.怎么理解okhttp中的责任链机制 处理</description>
+    </item>
     
     <item>
       <title>Hybrid开发之cordova(2)</title>
