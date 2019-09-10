@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Picasso 源码分析 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/picasso_source/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Picasso 源码分析" />
+<meta property="og:description" content="前言 记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/picasso_source/" />
+<meta property="article:published_time" content="2019-09-01T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-09-01T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Picasso 源码分析">
+<meta itemprop="description" content="前言 记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，">
+
+
+<meta itemprop="datePublished" content="2019-09-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-09-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3242">
+
+
+
+<meta itemprop="keywords" content="源码,Picasso," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Picasso 源码分析"/>
+<meta name="twitter:description" content="前言 记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Picasso 源码分析</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-09-01" class="post-time">
+          2019-09-01
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#picasso">Picasso</a>
+<ul>
+<li><a href="#1-架构">1 架构</a></li>
+<li><a href="#2-调度">2 调度</a></li>
+<li><a href="#3-内存缓存">3 内存缓存</a></li>
+<li><a href="#4-磁盘缓存">4 磁盘缓存</a></li>
+<li><a href="#5-图片">5 图片</a>
+<ul>
+<li><a href="#5-1-错位问题">5.1 错位问题</a></li>
+<li><a href="#5-2-转化">5.2 转化</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，
+一晃78年过去了，已经涌现的很多非常不错的图片加载框架，分析这些框架的同时，也不经回忆起了当初；一转眼，我们又老了几岁了！</p>
+
+<h2 id="picasso">Picasso</h2>
+
+<p>square出品的又一利器，当时第一次使用时就被其简洁的调用方式所惊艳。不过这款框架只能算是轻量级，功能上还不是特别繁杂。本文分析的
+版本为2.3.2</p>
+
+<h3 id="1-架构">1 架构</h3>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/picasso_structure.png" />
+    </div>
+    <a href="/imgs/picasso_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>picasso 架构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>picasso整体上比较突出的就是可以设置特别多的图片来源，如上图，大概有6种图片来源（BitmapHunter）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">NetworkBitmapHunter</span><span class="o">;</span> <span class="c1">//常用来源,通过网络请求获取图片资源
+</span><span class="c1"></span><span class="n">AssetBitmapHunter</span><span class="o">;</span>   <span class="c1">//android Assets获取
+</span><span class="c1"></span><span class="n">ContactsPhotoBitmapHunter</span><span class="o">;</span> <span class="c1">//不怎么常用，联系人ContentProvider获取
+</span><span class="c1"></span><span class="n">ContentStreamBitmapHunter</span><span class="o">;</span> <span class="c1">//通过ContentProvier 获取第三方的图片资源
+</span><span class="c1"></span><span class="n">MediaStoreBitmapHunter</span><span class="o">;</span><span class="c1">//android 媒体数据库中获取图片资源，比如视频封面
+</span><span class="c1"></span><span class="n">ResourceBitmapHunter</span><span class="o">;</span><span class="c1">//app 获取自带图片资源
+</span><span class="c1"></span><span class="n">FileBitmapHunter</span><span class="o">;//</span> <span class="n">app</span> <span class="n">文件系统获取</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>调度器Dispatcher会调用多线程来从上述这些渠道获取图片资源，并且会根据是否缓存的开关来进行缓存操作。
+Picasso值得注意的是，缓存只是采用了LrcCache内存缓存这一级，而磁盘缓存实际跟通用图片加载框架的使用位置还不太一样</p>
+
+<h3 id="2-调度">2 调度</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/picasso_state.png" />
+    </div>
+    <a href="/imgs/picasso_state.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Dispatcher 状态图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>调度器Dispatcher主要有6种状态响应</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">REQUEST_SUBMIT</span>        <span class="c1">//开始获取图片
+</span><span class="c1"></span><span class="n">HUNTER_COMPLETE</span>       <span class="c1">//获取成功
+</span><span class="c1"></span><span class="n">HUNTER_DECODE_FAILED</span>  <span class="c1">//获取失败
+</span><span class="c1"></span><span class="n">HUNTER_RETRY</span>          <span class="c1">//需要重试
+</span><span class="c1"></span><span class="n">NETWORK_STATE_CHANGE</span>  <span class="c1">//网络状态变化
+</span><span class="c1"></span><span class="n">AIRPLANE_MODE_CHANGE</span>  <span class="o">//</span><span class="n">飞行模式状态变化</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>REQUEST_SUBMIT之后，系统就会开启一个线程用来进行获取图片操作，并且会保留该线程的
+Future，用来中断或者取消操作。</p>
+
+<p>HUNTER_COMPLETE之后，Dispatcher会将数据发送到主线程中的Handler来使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//Picasso 持有的静态Handler
+</span><span class="c1"></span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Handler</span> <span class="n">HANDLER</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">Looper</span><span class="o">.</span><span class="na">getMainLooper</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//获取bitmap成功
+</span><span class="c1"></span>        <span class="k">case</span> <span class="nl">HUNTER_BATCH_COMPLETE:</span> <span class="o">{</span>
+          <span class="o">...</span>
+          <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">case</span> <span class="nl">REQUEST_GCED:</span> <span class="o">{</span>
+          <span class="o">...</span>
+          <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">};</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>一个BitmapHandler会绑定多个相同来源的请求，比如多个渲染目标都加载一张同样来源的图片
+这样也避免的内存资源的浪费，在加载完成Bitmap之后，BitmapHandler会遍历自己绑定的
+Target，分别渲染Bitmap</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//Picasso.java
+</span><span class="c1"></span><span class="kt">void</span> <span class="nf">complete</span><span class="o">(</span><span class="n">BitmapHunter</span> <span class="n">hunter</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Action</span> <span class="n">single</span> <span class="o">=</span> <span class="n">hunter</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">Action</span><span class="o">&gt;</span> <span class="n">joined</span> <span class="o">=</span> <span class="n">hunter</span><span class="o">.</span><span class="na">getActions</span><span class="o">();</span>
+    <span class="o">...</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">joined</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="n">Action</span> <span class="n">join</span> <span class="o">=</span> <span class="n">joined</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+        <span class="n">deliverAction</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">from</span><span class="o">,</span> <span class="n">join</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>而多个BitmapHandler也会被绑定在一起，一批一批的发送处理，也是为了避免多次调用主线程</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">  <span class="c1">//Picasso.java
+</span><span class="c1"></span>  <span class="kd">static</span> <span class="kd">final</span> <span class="n">Handler</span> <span class="n">HANDLER</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">Looper</span><span class="o">.</span><span class="na">getMainLooper</span><span class="o">())</span> <span class="o">{</span>
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">switch</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="nl">HUNTER_BATCH_COMPLETE:</span> <span class="o">{</span>
+          <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unchecked&#34;</span><span class="o">)</span> 
+          <span class="n">List</span><span class="o">&lt;</span><span class="n">BitmapHunter</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">=</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">BitmapHunter</span><span class="o">&gt;)</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+          <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">BitmapHunter</span> <span class="n">hunter</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+            <span class="n">hunter</span><span class="o">.</span><span class="na">picasso</span><span class="o">.</span><span class="na">complete</span><span class="o">(</span><span class="n">hunter</span><span class="o">);</span>
+          <span class="o">}</span>
+          <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="o">...</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">};</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-内存缓存">3 内存缓存</h3>
+
+<p>picasso默认情况下只使用了一级内存缓存。注意是默认情况下，内存大小默认使用应用可用内存的15%。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">calculateMemoryCacheSize</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ActivityManager</span> <span class="n">am</span> <span class="o">=</span> <span class="n">getService</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">ACTIVITY_SERVICE</span><span class="o">);</span>
+    <span class="kt">boolean</span> <span class="n">largeHeap</span> <span class="o">=</span> <span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getApplicationInfo</span><span class="o">().</span><span class="na">flags</span> <span class="o">&amp;</span> <span class="n">FLAG_LARGE_HEAP</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">memoryClass</span> <span class="o">=</span> <span class="n">am</span><span class="o">.</span><span class="na">getMemoryClass</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">largeHeap</span> <span class="o">&amp;&amp;</span> <span class="n">SDK_INT</span> <span class="o">&gt;=</span> <span class="n">HONEYCOMB</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">memoryClass</span> <span class="o">=</span> <span class="n">ActivityManagerHoneycomb</span><span class="o">.</span><span class="na">getLargeMemoryClass</span><span class="o">(</span><span class="n">am</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// Target ~15% of the available heap.
+</span><span class="c1"></span>    <span class="k">return</span> <span class="n">1024</span> <span class="o">*</span> <span class="n">1024</span> <span class="o">*</span> <span class="n">memoryClass</span> <span class="o">/</span> <span class="n">7</span><span class="o">;</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>而具体是怎么实现最近最少使用的剔除算法呢？答案就是对LinkedHashMap的巧妙运用</p>
+
+<p>LinkedHashMap是HashMap的加强版，HashMap所存数据遍历时是无序，而LinkedHashMap可以做到有序，
+也就是说谁先存进去，谁就先被取出来。当LinkedHashMap的构造方法第三个参数为true时</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="k">this</span><span class="o">.</span><span class="na">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;(</span><span class="n">0</span><span class="o">,</span> <span class="n">0</span><span class="o">.</span><span class="na">75f</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在对该数据执行了LinkedHashMap.get(key)操作后，该数据就被放在遍历集合的末尾了。
+那么这样的效果就是，哪个Bitmap没有被经常使用，这个Bitmap就一定在遍历时最先出来。</p>
+
+<p>所以当执行清除操作时，直接使用iterator来清理最靠前的Bitmap，直到所有Bitmap占有内存小于当前被设置的
+最大内存即可</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">trimToSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxSize</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+      <span class="n">Bitmap</span> <span class="n">value</span><span class="o">;</span>
+      <span class="kd">synchronized</span> <span class="o">(</span><span class="k">this</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="c1">//当前Bitmap集合所占内存符合最大内存的要求
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">maxSize</span> <span class="o">||</span> <span class="n">map</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+          <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//清除最靠前的Bitmap数据
+</span><span class="c1"></span>        <span class="n">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Bitmap</span><span class="o">&gt;</span> <span class="n">toEvict</span> <span class="o">=</span> <span class="n">map</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">toEvict</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">toEvict</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+        <span class="c1">//清除操作
+</span><span class="c1"></span>        <span class="n">map</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="c1">//计算当前所有Bitmap所占内存
+</span><span class="c1"></span>        <span class="n">size</span> <span class="o">-=</span> <span class="n">Utils</span><span class="o">.</span><span class="na">getBitmapBytes</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+        <span class="n">evictionCount</span><span class="o">++;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="4-磁盘缓存">4 磁盘缓存</h3>
+
+<p>说picasso有磁盘缓存其实也不太准确，picasso自带的磁盘缓存跟常用图片加载框架的磁盘缓存的使用时机不太一样。</p>
+
+<p>首先picasso的磁盘缓存是网络请求自带的磁盘缓存。如果是OkhttpDownloader的话就是Okhttp自带的DiskLruCache
+并且要想使用Okhttp必须导入相应的库才行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="kd">static</span> <span class="n">Downloader</span> <span class="nf">createDefaultDownloader</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="c1">//异常信息说明，需要的库为
+</span><span class="c1"></span>    <span class="c1">//com.squareup.okhttp:okhttp:1.6.0 (or newer)
+</span><span class="c1"></span>    <span class="c1">//com.squareup.okhttp:okhttp-urlconnection:1.6.0 (or newer)
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">okHttpClient</span> <span class="o">!=</span> <span class="n">okUrlFactory</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;&#34;</span>
+          <span class="o">+</span> <span class="s">&#34;Picasso detected an unsupported OkHttp on the classpath.\n&#34;</span>
+          <span class="o">+</span> <span class="s">&#34;To use OkHttp with this version of Picasso, you&#39;ll need:\n&#34;</span>
+          <span class="o">+</span> <span class="s">&#34;1. com.squareup.okhttp:okhttp:1.6.0 (or newer)\n&#34;</span>
+          <span class="o">+</span> <span class="s">&#34;2. com.squareup.okhttp:okhttp-urlconnection:1.6.0 (or newer)\n&#34;</span>
+          <span class="o">+</span> <span class="s">&#34;Note that OkHttp 2.0.0+ is supported!&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">okHttpClient</span>
+        <span class="o">?</span> <span class="n">OkHttpLoaderCreator</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">context</span><span class="o">)</span>
+        <span class="o">:</span> <span class="k">new</span> <span class="n">UrlConnectionDownloader</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>否则就使用了默认的HttpUrlConnection来实现下载功能，HttpUrlConnection的默认缓存为HttpResponseCache</p>
+
+<p>然后呢，picasso并不是图片首先从缓存中去读取，是当下载该图片时失败，并且失败了两次时就会调用磁盘缓存的图片</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="nd">@Override</span> <span class="n">Bitmap</span> <span class="nf">decode</span><span class="o">(</span><span class="n">Request</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="kt">boolean</span> <span class="n">loadFromLocalCacheOnly</span> <span class="o">=</span> <span class="n">retryCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">;</span>
+    <span class="c1">//loadFromLocalCacheOnly取决于retryCount
+</span><span class="c1"></span>    <span class="c1">//retryCount初始值为2，重试一次自减一次
+</span><span class="c1"></span>    <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">downloader</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">uri</span><span class="o">,</span> <span class="n">loadFromLocalCacheOnly</span><span class="o">);</span>
+    <span class="o">...</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>当loadFromLocalCacheOnly为true时就会启动缓存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="nd">@Override</span> <span class="kd">public</span> <span class="n">Response</span> <span class="nf">load</span><span class="o">(</span><span class="n">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">localCacheOnly</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">HttpURLConnection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">openConnection</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+    <span class="n">connection</span><span class="o">.</span><span class="na">setUseCaches</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">localCacheOnly</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">connection</span><span class="o">.</span><span class="na">setRequestProperty</span><span class="o">(</span><span class="s">&#34;Cache-Control&#34;</span><span class="o">,</span> <span class="s">&#34;only-if-cached,max-age=&#34;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在请求时会默认加入only-if-cached,max-age控制，其中max-age追加的值为Integer的MAX_VALUE，
+根据http的头部配置说明，only-if-cached表示默认使用缓存，并且只要max-age所跟的最大存活时间没过
+就会调用缓存来作为相应结果，经过计算Integer.MAX_VALUE折算的时间其实比一年还要大。</p>
+
+<p>综上，只要请求两次图片资源失败，就使用缓存值，当然前提是缓存值要存在啊。</p>
+
+<p>也说明了picasso的缓存优先级如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">MemoryCache &gt; NetWork &gt; DiskCache</pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-图片">5 图片</h3>
+
+<h4 id="5-1-错位问题">5.1 错位问题</h4>
+
+<p>以前我们防止在列表显示图片时，加载错位，在每个ImageView上都绑定一个tag，当Bitmap返回时，对比tag，
+两者的tag一样才会执行渲染。</p>
+
+<p>picasso在处理这样的问题上，比较直接，如果当前target上绑定了一个获取任务，就将该任务中断，执行最新的
+绑定任务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kt">void</span> <span class="nf">enqueueAndSubmit</span><span class="o">(</span><span class="n">Action</span> <span class="n">action</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Object</span> <span class="n">target</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="na">getTarget</span><span class="o">();</span>
+    <span class="c1">//提交获取请求之前，先判断一下目标Target是否已经绑定了请求任务，有的话取消
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">target</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">cancelExistingRequest</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
+      <span class="n">targetToAction</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">action</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//然后执行当前新任务
+</span><span class="c1"></span>    <span class="n">submit</span><span class="o">(</span><span class="n">action</span><span class="o">);</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="5-2-转化">5.2 转化</h4>
+
+<p>picasso支持对Bitmap进行加工，有默认加工和自定义两种方式</p>
+
+<p>默认加工在自定义加工之前，默认加工包括，重调大小，旋转，居中裁剪等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//BitmapHandler.java
+</span><span class="c1"></span><span class="kd">static</span> <span class="n">Bitmap</span> <span class="nf">transformResult</span><span class="o">(</span><span class="n">Request</span> <span class="n">data</span><span class="o">,</span> <span class="n">Bitmap</span> <span class="n">result</span><span class="o">,</span> <span class="kt">int</span> <span class="n">exifRotation</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">Matrix</span> <span class="n">matrix</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Matrix</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">needsMatrixTransform</span><span class="o">())</span> <span class="o">{</span>
+      <span class="c1">//重调大小
+</span><span class="c1"></span>      <span class="kt">int</span> <span class="n">targetWidth</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">targetWidth</span><span class="o">;</span>
+      <span class="kt">int</span> <span class="n">targetHeight</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">targetHeight</span><span class="o">;</span>
+      <span class="o">...</span>
+      <span class="c1">//旋转
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">targetRotation</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">hasRotationPivot</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">matrix</span><span class="o">.</span><span class="na">setRotate</span><span class="o">(</span><span class="n">targetRotation</span><span class="o">,</span> <span class="n">data</span><span class="o">.</span><span class="na">rotationPivotX</span><span class="o">,</span> <span class="n">data</span><span class="o">.</span><span class="na">rotationPivotY</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+          <span class="n">matrix</span><span class="o">.</span><span class="na">setRotate</span><span class="o">(</span><span class="n">targetRotation</span><span class="o">);</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="c1">//居中裁剪
+</span><span class="c1"></span>      <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">centerCrop</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">float</span> <span class="n">widthRatio</span> <span class="o">=</span> <span class="n">targetWidth</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inWidth</span><span class="o">;</span>
+        <span class="kt">float</span> <span class="n">heightRatio</span> <span class="o">=</span> <span class="n">targetHeight</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inHeight</span><span class="o">;</span>
+        <span class="kt">float</span> <span class="n">scale</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">widthRatio</span> <span class="o">&gt;</span> <span class="n">heightRatio</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">scale</span> <span class="o">=</span> <span class="n">widthRatio</span><span class="o">;</span>
+          <span class="kt">int</span> <span class="n">newSize</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">Math</span><span class="o">.</span><span class="na">ceil</span><span class="o">(</span><span class="n">inHeight</span> <span class="o">*</span> <span class="o">(</span><span class="n">heightRatio</span> <span class="o">/</span> <span class="n">widthRatio</span><span class="o">));</span>
+          <span class="n">drawY</span> <span class="o">=</span> <span class="o">(</span><span class="n">inHeight</span> <span class="o">-</span> <span class="n">newSize</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+          <span class="n">drawHeight</span> <span class="o">=</span> <span class="n">newSize</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+          <span class="n">scale</span> <span class="o">=</span> <span class="n">heightRatio</span><span class="o">;</span>
+          <span class="kt">int</span> <span class="n">newSize</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">Math</span><span class="o">.</span><span class="na">ceil</span><span class="o">(</span><span class="n">inWidth</span> <span class="o">*</span> <span class="o">(</span><span class="n">widthRatio</span> <span class="o">/</span> <span class="n">heightRatio</span><span class="o">));</span>
+          <span class="n">drawX</span> <span class="o">=</span> <span class="o">(</span><span class="n">inWidth</span> <span class="o">-</span> <span class="n">newSize</span><span class="o">)</span> <span class="o">/</span> <span class="n">2</span><span class="o">;</span>
+          <span class="n">drawWidth</span> <span class="o">=</span> <span class="n">newSize</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">matrix</span><span class="o">.</span><span class="na">preScale</span><span class="o">(</span><span class="n">scale</span><span class="o">,</span> <span class="n">scale</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">centerInside</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">float</span> <span class="n">widthRatio</span> <span class="o">=</span> <span class="n">targetWidth</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inWidth</span><span class="o">;</span>
+        <span class="kt">float</span> <span class="n">heightRatio</span> <span class="o">=</span> <span class="n">targetHeight</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inHeight</span><span class="o">;</span>
+        <span class="kt">float</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">widthRatio</span> <span class="o">&lt;</span> <span class="n">heightRatio</span> <span class="o">?</span> <span class="n">widthRatio</span> <span class="o">:</span> <span class="n">heightRatio</span><span class="o">;</span>
+        <span class="n">matrix</span><span class="o">.</span><span class="na">preScale</span><span class="o">(</span><span class="n">scale</span><span class="o">,</span> <span class="n">scale</span><span class="o">);</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">targetWidth</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">targetHeight</span> <span class="o">!=</span> <span class="n">0</span> <span class="c1">//
+</span><span class="c1"></span>          <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">targetWidth</span> <span class="o">!=</span> <span class="n">inWidth</span> <span class="o">||</span> <span class="n">targetHeight</span> <span class="o">!=</span> <span class="n">inHeight</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">// If an explicit target size has been specified and they do not match the results bounds,
+</span><span class="c1"></span>        <span class="c1">// pre-scale the existing matrix appropriately.
+</span><span class="c1"></span>        <span class="kt">float</span> <span class="n">sx</span> <span class="o">=</span> <span class="n">targetWidth</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inWidth</span><span class="o">;</span>
+        <span class="kt">float</span> <span class="n">sy</span> <span class="o">=</span> <span class="n">targetHeight</span> <span class="o">/</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">inHeight</span><span class="o">;</span>
+        <span class="n">matrix</span><span class="o">.</span><span class="na">preScale</span><span class="o">(</span><span class="n">sx</span><span class="o">,</span> <span class="n">sy</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">exifRotation</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">matrix</span><span class="o">.</span><span class="na">preRotate</span><span class="o">(</span><span class="n">exifRotation</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">Bitmap</span> <span class="n">newResult</span> <span class="o">=</span>
+        <span class="n">Bitmap</span><span class="o">.</span><span class="na">createBitmap</span><span class="o">(</span><span class="n">result</span><span class="o">,</span> <span class="n">drawX</span><span class="o">,</span> <span class="n">drawY</span><span class="o">,</span> <span class="n">drawWidth</span><span class="o">,</span> <span class="n">drawHeight</span><span class="o">,</span> <span class="n">matrix</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">newResult</span> <span class="o">!=</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">result</span><span class="o">.</span><span class="na">recycle</span><span class="o">();</span>
+      <span class="n">result</span> <span class="o">=</span> <span class="n">newResult</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>自定义加工需要我们实现Transformation接口，在transform方法中去添加具体的转换操作</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//BitmapHandler.java
+</span><span class="c1"></span> <span class="kd">static</span> <span class="n">Bitmap</span> <span class="nf">applyCustomTransformations</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Transformation</span><span class="o">&gt;</span> <span class="n">transformations</span><span class="o">,</span> <span class="n">Bitmap</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+      <span class="kd">final</span> <span class="n">Transformation</span> <span class="n">transformation</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+      <span class="n">Bitmap</span> <span class="n">newResult</span> <span class="o">=</span> <span class="n">transformation</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+      <span class="o">...</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="总结">总结</h2>
+
+<p>以上是关于Picasso的一些比较重要知识点，总体而言，picasso是麻雀虽小五脏俱全，其实笔者这边对于Picasso的磁盘缓存的分析还是意犹未尽，主要是因为
+其也不是独立模块。后续会专门抽出一篇来分析磁盘缓存的内容</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-09-01
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/picasso/">Picasso</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/okhttp_source/">
+            <span class="next-text nav-default">Okhttp源码分析</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

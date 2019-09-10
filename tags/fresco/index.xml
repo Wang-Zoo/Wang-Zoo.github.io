@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fresco on WangZoo - 码字坞</title>
+    <link>https://wang-zoo.github.io/tags/fresco/</link>
+    <description>Recent content in Fresco on WangZoo - 码字坞</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 01 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://wang-zoo.github.io/tags/fresco/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Picasso 与 Fresco</title>
+      <link>https://wang-zoo.github.io/post/picasso_source/</link>
+      <pubDate>Sun, 01 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/picasso_source/</guid>
+      <description>前言 记得android开发最开始，图片的加载一直是一个历史性问题。OOM，图片错位，图片渲染速度等种种问题一直困扰着我们这些苦逼的开发人员，</description>
+    </item>
+    
+  </channel>
+</rss>
