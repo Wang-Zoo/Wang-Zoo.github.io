@@ -6,10 +6,19 @@
     <description>Recent content in 源码 on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 01 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fresco 源码分析</title>
+      <link>https://wang-zoo.github.io/post/fresco_source/</link>
+      <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/fresco_source/</guid>
+      <description>前言 头篇刚分析完Picasso，我兴致勃勃的打起了Fresco的主意，看了将近40分钟之后，我问了我自己三个问题。 1 2 3 1.为什么要折磨自己</description>
+    </item>
     
     <item>
       <title>Picasso 源码分析</title>
