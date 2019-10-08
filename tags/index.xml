@@ -6,10 +6,37 @@
     <description>Recent content in Tags on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 10 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Activity</title>
+      <link>https://wang-zoo.github.io/tags/activity/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/activity/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>插件化</title>
+      <link>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>源码</title>
+      <link>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Fresco</title>
@@ -17,15 +44,6 @@
       <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>https://wang-zoo.github.io/tags/fresco/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>源码</title>
-      <link>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</link>
-      <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</guid>
       <description></description>
     </item>
     

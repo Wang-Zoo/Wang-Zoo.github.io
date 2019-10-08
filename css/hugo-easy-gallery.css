@@ -101,6 +101,11 @@ figure {
     background-repeat: no-repeat;
 }
 
+figure .img{
+    text-align: center;
+    
+}
+
 .gallery.hover-effect-zoom figure:hover .img {
     transform: scale(1.05);
 }

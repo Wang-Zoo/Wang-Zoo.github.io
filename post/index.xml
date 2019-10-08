@@ -6,10 +6,19 @@
     <description>Recent content in Posts on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 10 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 18 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>9.0 Activity启动流程分析</title>
+      <link>https://wang-zoo.github.io/post/plugin_activity/</link>
+      <pubDate>Wed, 18 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/plugin_activity/</guid>
+      <description>前言 一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。 万丈</description>
+    </item>
     
     <item>
       <title>Fresco 源码分析</title>

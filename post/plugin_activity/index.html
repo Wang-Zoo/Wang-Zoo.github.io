@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>9.0 Activity启动流程分析 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。 万丈" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/plugin_activity/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="9.0 Activity启动流程分析" />
+<meta property="og:description" content="前言 一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。 万丈" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/plugin_activity/" />
+<meta property="article:published_time" content="2019-09-18T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-09-18T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="9.0 Activity启动流程分析">
+<meta itemprop="description" content="前言 一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。 万丈">
+
+
+<meta itemprop="datePublished" content="2019-09-18T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-09-18T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="4108">
+
+
+
+<meta itemprop="keywords" content="源码,插件化,Activity," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="9.0 Activity启动流程分析"/>
+<meta name="twitter:description" content="前言 一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。 万丈"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">9.0 Activity启动流程分析</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-09-18" class="post-time">
+          2019-09-18
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#actiity启动流程">Actiity启动流程</a>
+<ul>
+<li><a href="#1-开始启动">1.开始启动</a></li>
+<li><a href="#2-栈顶activity退出">2.栈顶Activity退出</a></li>
+<li><a href="#3-启动新进程">3.启动新进程</a></li>
+<li><a href="#4-activitythread-初始化">4.ActivityThread 初始化</a></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>一直想写写插件化，才发现自己连Activity的启动过程都不甚了解。插件化说到底考验的是开发者对于Android 源码的深入理解程度。
+万丈高楼从地起，从头开始吧</p>
+
+<h2 id="actiity启动流程">Actiity启动流程</h2>
+
+<p>Activity的一次启动大致会经过如下四个阶段，其中涉及与AMS的Binder通讯，与Zygote的通讯。为此，我每个阶段都准备了一张时序图，
+能很好的理清调用思路</p>
+
+<h3 id="1-开始启动">1.开始启动</h3>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/activity_start_flow.png" />
+    </div>
+    <a href="/imgs/activity_start_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Activity 开始启动时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>Activity的所有的启动Activity的操作都会经过startActivityForResult，然后会交给Instrumentation去实现转发，
+Instrumentation这个类在调试app时起到了很大的作用，它可以追踪Activity和Application的生命周期，如果需要用于测试
+可以继承，然后反射注入，在自动化测试时经常用到。</p>
+
+<p>然后我们看到Instrumentation会通过binder向AMS请求。这里会先请求到ActivityManager注册的服务AMS，然后才调用服务的
+startActivity来开始请求。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//Instrumentation.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="n">ActivityResult</span> <span class="nf">execStartActivity</span><span class="o">(</span><span class="n">Context</span> <span class="n">who</span><span class="o">,</span> <span class="n">IBinder</span> <span class="n">contextThread</span><span class="o">,</span> <span class="n">IBinder</span> <span class="n">token</span><span class="o">,</span> <span class="n">Activity</span> <span class="n">target</span><span class="o">,</span><span class="n">Intent</span> <span class="n">intent</span><span class="o">,</span> <span class="kt">int</span> <span class="n">requestCode</span><span class="o">,</span> <span class="n">Bundle</span> <span class="n">options</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">ActivityManager</span><span class="o">.</span><span class="na">getService</span><span class="o">().</span><span class="na">startActivity</span><span class="o">(</span><span class="n">whoThread</span><span class="o">,</span> <span class="n">who</span><span class="o">.</span><span class="na">getBasePackageName</span><span class="o">(),</span> <span class="n">intent</span><span class="o">,</span>
+                        <span class="n">intent</span><span class="o">.</span><span class="na">resolveTypeIfNeeded</span><span class="o">(</span><span class="n">who</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">()),</span>
+                        <span class="n">token</span><span class="o">,</span> <span class="n">target</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">target</span><span class="o">.</span><span class="na">mEmbeddedID</span> <span class="o">:</span> <span class="kc">null</span><span class="o">,</span>
+                        <span class="n">requestCode</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">options</span><span class="o">);</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+<span class="c1">//ActivityManager.java
+</span><span class="c1"></span> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Singleton</span><span class="o">&lt;</span><span class="n">IActivityManager</span><span class="o">&gt;</span> <span class="n">IActivityManagerSingleton</span> <span class="o">=</span>
+    <span class="k">new</span> <span class="n">Singleton</span><span class="o">&lt;</span><span class="n">IActivityManager</span><span class="o">&gt;()</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">protected</span> <span class="n">IActivityManager</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">IBinder</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ServiceManager</span><span class="o">.</span><span class="na">getService</span><span class="o">(</span><span class="n">Context</span><span class="o">.</span><span class="na">ACTIVITY_SERVICE</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">IActivityManager</span> <span class="n">am</span> <span class="o">=</span> <span class="n">IActivityManager</span><span class="o">.</span><span class="na">Stub</span><span class="o">.</span><span class="na">asInterface</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">am</span><span class="o">;</span>
+        <span class="o">}</span>
+<span class="o">};</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>ActivityManager.getService()获取的其实就是上图ActivityManager中的单例，然后调用startActivity时会将Activity自身所处进程的IApplicationThread传给AMS，这个主要是用于AMS的之后的回调。</p>
+
+<p>层层转发，最后才将任务分发给了ActivityStack（外包既视感！），第一阶段到此结束，对于这个阶段要注意上述的IApplicationThread的传入，
+IApplicationThread本身就是一个AIDL的接口，具体实现在ActivityThread中，每一个ActivityThread都会生成一个ApplicationThread，用于
+在与AMS通讯的回调使用。其实AMS也是一个AIDL的实现，我们在这一步相当于是获取AIDL，然后将自身的AIDL传给别人，实现一个回调注册。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">class</span> <span class="nc">ActivityThread</span><span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kd">class</span> <span class="nc">ApplicationThread</span> <span class="kd">extends</span> <span class="n">IApplicationThread</span><span class="o">.</span><span class="na">Stub</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ActivityManagerService</span> <span class="kd">extends</span> <span class="n">IActivityManager</span><span class="o">.</span><span class="na">Stub</span>
+        <span class="kd">implements</span> <span class="n">Watchdog</span><span class="o">.</span><span class="na">Monitor</span><span class="o">,</span> <span class="n">BatteryStatsImpl</span><span class="o">.</span><span class="na">BatteryCallback</span> <span class="o">{</span>
+            <span class="o">...</span>
+        <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-栈顶activity退出">2.栈顶Activity退出</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/activity_pause_flow.png" />
+    </div>
+    <a href="/imgs/activity_pause_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>栈顶Activity退出时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>AMS在收到一个启动新APP的请求之后做的第一件重要的事，就是将当前Activity置于“休眠状态”，告诉它“我知道你的请求了，你可以下班了”。</p>
+
+<p>从图中我们知道，AMS这边会产生一个ClientTransaction,一个ClientTransaction可以携带多个转化操作，不过这里这个ClientTransaction只
+携带一个PauseActivityItem，从命名就可以看出，这个是一个让Activity “Pause” 的操作。</p>
+
+<p>然后将ClientTansaction通过上文所说的IAppicationThread（这里也被说成是Client客户端）传回去。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientTransaction</span> <span class="kd">implements</span> <span class="n">Parcelable</span><span class="o">,</span> <span class="n">ObjectPoolItem</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="n">IApplicationThread</span> <span class="n">mClient</span><span class="o">;</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">schedule</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="o">{</span>
+        <span class="c1">//回调操作
+</span><span class="c1"></span>        <span class="n">mClient</span><span class="o">.</span><span class="na">scheduleTransaction</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>经过Binder操作之后，ActivityThread这边的IApplicationThread就收到回调操作，然后继续任务分发，会将任务分发给ActivityThread中的
+H，这个H其实就是一个Handler。ActivityThread在创建的同时也为该进程中创建了一个默认Looper，也就是我们常说的mainLooper，这个H就是ActvityThread为mainLooper准备的配套设施。</p>
+
+<p>最后，传送过来的PauseActivityItem会执行具体的Pause操作，经过Instrumentation的转发，执行栈顶的Activity的performPause，最后也会
+调用了我们常见的生命周期回调 onPause。</p>
+
+<h3 id="3-启动新进程">3.启动新进程</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/activity_create_flow.png" />
+    </div>
+    <a href="/imgs/activity_create_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>应用新进程启动时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>ActivityStack在完成了pause 栈顶Actvity之后，就开始真正启动新应用的步骤了。通过AMS 将具体的启动任务分发到Process的start方法中，
+Process调用ZygoteProcess的start方法，然后ZygoteProcess调用startViaZygote进行操作，这一系列转发之后，关键时候来了。ZygoteProcess与
+Zygote开始通讯，两者IPC通讯的方式也很直接，使用了Socket完成操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//Process.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Process</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">ZYGOTE_SOCKET</span> <span class="o">=</span> <span class="s">&#34;zygote&#34;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">SECONDARY_ZYGOTE_SOCKET</span> <span class="o">=</span> <span class="s">&#34;zygote_secondary&#34;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ZygoteProcess</span> <span class="n">zygoteProcess</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZygoteProcess</span><span class="o">(</span><span class="n">ZYGOTE_SOCKET</span><span class="o">,</span> <span class="n">SECONDARY_ZYGOTE_SOCKET</span><span class="o">);</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="c1">//ZygoteProcess.java
+</span><span class="c1"></span><span class="kd">public</span> <span class="nf">ZygoteProcess</span><span class="o">(</span><span class="n">LocalSocketAddress</span> <span class="n">primarySocket</span><span class="o">,</span> <span class="n">LocalSocketAddress</span> <span class="n">secondarySocket</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//socket的句柄 为“zygote”
+</span><span class="c1"></span>    <span class="n">mSocket</span> <span class="o">=</span> <span class="n">primarySocket</span><span class="o">;</span>
+    <span class="n">mSecondarySocket</span> <span class="o">=</span> <span class="n">secondarySocket</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="n">Process</span><span class="o">.</span><span class="na">ProcessStartResult</span> <span class="nf">startViaZygote</span><span class="o">(...)</span> <span class="kd">throws</span> <span class="n">ZygoteStartFailedEx</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">zygoteSendArgsAndGetResult</span><span class="o">(</span><span class="n">openZygoteSocketIfNeeded</span><span class="o">(</span><span class="n">abi</span><span class="o">),</span> <span class="n">argsForZygote</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="n">ZygoteState</span> <span class="nf">openZygoteSocketIfNeeded</span><span class="o">(</span><span class="n">String</span> <span class="n">abi</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ZygoteStartFailedEx</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">primaryZygoteState</span> <span class="o">=</span> <span class="n">ZygoteState</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">mSocket</span><span class="o">);</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">static</span> <span class="n">Process</span><span class="o">.</span><span class="na">ProcessStartResult</span> <span class="nf">zygoteSendArgsAndGetResult</span><span class="o">(</span><span class="n">ZygoteState</span> <span class="n">zygoteState</span><span class="o">,</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">args</span><span class="o">)</span><span class="kd">throws</span> <span class="n">ZygoteStartFailedEx</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">BufferedWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="n">zygoteState</span><span class="o">.</span><span class="na">writer</span><span class="o">;</span>
+    <span class="kd">final</span> <span class="n">DataInputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">zygoteState</span><span class="o">.</span><span class="na">inputStream</span><span class="o">;</span>
+    <span class="c1">//socket通讯
+</span><span class="c1"></span>    <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">size</span><span class="o">()));</span>
+    <span class="n">writer</span><span class="o">.</span><span class="na">newLine</span><span class="o">();</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sz</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">arg</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+        <span class="n">writer</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">arg</span><span class="o">);</span>
+        <span class="n">writer</span><span class="o">.</span><span class="na">newLine</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">writer</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在Zygote进程这边，会收到socket通讯请求，然后处理请求，这里我们先梳理一下Zygote进程的一些东西。按照
+android系统启动了流程，Zygote进程初始化会在ZygoteInit.java文件中来完成。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ZygoteInit</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">argv</span><span class="o">[])</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="n">ZygoteServer</span> <span class="n">zygoteServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZygoteServer</span><span class="o">();</span>
+        <span class="o">...</span>
+        <span class="c1">//循环处理其他进程请求
+</span><span class="c1"></span>        <span class="n">caller</span> <span class="o">=</span> <span class="n">zygoteServer</span><span class="o">.</span><span class="na">runSelectLoop</span><span class="o">(</span><span class="n">abiList</span><span class="o">);</span>
+        <span class="c1">//如果是fork子进程，在执行完任务之后就退出       
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">caller</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">caller</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>启动ZygoteInit之后，zygoteServer就会一直处于循环等待和处理消息的状态。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//ZygoteServer.java
+</span><span class="c1"></span><span class="n">Runnable</span> <span class="nf">runSelectLoop</span><span class="o">(</span><span class="n">String</span> <span class="n">abiList</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="c1">//等待接受请求
+</span><span class="c1"></span>        <span class="n">ZygoteConnection</span> <span class="n">newPeer</span> <span class="o">=</span> <span class="n">acceptCommandPeer</span><span class="o">(</span><span class="n">abiList</span><span class="o">);</span>
+        <span class="n">peers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">newPeer</span><span class="o">);</span>
+        <span class="n">fds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">newPeer</span><span class="o">.</span><span class="na">getFileDesciptor</span><span class="o">());</span>
+        <span class="o">...</span>
+        <span class="n">ZygoteConnection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">peers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+        <span class="c1">//处理请求
+</span><span class="c1"></span>        <span class="kd">final</span> <span class="n">Runnable</span> <span class="n">command</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">processOneCommand</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mIsForkChild</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">command</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span><span class="s">&#34;command == null&#34;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="n">command</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>    
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="n">ZygoteConnection</span> <span class="nf">acceptCommandPeer</span><span class="o">(</span><span class="n">String</span> <span class="n">abiList</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//等待
+</span><span class="c1"></span>    <span class="k">return</span> <span class="n">createNewConnection</span><span class="o">(</span><span class="n">mServerSocket</span><span class="o">.</span><span class="na">accept</span><span class="o">(),</span> <span class="n">abiList</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>获得消息之后就交给ZygoteConnection来处理具体事务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//ZygoteConnection.java
+</span><span class="c1"></span> <span class="n">Runnable</span> <span class="nf">processOneCommand</span><span class="o">(</span><span class="n">ZygoteServer</span> <span class="n">zygoteServer</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//孵化操作
+</span><span class="c1"></span>    <span class="n">pid</span> <span class="o">=</span> <span class="n">Zygote</span><span class="o">.</span><span class="na">forkAndSpecialize</span><span class="o">(</span><span class="n">parsedArgs</span><span class="o">.</span><span class="na">uid</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">gid</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">gids</span><span class="o">,</span>
+                <span class="n">parsedArgs</span><span class="o">.</span><span class="na">runtimeFlags</span><span class="o">,</span> <span class="n">rlimits</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">mountExternal</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">seInfo</span><span class="o">,</span>
+                <span class="n">parsedArgs</span><span class="o">.</span><span class="na">niceName</span><span class="o">,</span> <span class="n">fdsToClose</span><span class="o">,</span> <span class="n">fdsToIgnore</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">startChildZygote</span><span class="o">,</span>
+                <span class="n">parsedArgs</span><span class="o">.</span><span class="na">instructionSet</span><span class="o">,</span> <span class="n">parsedArgs</span><span class="o">.</span><span class="na">appDataDir</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">pid</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// in child
+</span><span class="c1"></span>        <span class="o">...</span>
+        <span class="k">return</span> <span class="n">handleChildProc</span><span class="o">(</span><span class="n">parsedArgs</span><span class="o">,</span> <span class="n">descriptors</span><span class="o">,</span> <span class="n">childPipeFd</span><span class="o">,</span><span class="n">parsedArgs</span><span class="o">.</span><span class="na">startChildZygote</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>handleChildProc会调用ZygoteInit的静态方法childZygoteInit，childZygoteInit又会调用RuntimeInit的findStaticMain
+来真正创建新应用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//RuntimeInit.java
+</span><span class="c1"></span><span class="kd">protected</span> <span class="kd">static</span> <span class="n">Runnable</span> <span class="nf">findStaticMain</span><span class="o">(</span><span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">argv</span><span class="o">,</span>
+            <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cl</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">cl</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">className</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="n">classLoader</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span>
+                    <span class="s">&#34;Missing class when invoking static main &#34;</span> <span class="o">+</span> <span class="n">className</span><span class="o">,</span>
+                    <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">Method</span> <span class="n">m</span><span class="o">;</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;main&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]</span> <span class="o">{</span> <span class="n">String</span><span class="o">[].</span><span class="na">class</span> <span class="o">});</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchMethodException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span>
+                    <span class="s">&#34;Missing static main on &#34;</span> <span class="o">+</span> <span class="n">className</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SecurityException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span>
+                    <span class="s">&#34;Problem getting static main on &#34;</span> <span class="o">+</span> <span class="n">className</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="kt">int</span> <span class="n">modifiers</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="na">getModifiers</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(!</span> <span class="o">(</span><span class="n">Modifier</span><span class="o">.</span><span class="na">isStatic</span><span class="o">(</span><span class="n">modifiers</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">Modifier</span><span class="o">.</span><span class="na">isPublic</span><span class="o">(</span><span class="n">modifiers</span><span class="o">)))</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span>
+                    <span class="s">&#34;Main method is not public and static on &#34;</span> <span class="o">+</span> <span class="n">className</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">MethodAndArgsCaller</span><span class="o">(</span><span class="n">m</span><span class="o">,</span> <span class="n">argv</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>findStaticMain方法实际就是执行了反射操作，调用的传入类的main方法，而传入的类就是ActivityThread.java
+到此才真正启动了应用</p>
+
+<p>这里需要注意的是Zygote的孵化操作，这一部分其实完全需要新开一篇来讲，但是为了完全理解，我就再多嘴一下。
+孵化新进程之后，建立应用就不用再重新加载资源，直接使用之前的，这项技术称为COW，如果当前进程是用于孵化新应用的
+子进程的话，在新建应用成功之后，当前孵化的Zygote就会退出。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ZygoteInit</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">argv</span><span class="o">[])</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">socketName</span> <span class="o">=</span> <span class="s">&#34;zygote&#34;</span><span class="o">;</span>
+        <span class="o">...</span>
+        <span class="n">ZygoteServer</span> <span class="n">zygoteServer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZygoteServer</span><span class="o">();</span>
+        <span class="o">...</span>
+        <span class="c1">//循环处理其他进程请求
+</span><span class="c1"></span>        <span class="n">caller</span> <span class="o">=</span> <span class="n">zygoteServer</span><span class="o">.</span><span class="na">runSelectLoop</span><span class="o">(</span><span class="n">abiList</span><span class="o">);</span>
+        <span class="c1">//如果是fork子进程，在执行完任务之后就退出       
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">caller</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">caller</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>还有一个地方就是上述Socket实际是由android本地生成的一个通讯管道，这块，目前笔者还不是很清楚，暂时只能记录下来
+待后续补上。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/zygote_socket_struc.png" />
+    </div>
+    <a href="/imgs/zygote_socket_struc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Zygote socket通讯</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h3 id="4-activitythread-初始化">4.ActivityThread 初始化</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/activity_lanunch_flow.png" />
+    </div>
+    <a href="/imgs/activity_lanunch_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>新Activity启动时序图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>终于走到了最后一步，我们的应用的初始化这这里开始，上一阶段最后，系统反射了ActivityThread.java的main方法
+main方法中会生成一个ActivityThread实例，同时准备该进程的mainLooper，和Handler。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ActivityThread</span> <span class="kd">extends</span> <span class="n">ClientTransactionHandler</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="n">ActivityThread</span> <span class="n">thread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ActivityThread</span><span class="o">();</span>
+        <span class="n">thread</span><span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="n">startSeq</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">sMainThreadHandler</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">sMainThreadHandler</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="na">getHandler</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">Looper</span><span class="o">.</span><span class="na">loop</span><span class="o">();</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;Main thread loop unexpectedly exited&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>当前的ActivityThread会调用attach来关联到AMS。AMS 会获取当前的ActivityThread的启动资料记录
+具体是根据当前进程的pid。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">attachApplicationLocked</span><span class="o">(</span><span class="n">IApplicationThread</span> <span class="n">thread</span><span class="o">,</span><span class="kt">int</span> <span class="n">pid</span><span class="o">,</span> <span class="kt">int</span> <span class="n">callingUid</span><span class="o">,</span> <span class="kt">long</span> <span class="n">startSeq</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ProcessRecord</span> <span class="n">app</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">uptimeMillis</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">pid</span> <span class="o">!=</span> <span class="n">MY_PID</span> <span class="o">&amp;&amp;</span> <span class="n">pid</span> <span class="o">&gt;=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mPidsSelfLocked</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//获取启动资料
+</span><span class="c1"></span>            <span class="n">app</span> <span class="o">=</span> <span class="n">mPidsSelfLocked</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">pid</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上图中的mPidsSelfLocked的存储操作发生在向Zygote请求fork新进程之后，将请求到的pid和新进程的信息都保存在mPidsSelfLocked中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//ActivityManagerService.java
+</span><span class="c1"></span>
+ <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">startProcessLocked</span><span class="o">(</span><span class="n">String</span> <span class="n">hostingType</span><span class="o">,</span> <span class="n">String</span> <span class="n">hostingNameStr</span><span class="o">,</span> <span class="n">String</span> <span class="n">entryPoint</span><span class="o">,</span>
+            <span class="n">ProcessRecord</span> <span class="n">app</span><span class="o">,</span> <span class="kt">int</span> <span class="n">uid</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">gids</span><span class="o">,</span> <span class="kt">int</span> <span class="n">runtimeFlags</span><span class="o">,</span> <span class="kt">int</span> <span class="n">mountExternal</span><span class="o">,</span>
+            <span class="n">String</span> <span class="n">seInfo</span><span class="o">,</span> <span class="n">String</span> <span class="n">requiredAbi</span><span class="o">,</span> <span class="n">String</span> <span class="n">instructionSet</span><span class="o">,</span> <span class="n">String</span> <span class="n">invokeWith</span><span class="o">,</span>
+            <span class="kt">long</span> <span class="n">startTime</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mConstants</span><span class="o">.</span><span class="na">FLAG_PROCESS_START_ASYNC</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">...</span>
+            <span class="c1">//建立新进程
+</span><span class="c1"></span>             <span class="kd">final</span> <span class="n">ProcessStartResult</span> <span class="n">startResult</span> <span class="o">=</span> <span class="n">startProcess</span><span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">hostingType</span><span class="o">,</span> <span class="n">entryPoint</span><span class="o">,</span>
+                            <span class="n">app</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">startUid</span><span class="o">,</span> <span class="n">gids</span><span class="o">,</span> <span class="n">runtimeFlags</span><span class="o">,</span> <span class="n">mountExternal</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">seInfo</span><span class="o">,</span>
+                            <span class="n">requiredAbi</span><span class="o">,</span> <span class="n">instructionSet</span><span class="o">,</span> <span class="n">invokeWith</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">startTime</span><span class="o">);</span>
+            <span class="c1">//存储新进程信息
+</span><span class="c1"></span>            <span class="n">handleProcessStartedLocked</span><span class="o">(</span><span class="n">app</span><span class="o">,</span> <span class="n">startResult</span><span class="o">,</span> <span class="n">startSeq</span><span class="o">);</span>
+            <span class="o">...</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="o">...</span>
+            <span class="c1">//建立新进程
+</span><span class="c1"></span>             <span class="kd">final</span> <span class="n">ProcessStartResult</span> <span class="n">startResult</span> <span class="o">=</span> <span class="n">startProcess</span><span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">hostingType</span><span class="o">,</span> <span class="n">entryPoint</span><span class="o">,</span>
+                            <span class="n">app</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">startUid</span><span class="o">,</span> <span class="n">gids</span><span class="o">,</span> <span class="n">runtimeFlags</span><span class="o">,</span> <span class="n">mountExternal</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">seInfo</span><span class="o">,</span>
+                            <span class="n">requiredAbi</span><span class="o">,</span> <span class="n">instructionSet</span><span class="o">,</span> <span class="n">invokeWith</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">startTime</span><span class="o">);</span>
+            <span class="c1">//存储新进程信息
+</span><span class="c1"></span>            <span class="n">handleProcessStartedLocked</span><span class="o">(</span><span class="n">app</span><span class="o">,</span> <span class="n">startResult</span><span class="o">,</span> <span class="n">startSeq</span><span class="o">);</span>
+            <span class="o">...</span>
+            <span class="k">return</span> <span class="n">app</span><span class="o">.</span><span class="na">pid</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">handleProcessStartedLocked</span><span class="o">(</span><span class="n">ProcessRecord</span> <span class="n">app</span><span class="o">,</span> <span class="kt">int</span> <span class="n">pid</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">usingWrapper</span><span class="o">,</span><span class="kt">long</span> <span class="n">expectedStartSeq</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">procAttached</span><span class="o">)</span> <span class="o">{</span>
+     <span class="o">...</span>
+    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mPidsSelfLocked</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mPidsSelfLocked</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">pid</span><span class="o">,</span> <span class="n">app</span><span class="o">);</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>获取到的ProcessRecord app会在后续的用于查找需要启动的Activity的信息，最后在ActivityStackSupervisor的realStartActivityLocked
+发起启动Activity的事务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">final</span> <span class="kt">boolean</span> <span class="nf">realStartActivityLocked</span><span class="o">(</span><span class="n">ActivityRecord</span> <span class="n">r</span><span class="o">,</span> <span class="n">ProcessRecord</span> <span class="n">app</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">andResume</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">checkConfig</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">RemoteException</span> <span class="o">{</span>
+
+    <span class="o">...</span>
+    <span class="c1">//准备了Launch和Resume的事务，向ActivityThread发送执行
+</span><span class="c1"></span>    <span class="kd">final</span> <span class="n">ClientTransaction</span> <span class="n">clientTransaction</span> <span class="o">=</span> <span class="n">ClientTransaction</span><span class="o">.</span><span class="na">obtain</span><span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">thread</span><span class="o">,</span><span class="n">r</span><span class="o">.</span><span class="na">appToken</span><span class="o">);</span>
+    <span class="n">clientTransaction</span><span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">LaunchActivityItem</span><span class="o">.</span><span class="na">obtain</span><span class="o">(</span><span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">r</span><span class="o">.</span><span class="na">intent</span><span class="o">),</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">identityHashCode</span><span class="o">(</span><span class="n">r</span><span class="o">),</span> <span class="n">r</span><span class="o">.</span><span class="na">info</span><span class="o">,</span>
+        <span class="n">mergedConfiguration</span><span class="o">.</span><span class="na">getGlobalConfiguration</span><span class="o">(),</span>
+        <span class="n">mergedConfiguration</span><span class="o">.</span><span class="na">getOverrideConfiguration</span><span class="o">(),</span> <span class="n">r</span><span class="o">.</span><span class="na">compat</span><span class="o">,</span>
+        <span class="n">r</span><span class="o">.</span><span class="na">launchedFromPackage</span><span class="o">,</span> <span class="n">task</span><span class="o">.</span><span class="na">voiceInteractor</span><span class="o">,</span> <span class="n">app</span><span class="o">.</span><span class="na">repProcState</span><span class="o">,</span> <span class="n">r</span><span class="o">.</span><span class="na">icicle</span><span class="o">,</span>
+        <span class="n">r</span><span class="o">.</span><span class="na">persistentState</span><span class="o">,</span> <span class="n">results</span><span class="o">,</span> <span class="n">newIntents</span><span class="o">,</span> <span class="n">mService</span><span class="o">.</span><span class="na">isNextTransitionForward</span><span class="o">(),</span>
+        <span class="n">profilerInfo</span><span class="o">));</span>
+    <span class="kd">final</span> <span class="n">ActivityLifecycleItem</span> <span class="n">lifecycleItem</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">andResume</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">lifecycleItem</span> <span class="o">=</span> <span class="n">ResumeActivityItem</span><span class="o">.</span><span class="na">obtain</span><span class="o">(</span><span class="n">mService</span><span class="o">.</span><span class="na">isNextTransitionForward</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">lifecycleItem</span> <span class="o">=</span> <span class="n">PauseActivityItem</span><span class="o">.</span><span class="na">obtain</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">clientTransaction</span><span class="o">.</span><span class="na">setLifecycleStateRequest</span><span class="o">(</span><span class="n">lifecycleItem</span><span class="o">);</span>
+    <span class="n">mService</span><span class="o">.</span><span class="na">getLifecycleManager</span><span class="o">().</span><span class="na">scheduleTransaction</span><span class="o">(</span><span class="n">clientTransaction</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>之后的过程跟第二步分析的Pause过程大致相同，不再多言</p>
+
+<h3 id="总结">总结</h3>
+
+<p>本篇文章着重大致分析Activity的启动的完整流程，其实一个Activity的启动情况很多，不同的生命周期有着不同的
+调用流程，这里也就不一一描述了。同时，笔者深感对于Zygote的启动过程和其特有的Socket通讯还有很多迷惑之处，后续会继续
+深入分析，继续耕耘。本篇文章调用时序跳转过多，特此留下一张简图，以供参考。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/activity_start_struc.png" />
+    </div>
+    <a href="/imgs/activity_start_struc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Activity启动简图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-09-18
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/">插件化</a>
+          <a href="https://wang-zoo.github.io/tags/activity/">Activity</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/fresco_source/">
+            <span class="next-text nav-default">Fresco 源码分析</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
