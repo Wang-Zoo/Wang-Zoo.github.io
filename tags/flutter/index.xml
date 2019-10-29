@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flutter on WangZoo - 码字坞</title>
+    <link>https://wang-zoo.github.io/tags/flutter/</link>
+    <description>Recent content in Flutter on WangZoo - 码字坞</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 21 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://wang-zoo.github.io/tags/flutter/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Flutter 插件原理</title>
+      <link>https://wang-zoo.github.io/post/flutter_plugin/</link>
+      <pubDate>Mon, 21 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/flutter_plugin/</guid>
+      <description>Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链</description>
+    </item>
+    
+  </channel>
+</rss>

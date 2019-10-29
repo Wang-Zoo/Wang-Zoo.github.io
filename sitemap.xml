@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://wang-zoo.github.io/post/flutter_plugin/</loc>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/plugin_service/</loc>
     <lastmod>2019-10-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -79,8 +86,32 @@
   </url>
   
   <url>
+    <loc>https://wang-zoo.github.io/tags/flutter/</loc>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/</loc>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/</loc>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</loc>
+    <lastmod>2019-10-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -91,25 +122,7 @@
   </url>
   
   <url>
-    <loc>https://wang-zoo.github.io/tags/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://wang-zoo.github.io/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</loc>
-    <lastmod>2019-10-08T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/</loc>
     <lastmod>2019-10-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flutter 插件原理 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/flutter_plugin/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Flutter 插件原理" />
+<meta property="og:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/flutter_plugin/" />
+<meta property="article:published_time" content="2019-10-21T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-10-21T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Flutter 插件原理">
+<meta itemprop="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链">
+
+
+<meta itemprop="datePublished" content="2019-10-21T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-10-21T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2956">
+
+
+
+<meta itemprop="keywords" content="源码,Flutter," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Flutter 插件原理"/>
+<meta name="twitter:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Flutter 插件原理</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-10-21" class="post-time">
+          2019-10-21
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#platform-channel">Platform Channel</a></li>
+<li><a href="#通讯流程">通讯流程</a>
+<ul>
+<li><a href="#注册">注册</a></li>
+<li><a href="#调用">调用</a></li>
+<li><a href="#回传">回传</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="platform-channel">Platform Channel</h2>
+
+<p>flutter的android平台的通讯Channel大致有三种。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">BasicMessageChannel 用于简单的数据传递
+MethodChannel 传递一个方法名和参数来完成通讯
+EventChannel  类似与长链接的通讯</pre></td></tr></table>
+</div>
+</div>
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_plugin_channel.png" />
+    </div>
+    <a href="/imgs/flutter_plugin_channel.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Channel 结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>每个Channel都会配置一个Codec，用于通讯数据的编解码。Flutter的平台通讯方式采用了二进制协议，图中的
+MethodCodec和MessageCodec的实现者都是采用了字节写入写出完成数据的编解码。</p>
+
+<p>MessageCodec完成基础的编解码，MethodCodec在MessageCodec的基础上进一步完成方法名字的编解码。
+MessageCodec目前的实现类有四个，BinaryCodec基本不做操作，直接将获得的字节数据返回；StringCodec完成
+字节和字符串的转化；JSONMessageCodec完成Json结构的字符串与字节之间转化；而StandardMessageCodec采用了
+更加细分的规则。</p>
+
+<p>总的来说参数传递时都是只支持基本数据类型和List与Map类型的数据，只不过StandardMessageCodec比
+其他的Codec更加精准，StandardMessageCodec能根据数字编号直接确定当前读到的字节数据是何种类型。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_data.png" />
+    </div>
+    <a href="/imgs/flutter_data.png" itemprop="contentUrl"></a>
+      <figcaption><h4>数据结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>如图中所示，一串数据，开头字节表示为类型type，然后才是数据本体，比如当前type表示为Int型数据，那么在取数据时
+直接以int形式的方式将data取出。</p>
+
+<p>而MethodCodec先将方法名取出，然后将参数取出，实际还是由MessageCodec来处理。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_plugin_handler_response.png" />
+    </div>
+    <a href="/imgs/flutter_plugin_handler_response.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Channel 回调结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在Flutter android中真正完成数据收发的是DartMessenger，DartMessenger包含了两个回调集合，一个关于BinaryMessageHandler
+的回调集合用于接收来自Flutter的主动调用，一个BinaryReply集合用于接收Flutter对于平台调用的响应，当然BinaryMessageHandler
+是需要事先完成注册的，这样Flutter调用原生时才不会扑空。</p>
+
+<h2 id="通讯流程">通讯流程</h2>
+
+<p>有了对通道的一个初步认识，现在我们继续来看，Flutter如何实现平台通讯的。</p>
+
+<h3 id="注册">注册</h3>
+
+<p>如果Flutter想要调用android平台上一个功能，android就必须实现注册一个接收器，这个接收器就是BinaryMessageHandler。android 平台
+事先会将自己定义的Channel进行注册,这里我们选择MethodChannel。并且实现了一个FlutterPlugin 插件，继承于MethodCallHandler。
+注册名字就是 flutter_plugin。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">MethodChannel</span> <span class="n">channel</span> <span class="o">=</span> <span class="k">new</span>  <span class="n">MethodChannel</span><span class="o">(</span><span class="n">registrar</span><span class="o">.</span><span class="na">messenger</span><span class="o">(),</span> <span class="s">&#34;flutter_plugin&#34;</span><span class="o">);</span>
+<span class="n">channel</span><span class="o">.</span><span class="na">setMethodCallHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">FlutterPlugin</span><span class="o">());</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>调用了setMethodCallHandler之后会封装一个BinaryMessageHandler。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">MethodChannel</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMethodCallHandler</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">MethodChannel</span><span class="o">.</span><span class="na">MethodCallHandler</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">messenger</span><span class="o">.</span><span class="na">setMessageHandler</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">,</span> <span class="n">handler</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="k">new</span> <span class="n">MethodChannel</span><span class="o">.</span><span class="na">IncomingMethodCallHandler</span><span class="o">(</span><span class="n">handler</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">IncomingMethodCallHandler</span> <span class="kd">implements</span> <span class="n">BinaryMessageHandler</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>最重会调用到DartMessenger的setMessageHandler，根据注册名字来完成注册。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">class</span> <span class="nc">DartMessenger</span> <span class="kd">implements</span> <span class="n">BinaryMessenger</span><span class="o">,</span> <span class="n">PlatformMessageHandler</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">BinaryMessageHandler</span><span class="o">&gt;</span> <span class="n">messageHandlers</span><span class="o">;</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMessageHandler</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="n">String</span> <span class="n">channel</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">BinaryMessageHandler</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">handler</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">messageHandlers</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">messageHandlers</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="调用">调用</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_dart_native_flow.png" />
+    </div>
+    <a href="/imgs/flutter_dart_native_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>调用</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>完成注册之后，从Flutter发起调用。由Dart完成调用逻辑，Dart也实现了跟Java层一样的对接接口，
+调用了MethodChannel来完成分发。在MethodChannel中调用codec将参数封装成二进制数据，然后调用
+binaryMessenger发送。这里属于异步调用，可以直接将任务的Future返回。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">Future</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">invokeMethod</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;(</span><span class="n">String</span> <span class="n">method</span><span class="o">,</span> <span class="o">[</span> <span class="n">dynamic</span> <span class="n">arguments</span> <span class="o">])</span> <span class="n">async</span> <span class="o">{</span>
+    <span class="k">assert</span><span class="o">(</span><span class="n">method</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="c1">//发送
+</span><span class="c1"></span>    <span class="kd">final</span> <span class="n">ByteData</span> <span class="n">result</span> <span class="o">=</span> <span class="n">await</span> <span class="n">binaryMessenger</span><span class="o">.</span><span class="na">send</span><span class="o">(</span>
+      <span class="n">name</span><span class="o">,</span>
+      <span class="c1">//封装数据
+</span><span class="c1"></span>      <span class="n">codec</span><span class="o">.</span><span class="na">encodeMethodCall</span><span class="o">(</span><span class="n">MethodCall</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">arguments</span><span class="o">)),</span>
+    <span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="n">MissingPluginException</span><span class="o">(</span><span class="err">&#39;</span><span class="n">No</span> <span class="n">implementation</span> <span class="n">found</span> <span class="k">for</span> <span class="n">method</span> <span class="n">$method</span> <span class="n">on</span> <span class="n">channel</span> <span class="n">$name</span><span class="err">&#39;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">final</span> <span class="n">T</span> <span class="n">typedResult</span> <span class="o">=</span> <span class="n">codec</span><span class="o">.</span><span class="na">decodeEnvelope</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">typedResult</span><span class="o">;</span>
+  <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在Dart层代码中binaryMessenger的实现者目前只有_DefaultBinaryMessenger，_DefaultBinaryMessenger
+关于发送的逻辑的实现如下,并且设置了相应的回调。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">class</span> <span class="nc">_DefaultBinaryMessenger</span> <span class="kd">extends</span> <span class="n">BinaryMessenger</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">Future</span><span class="o">&lt;</span><span class="n">ByteData</span><span class="o">&gt;</span> <span class="nf">_sendPlatformMessage</span><span class="o">(</span><span class="n">String</span> <span class="n">channel</span><span class="o">,</span> <span class="n">ByteData</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">Completer</span><span class="o">&lt;</span><span class="n">ByteData</span><span class="o">&gt;</span> <span class="n">completer</span> <span class="o">=</span> <span class="n">Completer</span><span class="o">&lt;</span><span class="n">ByteData</span><span class="o">&gt;();</span>
+    <span class="c1">//最终调用了window的发送渠道
+</span><span class="c1"></span>    <span class="n">ui</span><span class="o">.</span><span class="na">window</span><span class="o">.</span><span class="na">sendPlatformMessage</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="o">(</span><span class="n">ByteData</span> <span class="n">reply</span><span class="o">)</span> <span class="o">{</span>
+      <span class="o">...</span>
+      <span class="n">completer</span><span class="o">.</span><span class="na">complete</span><span class="o">(</span><span class="n">reply</span><span class="o">);</span>
+      <span class="o">...</span>
+    <span class="o">});</span>
+    <span class="k">return</span> <span class="n">completer</span><span class="o">.</span><span class="na">future</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="o">...</span>
+  <span class="nd">@override</span>
+  <span class="n">Future</span><span class="o">&lt;</span><span class="n">ByteData</span><span class="o">&gt;</span> <span class="nf">send</span><span class="o">(</span><span class="n">String</span> <span class="n">channel</span><span class="o">,</span> <span class="n">ByteData</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">_sendPlatformMessage</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">message</span><span class="o">);</span>
+  <span class="o">}</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在window的实现中最终调用了native层的代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//window.dart
+</span><span class="c1"></span> <span class="n">String</span> <span class="nf">_sendPlatformMessage</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span>
+                              <span class="n">PlatformMessageResponseCallback</span> <span class="n">callback</span><span class="o">,</span>
+                              <span class="n">ByteData</span> <span class="n">data</span><span class="o">)</span> <span class="kd">native</span> <span class="err">&#39;</span><span class="n">Window_sendPlatformMessage</span><span class="err">&#39;</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Window_sendPlatformMessage 这个标示是在Engine层事先注册过的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//window.cc
+</span><span class="c1"></span>
+<span class="n">Dart_Handle</span> <span class="nf">SendPlatformMessage</span><span class="p">(</span><span class="n">Dart_Handle</span> <span class="n">window</span><span class="p">,</span>
+                                <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">name</span><span class="p">,</span>
+                                <span class="n">Dart_Handle</span> <span class="n">callback</span><span class="p">,</span>
+                                <span class="k">const</span> <span class="n">tonic</span><span class="o">::</span><span class="n">DartByteData</span><span class="o">&amp;</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">dart_state</span><span class="o">-&gt;</span><span class="n">window</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">HandlePlatformMessage</span><span class="p">(</span>
+        <span class="n">fml</span><span class="o">::</span><span class="n">MakeRefCounted</span><span class="o">&lt;</span><span class="n">PlatformMessage</span><span class="o">&gt;</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">uint8_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">buffer</span> <span class="o">+</span> <span class="n">data</span><span class="p">.</span><span class="n">length_in_bytes</span><span class="p">()),</span>
+            <span class="n">response</span><span class="p">));</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">_SendPlatformMessage</span><span class="p">(</span><span class="n">Dart_NativeArguments</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">tonic</span><span class="o">::</span><span class="n">DartCallStatic</span><span class="p">(</span><span class="o">&amp;</span><span class="n">SendPlatformMessage</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">Window</span><span class="o">::</span><span class="n">RegisterNatives</span><span class="p">(</span><span class="n">tonic</span><span class="o">::</span><span class="n">DartLibraryNatives</span><span class="o">*</span> <span class="n">natives</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">natives</span><span class="o">-&gt;</span><span class="n">Register</span><span class="p">({</span>
+      <span class="p">{</span><span class="s">&#34;Window_defaultRouteName&#34;</span><span class="p">,</span> <span class="n">DefaultRouteName</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_scheduleFrame&#34;</span><span class="p">,</span> <span class="n">ScheduleFrame</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_sendPlatformMessage&#34;</span><span class="p">,</span> <span class="n">_SendPlatformMessage</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_respondToPlatformMessage&#34;</span><span class="p">,</span> <span class="n">_RespondToPlatformMessage</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_render&#34;</span><span class="p">,</span> <span class="n">Render</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_updateSemantics&#34;</span><span class="p">,</span> <span class="n">UpdateSemantics</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_setIsolateDebugName&#34;</span><span class="p">,</span> <span class="n">SetIsolateDebugName</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+      <span class="p">{</span><span class="s">&#34;Window_reportUnhandledException&#34;</span><span class="p">,</span> <span class="n">ReportUnhandledException</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">true</span><span class="p">},</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>这里有个client的转发，具体的关联如下图。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_plugin_native.png" />
+    </div>
+    <a href="/imgs/flutter_plugin_native.png" itemprop="contentUrl"></a>
+      <figcaption><h4>native 调用关联</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>最终会分发到PlatformViewAndroid的HandlePlatformMessage上，之后就会使用JNI技术传给Java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="kt">void</span> <span class="n">PlatformViewAndroid</span><span class="o">::</span><span class="n">HandlePlatformMessage</span><span class="p">(</span>
+    <span class="n">fml</span><span class="o">::</span><span class="n">RefPtr</span><span class="o">&lt;</span><span class="n">blink</span><span class="o">::</span><span class="n">PlatformMessage</span><span class="o">&gt;</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">...</span>   
+    <span class="n">FlutterViewHandlePlatformMessage</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">view</span><span class="p">.</span><span class="n">obj</span><span class="p">(),</span> <span class="n">java_channel</span><span class="p">.</span><span class="n">obj</span><span class="p">(),</span>
+                                     <span class="k">nullptr</span><span class="p">,</span> <span class="n">response_id</span><span class="p">);</span>
+    <span class="p">...</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">FlutterViewHandlePlatformMessage</span><span class="p">(</span><span class="n">JNIEnv</span><span class="o">*</span> <span class="n">env</span><span class="p">,</span>
+                                      <span class="n">jobject</span> <span class="n">obj</span><span class="p">,</span>
+                                      <span class="n">jstring</span> <span class="n">channel</span><span class="p">,</span>
+                                      <span class="n">jobject</span> <span class="n">message</span><span class="p">,</span>
+                                      <span class="n">jint</span> <span class="n">responseId</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">env</span><span class="o">-&gt;</span><span class="n">CallVoidMethod</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">g_handle_platform_message_method</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
+                      <span class="n">responseId</span><span class="p">);</span>
+  <span class="n">FML_CHECK</span><span class="p">(</span><span class="n">CheckException</span><span class="p">(</span><span class="n">env</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="p">...</span>
+ <span class="n">g_flutter_jni_class</span> <span class="o">=</span> <span class="k">new</span> <span class="n">fml</span><span class="o">::</span><span class="n">jni</span><span class="o">::</span><span class="n">ScopedJavaGlobalRef</span><span class="o">&lt;</span><span class="n">jclass</span><span class="o">&gt;</span><span class="p">(</span>
+      <span class="n">env</span><span class="p">,</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">FindClass</span><span class="p">(</span><span class="s">&#34;io/flutter/embedding/engine/FlutterJNI&#34;</span><span class="p">));</span>
+<span class="p">...</span>
+ <span class="n">g_handle_platform_message_method</span> <span class="o">=</span>
+      <span class="n">env</span><span class="o">-&gt;</span><span class="n">GetMethodID</span><span class="p">(</span><span class="n">g_flutter_jni_class</span><span class="o">-&gt;</span><span class="n">obj</span><span class="p">(),</span> <span class="s">&#34;handlePlatformMessage&#34;</span><span class="p">,</span>
+                       <span class="s">&#34;(Ljava/lang/String;[BI)V&#34;</span><span class="p">);</span>
+<span class="p">...</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>上边代码显示，最终java层的FlutterJNI类的handlePlatformMessage方法会被调用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FlutterJNI</span> <span class="o">{</span>
+     <span class="o">...</span>
+     <span class="kd">private</span> <span class="kt">void</span> <span class="nf">handlePlatformMessage</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="n">String</span> <span class="n">channel</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span><span class="o">,</span> <span class="kt">int</span> <span class="n">replyId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">platformMessageHandler</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">platformMessageHandler</span><span class="o">.</span><span class="na">handleMessageFromDart</span><span class="o">(</span><span class="n">channel</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">replyId</span><span class="o">);</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>继续分发，会给到platformMessageHandler调用。platformMessageHandler其实就是DartMessenger。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">class</span> <span class="nc">DartMessenger</span> <span class="kd">implements</span> <span class="n">BinaryMessenger</span><span class="o">,</span> <span class="n">PlatformMessageHandler</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleMessageFromDart</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="n">String</span> <span class="n">channel</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">message</span><span class="o">,</span> <span class="kt">int</span> <span class="n">replyId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">BinaryMessageHandler</span> <span class="n">handler</span> <span class="o">=</span> <span class="o">(</span><span class="n">BinaryMessageHandler</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">messageHandlers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">channel</span><span class="o">);</span>
+        <span class="o">...</span>        
+            <span class="n">ByteBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="n">message</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="n">ByteBuffer</span><span class="o">.</span><span class="na">wrap</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+            <span class="n">handler</span><span class="o">.</span><span class="na">onMessage</span><span class="o">(</span><span class="n">buffer</span><span class="o">,</span> <span class="k">new</span> <span class="n">DartMessenger</span><span class="o">.</span><span class="na">Reply</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">flutterJNI</span><span class="o">,</span> <span class="n">replyId</span><span class="o">));</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这里会取出之前注册时 ，相应的名字对应的BinaryMessageHandler，这个BinaryMessageHandler应该是MethodChannel中实现的
+IncomingMethodCallHandler,而MethodCallHandler就是插件需要实现的逻辑。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">MethodChannel</span> <span class="o">{</span>
+     <span class="kd">private</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">IncomingMethodCallHandler</span> <span class="kd">implements</span> <span class="n">BinaryMessageHandler</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">final</span> <span class="n">MethodChannel</span><span class="o">.</span><span class="na">MethodCallHandler</span> <span class="n">handler</span><span class="o">;</span>
+
+        <span class="n">IncomingMethodCallHandler</span><span class="o">(</span><span class="n">MethodChannel</span><span class="o">.</span><span class="na">MethodCallHandler</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">handler</span> <span class="o">=</span> <span class="n">handler</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nd">@UiThread</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMessage</span><span class="o">(</span><span class="n">ByteBuffer</span> <span class="n">message</span><span class="o">,</span> <span class="kd">final</span> <span class="n">BinaryReply</span> <span class="n">reply</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">MethodCall</span> <span class="n">call</span> <span class="o">=</span> <span class="n">MethodChannel</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">codec</span><span class="o">.</span><span class="na">decodeMethodCall</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+            <span class="o">...</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">handler</span><span class="o">.</span><span class="na">onMethodCall</span><span class="o">(</span><span class="n">call</span><span class="o">,</span> <span class="k">new</span> <span class="n">MethodChannel</span><span class="o">.</span><span class="na">Result</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">success</span><span class="o">(</span><span class="n">Object</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">reply</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">MethodChannel</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">codec</span><span class="o">.</span><span class="na">encodeSuccessEnvelope</span><span class="o">(</span><span class="n">result</span><span class="o">));</span>
+                    <span class="o">}</span>
+
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">error</span><span class="o">(</span><span class="n">String</span> <span class="n">errorCode</span><span class="o">,</span> <span class="n">String</span> <span class="n">errorMessage</span><span class="o">,</span> <span class="n">Object</span> <span class="n">errorDetails</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">reply</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">MethodChannel</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">codec</span><span class="o">.</span><span class="na">encodeErrorEnvelope</span><span class="o">(</span><span class="n">errorCode</span><span class="o">,</span> <span class="n">errorMessage</span><span class="o">,</span> <span class="n">errorDetails</span><span class="o">));</span>
+                    <span class="o">}</span>
+
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">notImplemented</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">reply</span><span class="o">.</span><span class="na">reply</span><span class="o">((</span><span class="n">ByteBuffer</span><span class="o">)</span><span class="kc">null</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+            <span class="o">...</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>只这里就完成了调用过程，下面就是回传过程。</p>
+
+<h3 id="回传">回传</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_native_java_flow.png" />
+    </div>
+    <a href="/imgs/flutter_native_java_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>回传</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>android 原生会使用BinaryReply完成回传，在上述过程中会传入一个DartMessenger.Reply完成回传操作</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">class</span> <span class="nc">DartMessenger</span> <span class="kd">implements</span> <span class="n">BinaryMessenger</span><span class="o">,</span> <span class="n">PlatformMessageHandler</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Reply</span> <span class="kd">implements</span> <span class="n">BinaryReply</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">reply</span><span class="o">(</span><span class="nd">@Nullable</span> <span class="n">ByteBuffer</span> <span class="n">reply</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">...</span>           
+            <span class="k">if</span> <span class="o">(</span><span class="n">reply</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">flutterJNI</span><span class="o">.</span><span class="na">invokePlatformMessageEmptyResponseCallback</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">replyId</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">flutterJNI</span><span class="o">.</span><span class="na">invokePlatformMessageResponseCallback</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">replyId</span><span class="o">,</span> <span class="n">reply</span><span class="o">,</span> <span class="n">reply</span><span class="o">.</span><span class="na">position</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>Replay 会继续调用FlutterJNI，并且根据有参数与否选择不同的回调。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="nd">@UiThread</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">invokePlatformMessageEmptyResponseCallback</span><span class="o">(</span><span class="kt">int</span> <span class="n">responseId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>    
+        <span class="k">this</span><span class="o">.</span><span class="na">nativeInvokePlatformMessageEmptyResponseCallback</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nativePlatformViewId</span><span class="o">,</span> <span class="n">responseId</span><span class="o">);</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">native</span> <span class="kt">void</span> <span class="nf">nativeInvokePlatformMessageEmptyResponseCallback</span><span class="o">(</span><span class="kt">long</span> <span class="n">var1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">var3</span><span class="o">);</span>
+
+    <span class="nd">@UiThread</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">invokePlatformMessageResponseCallback</span><span class="o">(</span><span class="kt">int</span> <span class="n">responseId</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">ByteBuffer</span> <span class="n">message</span><span class="o">,</span> <span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">nativeInvokePlatformMessageResponseCallback</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nativePlatformViewId</span><span class="o">,</span> <span class="n">responseId</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">position</span><span class="o">);</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">native</span> <span class="kt">void</span> <span class="nf">nativeInvokePlatformMessageResponseCallback</span><span class="o">(</span><span class="kt">long</span> <span class="n">var1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">var3</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">ByteBuffer</span> <span class="n">var4</span><span class="o">,</span> <span class="kt">int</span> <span class="n">var5</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>到此又进入Native层。JNI注册方法在platform_view_android_jni.cc中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//platform_view_android_jni.cc
+</span><span class="c1"></span>      <span class="p">...</span>
+      <span class="p">{</span>
+          <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;nativeInvokePlatformMessageResponseCallback&#34;</span><span class="p">,</span>
+          <span class="p">.</span><span class="n">signature</span> <span class="o">=</span> <span class="s">&#34;(JILjava/nio/ByteBuffer;I)V&#34;</span><span class="p">,</span>
+          <span class="p">.</span><span class="n">fnPtr</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*&gt;</span><span class="p">(</span>
+              <span class="o">&amp;</span><span class="n">shell</span><span class="o">::</span><span class="n">InvokePlatformMessageResponseCallback</span><span class="p">),</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+          <span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;nativeInvokePlatformMessageEmptyResponseCallback&#34;</span><span class="p">,</span>
+          <span class="p">.</span><span class="n">signature</span> <span class="o">=</span> <span class="s">&#34;(JI)V&#34;</span><span class="p">,</span>
+          <span class="p">.</span><span class="n">fnPtr</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*&gt;</span><span class="p">(</span>
+              <span class="o">&amp;</span><span class="n">shell</span><span class="o">::</span><span class="n">InvokePlatformMessageEmptyResponseCallback</span><span class="p">),</span>
+      <span class="p">},</span>
+      <span class="p">...</span> 
+
+<span class="kt">void</span> <span class="n">PlatformViewAndroid</span><span class="o">::</span><span class="n">InvokePlatformMessageResponseCallback</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span>  
+    <span class="n">message_response</span><span class="o">-&gt;</span><span class="n">Complete</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">fml</span><span class="o">::</span><span class="n">DataMapping</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">response</span><span class="p">)));</span>
+<span class="p">}</span>
+
+<span class="c1">//platform_message_response_dart.cc
+</span><span class="c1"></span><span class="kt">void</span> <span class="n">PlatformMessageResponseDart</span><span class="o">::</span><span class="n">Complete</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">fml</span><span class="o">::</span><span class="n">Mapping</span><span class="o">&gt;</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">callback_</span><span class="p">.</span><span class="n">is_empty</span><span class="p">())</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="n">FML_DCHECK</span><span class="p">(</span><span class="o">!</span><span class="n">is_complete_</span><span class="p">);</span>
+  <span class="n">is_complete_</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+  <span class="n">ui_task_runner_</span><span class="o">-&gt;</span><span class="n">PostTask</span><span class="p">(</span><span class="n">fml</span><span class="o">::</span><span class="n">MakeCopyable</span><span class="p">(</span>
+      <span class="p">[</span><span class="n">callback</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">callback_</span><span class="p">),</span> <span class="n">data</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">data</span><span class="p">)]()</span> <span class="k">mutable</span> <span class="p">{</span>
+        <span class="p">...</span>     
+        <span class="c1">//回传给Dart  
+</span><span class="c1"></span>        <span class="n">tonic</span><span class="o">::</span><span class="n">DartInvoke</span><span class="p">(</span><span class="n">callback</span><span class="p">.</span><span class="n">Release</span><span class="p">(),</span> <span class="p">{</span><span class="n">byte_buffer</span><span class="p">});</span>
+      <span class="p">}));</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>Dart层代码在调用之前会注册一个回调，natvie执行了回传操作之后，该回调响应。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>Flutter选用了C++作为中间层，满足了跨平台性和运行效率的问题。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/flutter_engine.png" />
+    </div>
+    <a href="/imgs/flutter_engine.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Flutter架构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-10-21
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/flutter/">Flutter</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/plugin_service/">
+            <span class="next-text nav-default">Service启动流程分析</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
