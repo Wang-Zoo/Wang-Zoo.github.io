@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>9.0 插件化方案实践 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/plugin_struc/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="9.0 插件化方案实践" />
+<meta property="og:description" content="前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/plugin_struc/" />
+<meta property="article:published_time" content="2019-11-08T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-11-08T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="9.0 插件化方案实践">
+<meta itemprop="description" content="前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采">
+
+
+<meta itemprop="datePublished" content="2019-11-08T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-11-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2765">
+
+
+
+<meta itemprop="keywords" content="源码,插件化," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="9.0 插件化方案实践"/>
+<meta name="twitter:description" content="前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">9.0 插件化方案实践</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-11-08" class="post-time">
+          2019-11-08
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#1-方案">1.方案</a></li>
+<li><a href="#2-dex-和-resource-的加载">2. Dex 和 Resource 的加载</a>
+<ul>
+<li><a href="#2-1-dex">2.1 Dex</a></li>
+<li><a href="#2-2-resource">2.2 Resource</a></li>
+</ul></li>
+<li><a href="#3-实施">3. 实施</a>
+<ul>
+<li><a href="#3-1-架构规划">3.1 架构规划</a></li>
+<li><a href="#3-2-activity的启动">3.2 Activity的启动</a></li>
+<li><a href="#3-3-service的启动">3.3 Service的启动</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。</p>
+
+<h2 id="1-方案">1.方案</h2>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/plugin_mind.png" />
+    </div>
+    <a href="/imgs/plugin_mind.png" itemprop="contentUrl"></a>
+      <figcaption><h4>插件化方案</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>本文采用的还是插件化技术中较为主流的“欺骗AMS”的策略。即为在向AMS发送请求时，将组件信息替换为宿主注册过的组件，
+在通过AMS之后，将宿主组件的信息替换为目标插件组件信息。</p>
+
+<h2 id="2-dex-和-resource-的加载">2. Dex 和 Resource 的加载</h2>
+
+<p>想要完成对插件的完全调用，要解决两个问题。第一就是能够正常加载插件中的类，第二个就是能正常加载插件中的资源。</p>
+
+<h3 id="2-1-dex">2.1 Dex</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/plugin_classloader_uml.png" />
+    </div>
+    <a href="/imgs/plugin_classloader_uml.png" itemprop="contentUrl"></a>
+      <figcaption><h4>DexClassloader 结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在宿主app中，都会调用到BaseDexClassLoader中的DexPathList来加载相应的类，DexPathList中的dexElements
+是一个dex信息数组，在查找过程中会遍历该数组，直到找到目标类为止，所以我们可以将插件dex强行加入该数组，这样
+在创建组件过程中，就能正常的找到插件组件类。</p>
+
+<p>具体代码如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="cm">/**
+</span><span class="cm">     * 添加插件dex到host
+</span><span class="cm">     *
+</span><span class="cm">     * @param hostClassLoader 宿主classloader
+</span><span class="cm">     * @param apkFile         插件apkfile
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">addDexToHost</span><span class="o">(</span><span class="n">ClassLoader</span> <span class="n">hostClassLoader</span><span class="o">,</span> <span class="n">File</span> <span class="n">apkFile</span><span class="o">,</span> <span class="n">File</span> <span class="n">optDexFile</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">//取出pathList
+</span><span class="c1"></span>            <span class="n">Object</span> <span class="n">pathList</span> <span class="o">=</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObjectWithClassName</span><span class="o">(</span><span class="n">DexClassLoader</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSuperclass</span><span class="o">().</span><span class="na">getName</span><span class="o">(),</span><span class="n">hostClassLoader</span><span class="o">,</span> <span class="s">&#34;pathList&#34;</span><span class="o">);</span>
+            <span class="c1">//取出dexElements
+</span><span class="c1"></span>            <span class="n">Object</span><span class="o">[]</span> <span class="n">dexElments</span> <span class="o">=</span> <span class="o">(</span><span class="n">Object</span><span class="o">[])</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObject</span><span class="o">(</span><span class="n">pathList</span><span class="o">,</span> <span class="s">&#34;dexElements&#34;</span><span class="o">);</span>
+            <span class="c1">//构造新数组
+</span><span class="c1"></span>            <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">componentType</span> <span class="o">=</span> <span class="n">dexElments</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getComponentType</span><span class="o">();</span>
+            <span class="n">Object</span><span class="o">[]</span> <span class="n">newArray</span> <span class="o">=</span> <span class="o">(</span><span class="n">Object</span><span class="o">[])</span> <span class="n">Array</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">componentType</span><span class="o">,</span> <span class="n">dexElments</span><span class="o">.</span><span class="na">length</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+            <span class="c1">//构造新成员
+</span><span class="c1"></span>            <span class="n">Class</span><span class="o">[]</span> <span class="n">paramsType</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">DexFile</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">File</span><span class="o">.</span><span class="na">class</span><span class="o">};</span>
+            <span class="n">Object</span><span class="o">[]</span> <span class="n">params</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">DexFile</span><span class="o">.</span><span class="na">loadDex</span><span class="o">(</span><span class="n">apkFile</span><span class="o">.</span><span class="na">getCanonicalPath</span><span class="o">(),</span> <span class="n">optDexFile</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">(),</span> <span class="n">0</span><span class="o">),</span> <span class="n">apkFile</span><span class="o">};</span>
+            <span class="n">Object</span> <span class="n">objectWithParams</span> <span class="o">=</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">createObjectWithParams</span><span class="o">(</span><span class="n">componentType</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">paramsType</span><span class="o">,</span> <span class="n">params</span><span class="o">);</span>
+            <span class="n">Object</span><span class="o">[]</span> <span class="n">tonewArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="n">objectWithParams</span><span class="o">};</span>
+            <span class="c1">//填充新数组
+</span><span class="c1"></span>            <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">dexElments</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">newArray</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">dexElments</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">arraycopy</span><span class="o">(</span><span class="n">tonewArray</span><span class="o">,</span> <span class="n">0</span><span class="o">,</span> <span class="n">newArray</span><span class="o">,</span> <span class="n">dexElments</span><span class="o">.</span><span class="na">length</span> <span class="o">,</span> <span class="n">tonewArray</span><span class="o">.</span><span class="na">length</span><span class="o">);</span>
+            <span class="c1">//设置dexElements
+</span><span class="c1"></span>            <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">setFieldValue</span><span class="o">(</span><span class="n">pathList</span><span class="o">,</span> <span class="s">&#34;dexElements&#34;</span><span class="o">,</span> <span class="n">newArray</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-2-resource">2.2 Resource</h3>
+
+<p>对于插件资源的控制，需要用到AssetManager。AssetManager能将一个apk中的资源解析，提供给应用使用，所以我们需要给插件新建一个
+AssetManager，并且插件的组件都要使用这个AssetManager。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">        <span class="n">PluginPackage</span> <span class="n">pluginPackage</span> <span class="o">;</span>
+        <span class="c1">//新建一个AssetManager
+</span><span class="c1"></span>        <span class="n">AssetManager</span> <span class="n">assetManager</span> <span class="o">=</span> <span class="n">AssetManager</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="c1">//新建一个Resources
+</span><span class="c1"></span>        <span class="n">Resources</span> <span class="n">resources</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Resources</span><span class="o">(</span><span class="n">assetManager</span><span class="o">,</span><span class="n">context</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getDisplayMetrics</span><span class="o">(),</span><span class="n">context</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getConfiguration</span><span class="o">());</span>
+        <span class="c1">//解析插件资源
+</span><span class="c1"></span>        <span class="n">Method</span> <span class="n">addAssetPath</span> <span class="o">=</span> <span class="n">assetManager</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getMethod</span><span class="o">(</span><span class="s">&#34;addAssetPath&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">addAssetPath</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">assetManager</span><span class="o">,</span> <span class="n">file</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span>
+        <span class="c1">//封装
+</span><span class="c1"></span>        <span class="n">pluginPackage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PluginPackage</span><span class="o">();</span>
+        <span class="n">pluginPackage</span><span class="o">.</span><span class="na">setManager</span><span class="o">(</span><span class="n">assetManager</span><span class="o">);</span>
+        <span class="n">pluginPackage</span><span class="o">.</span><span class="na">setResources</span><span class="o">(</span><span class="n">resources</span><span class="o">);</span>
+        <span class="n">pluginPackage</span><span class="o">.</span><span class="na">setTheme</span><span class="o">(</span><span class="n">resources</span><span class="o">.</span><span class="na">newTheme</span><span class="o">());</span>
+        <span class="n">pluginPackage</span><span class="o">.</span><span class="na">getTheme</span><span class="o">().</span><span class="na">setTo</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getTheme</span><span class="o">());</span>
+        <span class="n">String</span> <span class="n">replace</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="n">Constants</span><span class="o">.</span><span class="na">PLUGIN_SUFFIX</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">);</span>
+        <span class="n">pluginPackage</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">replace</span><span class="o">);</span>
+        <span class="n">pluginPackageHashMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">replace</span><span class="o">,</span><span class="n">pluginPackage</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在这里需要注意的是，添加插件资源的操作是在宿主app中，而使用插件资源的操作是在插件app中，所以，宿主app和插件app都需要依赖一个
+公共工程，这个工程就是专门管理插件资源的。</p>
+
+<h2 id="3-实施">3. 实施</h2>
+
+<h3 id="3-1-架构规划">3.1 架构规划</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/plugin_struc.png" />
+    </div>
+    <a href="/imgs/plugin_struc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>项目结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>针对以上的分析，我们在项目实践时，首先需要规划好项目结构，如上图，我们需要建立一个公共库common，这个库中包含了插件的资源管理器
+和需要执行Hook操作的工具类，不管是宿主工程还是插件工程都需要依赖此库。</p>
+
+<p>Hooker中除了需要添加插件Dex的操作之外，还需要完成“欺骗策略”的Hook操作。熟悉四大组件的启动过程之后，我们就知道，想要完整的欺骗
+AMS，需要完成两步Hook操作。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/plugin_ams_uml.png" />
+    </div>
+    <a href="/imgs/plugin_ams_uml.png" itemprop="contentUrl"></a>
+      <figcaption><h4>AMS 结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>第一步在发送启动请求时，需要将请求的插件组件的类名替换成宿主app中申请的组件类名，这一步，进过多步实验，直接Hook AMS是合理的。
+代码中的AMSHooker是我们执行具体替换插件类名操作的类，这里属于动态代理的一种方案。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="cm">/**
+</span><span class="cm">     * 欺骗策略第一环节，拦截Intent，替换之后发送给AMS
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">hookAMS</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">iActivityManagerSingleton</span> <span class="o">=</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getStaticFieldObject</span><span class="o">(</span><span class="s">&#34;android.app.ActivityManager&#34;</span><span class="o">,</span> <span class="s">&#34;IActivityManagerSingleton&#34;</span><span class="o">);</span>
+            <span class="n">Object</span> <span class="n">mInstance</span> <span class="o">=</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObjectWithClassName</span><span class="o">(</span><span class="s">&#34;android.util.Singleton&#34;</span><span class="o">,</span><span class="n">iActivityManagerSingleton</span><span class="o">,</span> <span class="s">&#34;mInstance&#34;</span><span class="o">);</span>
+            <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">aClass</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;android.app.IActivityManager&#34;</span><span class="o">);</span>
+            <span class="n">Object</span> <span class="n">proxyInstance</span> <span class="o">=</span> <span class="n">Proxy</span><span class="o">.</span><span class="na">newProxyInstance</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">(),</span> <span class="k">new</span> <span class="n">Class</span><span class="o">[]{</span><span class="n">aClass</span><span class="o">},</span> <span class="k">new</span> <span class="n">AMSHooker</span><span class="o">(</span><span class="n">mInstance</span><span class="o">));</span>
+            <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">setFieldValueWithClassName</span><span class="o">(</span><span class="s">&#34;android.util.Singleton&#34;</span><span class="o">,</span><span class="n">iActivityManagerSingleton</span><span class="o">,</span><span class="s">&#34;mInstance&#34;</span><span class="o">,</span><span class="n">proxyInstance</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/plugin_activitythread_uml.png" />
+    </div>
+    <a href="/imgs/plugin_activitythread_uml.png" itemprop="contentUrl"></a>
+      <figcaption><h4>ActivityThread 结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>第二步，就是在通过了AMS验证之后，需要将目标插件组件的类名替换回来，好让ActivityThread完成反射操作。HandlerHooker也是我们处理
+替换操作的代理类。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="cm">/**
+</span><span class="cm">     * 欺骗策略第二环节，将插件Intent还原
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">hookActivityThread</span><span class="o">(){</span>
+        <span class="n">Object</span> <span class="n">sCurrentActivityThread</span> <span class="o">=</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getStaticFieldObject</span><span class="o">(</span><span class="s">&#34;android.app.ActivityThread&#34;</span><span class="o">,</span> <span class="s">&#34;sCurrentActivityThread&#34;</span><span class="o">);</span>
+        <span class="n">Handler</span> <span class="n">mH</span> <span class="o">=</span> <span class="o">(</span><span class="n">Handler</span><span class="o">)</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObject</span><span class="o">(</span><span class="n">sCurrentActivityThread</span><span class="o">,</span> <span class="s">&#34;mH&#34;</span><span class="o">);</span>
+        <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">setFieldValueWithClassName</span><span class="o">(</span><span class="n">Handler</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span><span class="n">mH</span><span class="o">,</span><span class="s">&#34;mCallback&#34;</span><span class="o">,</span><span class="k">new</span> <span class="n">HandlerHooker</span><span class="o">(</span><span class="n">mH</span><span class="o">));</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-2-activity的启动">3.2 Activity的启动</h3>
+
+<p>在两个代理类中，关于Activity的处理如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//AMSHooker.java
+</span><span class="c1"></span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AMSHooker</span> <span class="kd">implements</span> <span class="n">InvocationHandler</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="s">&#34;startActivity&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">())){</span>
+            <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+            <span class="n">Intent</span> <span class="n">raw</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="c1">//找出Intent的参数
+</span><span class="c1"></span>            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="k">instanceof</span>  <span class="n">Intent</span><span class="o">){</span>
+                    <span class="n">index</span>  <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+                    <span class="n">raw</span> <span class="o">=</span> <span class="o">(</span><span class="n">Intent</span><span class="o">)</span> <span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="c1">//将Intent中的Activity组件类名换成 宿主中的占位组件 StubActivity
+</span><span class="c1"></span>            <span class="n">Intent</span> <span class="n">newIntent</span> <span class="o">=</span>  <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+            <span class="n">newIntent</span><span class="o">.</span><span class="na">setComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ComponentName</span><span class="o">(</span><span class="s">&#34;com.zxy.plugin&#34;</span><span class="o">,</span><span class="s">&#34;com.zxy.plugin.StubActivity&#34;</span><span class="o">));</span>
+            <span class="n">newIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">TARGET_AC</span><span class="o">,</span><span class="n">raw</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">index</span><span class="o">&gt;-</span><span class="n">1</span><span class="o">){</span>
+                <span class="n">args</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">newIntent</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">mBase</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在返回后，处理如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HandlerHooker</span> <span class="kd">implements</span> <span class="n">Handler</span><span class="o">.</span><span class="na">Callback</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Handler</span> <span class="n">mHandler</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">HandlerHooker</span><span class="o">(</span><span class="n">Handler</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mHandler</span> <span class="o">=</span> <span class="n">o</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//在9.0的源码中，H 中159表示Activity的操作
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span> <span class="o">==</span> <span class="n">159</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+            <span class="c1">//每个操作都是封装成ClientTransaction 
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="s">&#34;android.app.servertransaction.ClientTransaction&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="c1">//一个ClientTransaction中包含一个关于操作activiy的集合
+</span><span class="c1"></span>                <span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">mActivityCallbacks</span> <span class="o">=</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;)</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObject</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="s">&#34;mActivityCallbacks&#34;</span><span class="o">);</span>
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">mActivityCallbacks</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                    <span class="n">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="n">mActivityCallbacks</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+                    <span class="c1">//如果包含了Launch操作，就可以在这里执行替换操作
+</span><span class="c1"></span>                    <span class="k">if</span> <span class="o">(</span><span class="s">&#34;android.app.servertransaction.LaunchActivityItem&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                        <span class="n">Intent</span> <span class="n">mIntent</span> <span class="o">=</span> <span class="o">(</span><span class="n">Intent</span><span class="o">)</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObject</span><span class="o">(</span><span class="n">o</span><span class="o">,</span> <span class="s">&#34;mIntent&#34;</span><span class="o">);</span>
+                        <span class="n">Intent</span> <span class="n">parcelableExtra</span> <span class="o">=</span> <span class="n">mIntent</span><span class="o">.</span><span class="na">getParcelableExtra</span><span class="o">(</span><span class="n">AMSHooker</span><span class="o">.</span><span class="na">TARGET_AC</span><span class="o">);</span>
+                        <span class="n">mIntent</span><span class="o">.</span><span class="na">setComponent</span><span class="o">(</span><span class="n">parcelableExtra</span><span class="o">.</span><span class="na">getComponent</span><span class="o">());</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">mHandler</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>关于插件Activity的资源引用，在上文我们也说到了，需要使用插件自己的AssetManager，所以这里我们会抽象一个插件Activity基类</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">PluginBaseActivity</span> <span class="kd">extends</span> <span class="n">Activity</span> <span class="o">{</span>
+    <span class="c1">//每个插件的资源封装
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">PluginResourceManager</span><span class="o">.</span><span class="na">PluginPackage</span> <span class="n">aPackage</span><span class="o">;</span>
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">attachBaseContext</span><span class="o">(</span><span class="n">Context</span> <span class="n">newBase</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">attachBaseContext</span><span class="o">(</span><span class="n">newBase</span><span class="o">);</span>
+        <span class="c1">//在插件Actiivity启动时就使用资源管理器将相应的插件资源获取
+</span><span class="c1"></span>        <span class="n">aPackage</span> <span class="o">=</span> <span class="n">PluginResourceManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getPackage</span><span class="o">(</span><span class="n">getPluginKey</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="s">&#34;.&#34;</span><span class="o">,</span><span class="s">&#34;_&#34;</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="c1">//插件标示，每个插件都有不一样的标示
+</span><span class="c1"></span>    <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getPluginKey</span><span class="o">();</span>
+    <span class="c1">//将以下三个方法返回值都替换为插件中的包装，这样插件Activity就能正常使用插件资源了
+</span><span class="c1"></span>    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">AssetManager</span> <span class="nf">getAssets</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getManager</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Resources</span><span class="o">.</span><span class="na">Theme</span> <span class="nf">getTheme</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getTheme</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Resources</span> <span class="nf">getResources</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getResources</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>代码中的PluginResourceManager是一个单例，在宿主app启东时会完成初始化，将所有的插件app的Resource都放入宿主app的
+内存中，以供后来的插件app调用。</p>
+
+<h3 id="3-3-service的启动">3.3 Service的启动</h3>
+
+<p>启动之前的操作如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AMSHooker</span> <span class="kd">implements</span> <span class="n">InvocationHandler</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">proxy</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="s">&#34;startService&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">())){</span>
+            <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+            <span class="n">Intent</span> <span class="n">raw</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="k">instanceof</span>  <span class="n">Intent</span><span class="o">){</span>
+                    <span class="n">index</span>  <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+                    <span class="n">raw</span> <span class="o">=</span> <span class="o">(</span><span class="n">Intent</span><span class="o">)</span> <span class="n">args</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+                    <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">Intent</span> <span class="n">newIntent</span> <span class="o">=</span>  <span class="k">new</span> <span class="n">Intent</span><span class="o">();</span>
+            <span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="na">getComponent</span><span class="o">().</span><span class="na">getClassName</span><span class="o">();</span>
+            <span class="c1">//Service由于其特殊性，插件app中的Service与宿主的占位Service需要一一对应。所以这里使用了字典的方式来管理
+</span><span class="c1"></span>            <span class="n">String</span> <span class="n">stubService</span> <span class="o">=</span> <span class="n">PluginServiceManager</span><span class="o">.</span><span class="na">serviceManagerSingleton</span><span class="o">.</span><span class="na">getmInstance</span><span class="o">().</span><span class="na">getStubService</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">TextUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">stubService</span><span class="o">)){</span>
+                <span class="n">newIntent</span><span class="o">.</span><span class="na">setComponent</span><span class="o">(</span><span class="k">new</span> <span class="n">ComponentName</span><span class="o">(</span><span class="s">&#34;com.zxy.plugin&#34;</span><span class="o">,</span><span class="n">stubService</span><span class="o">));</span>
+                <span class="n">newIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">TARGET_SE</span><span class="o">,</span><span class="n">raw</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">index</span><span class="o">&gt;-</span><span class="n">1</span><span class="o">){</span>
+                    <span class="n">args</span><span class="o">[</span><span class="n">index</span><span class="o">]</span> <span class="o">=</span> <span class="n">newIntent</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">mBase</span><span class="o">,</span><span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>返回之后的处理如下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HandlerHooker</span> <span class="kd">implements</span> <span class="n">Handler</span><span class="o">.</span><span class="na">Callback</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">handleMessage</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">//114属于创建指令
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span> <span class="o">==</span> <span class="n">114</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="s">&#34;android.app.ActivityThread$CreateServiceData&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">ServiceInfo</span> <span class="n">info</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServiceInfo</span><span class="o">)</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObjectWithClassName</span><span class="o">(</span><span class="s">&#34;android.app.ActivityThread$CreateServiceData&#34;</span><span class="o">,</span> <span class="n">obj</span><span class="o">,</span> <span class="s">&#34;info&#34;</span><span class="o">);</span>
+                <span class="c1">//替换
+</span><span class="c1"></span>                <span class="n">info</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">getTargetService</span><span class="o">(</span><span class="n">info</span><span class="o">.</span><span class="na">name</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">//115属于启动指令
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">what</span> <span class="o">==</span> <span class="n">115</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="na">obj</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="s">&#34;android.app.ActivityThread$ServiceArgsData&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="o">(</span><span class="n">Intent</span><span class="o">)</span> <span class="n">ReflectUtils</span><span class="o">.</span><span class="na">getFieldObjectWithClassName</span><span class="o">(</span><span class="s">&#34;android.app.ActivityThread$ServiceArgsData&#34;</span><span class="o">,</span> <span class="n">obj</span><span class="o">,</span> <span class="s">&#34;args&#34;</span><span class="o">);</span>
+                <span class="n">Intent</span> <span class="n">target</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="na">getParcelableExtra</span><span class="o">(</span><span class="n">AMSHooker</span><span class="o">.</span><span class="na">TARGET_SE</span><span class="o">);</span>
+                <span class="c1">//替换
+</span><span class="c1"></span>                <span class="n">intent</span><span class="o">.</span><span class="na">setComponent</span><span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">getComponent</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">mHandler</span><span class="o">.</span><span class="na">handleMessage</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>为了统一资源的使用，service也需要加载插件的资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BasePluginService</span> <span class="kd">extends</span> <span class="n">Service</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">PluginResourceManager</span><span class="o">.</span><span class="na">PluginPackage</span> <span class="n">aPackage</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">attachBaseContext</span><span class="o">(</span><span class="n">Context</span> <span class="n">newBase</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">attachBaseContext</span><span class="o">(</span><span class="n">newBase</span><span class="o">);</span>
+        <span class="n">aPackage</span> <span class="o">=</span> <span class="n">PluginResourceManager</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getPackage</span><span class="o">(</span><span class="n">getPluginKey</span><span class="o">().</span><span class="na">replace</span><span class="o">(</span><span class="s">&#34;.&#34;</span><span class="o">,</span><span class="s">&#34;_&#34;</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">getPluginKey</span><span class="o">();</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">AssetManager</span> <span class="nf">getAssets</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getManager</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Resources</span><span class="o">.</span><span class="na">Theme</span> <span class="nf">getTheme</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getTheme</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Resources</span> <span class="nf">getResources</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">aPackage</span><span class="o">.</span><span class="na">getResources</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="总结">总结</h2>
+
+<p>对于一个完整的插件化框架，光有上述工作还是不够的，比如Activity的启动模式的解决，Broadcastrecevier和ContentProvider
+的插件化实施，还有对于各个sdk版本的兼容。再接再厉，后续会继续完善。</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-11-08
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          <a href="https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/">插件化</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/flutter_plugin/">
+            <span class="next-text nav-default">Flutter 插件原理</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

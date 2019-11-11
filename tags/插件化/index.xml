@@ -6,10 +6,19 @@
     <description>Recent content in 插件化 on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 08 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 08 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>9.0 插件化方案实践</title>
+      <link>https://wang-zoo.github.io/post/plugin_struc/</link>
+      <pubDate>Fri, 08 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/plugin_struc/</guid>
+      <description>前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采</description>
+    </item>
     
     <item>
       <title>Service启动流程分析</title>

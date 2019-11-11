@@ -6,10 +6,19 @@
     <description>Recent content in Posts on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 21 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 08 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>9.0 插件化方案实践</title>
+      <link>https://wang-zoo.github.io/post/plugin_struc/</link>
+      <pubDate>Fri, 08 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/plugin_struc/</guid>
+      <description>前言 9.0 源码相对于之前的版本都有很大的调整，在插件化技术上需要做单独的Hook。不过在插件化方案上还是没有太大的变动。 1.方案 插件化方案 本文采</description>
+    </item>
     
     <item>
       <title>Flutter 插件原理</title>
