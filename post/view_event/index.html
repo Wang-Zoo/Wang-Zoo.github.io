@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>View 事件体系分析 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 android 事件体系比较繁杂，为了充分了解整个结构，我们需要完全搞清楚视图组成，事件来源，最后才是事件分发。 View Activity与WindowMan" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/view_event/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="View 事件体系分析" />
+<meta property="og:description" content="前言 android 事件体系比较繁杂，为了充分了解整个结构，我们需要完全搞清楚视图组成，事件来源，最后才是事件分发。 View Activity与WindowMan" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/view_event/" />
+<meta property="article:published_time" content="2019-12-01T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-01T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="View 事件体系分析">
+<meta itemprop="description" content="前言 android 事件体系比较繁杂，为了充分了解整个结构，我们需要完全搞清楚视图组成，事件来源，最后才是事件分发。 View Activity与WindowMan">
+
+
+<meta itemprop="datePublished" content="2019-12-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="6472">
+
+
+
+<meta itemprop="keywords" content="源码,View 事件," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="View 事件体系分析"/>
+<meta name="twitter:description" content="前言 android 事件体系比较繁杂，为了充分了解整个结构，我们需要完全搞清楚视图组成，事件来源，最后才是事件分发。 View Activity与WindowMan"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">View 事件体系分析</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-12-01" class="post-time">
+          2019-12-01
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#view-activity与windowmanager">View Activity与WindowManager</a></li>
+<li><a href="#事件来源">事件来源</a></li>
+<li><a href="#事件传递与特征">事件传递与特征</a>
+<ul>
+<li><a href="#activity-对于事件的处理">Activity 对于事件的处理</a></li>
+<li><a href="#viewgroup-对于事件的处理">ViewGroup 对于事件的处理</a>
+<ul>
+<li><a href="#dispatchtouchevent">dispatchTouchEvent</a></li>
+<li><a href="#dispatchtransformedtouchevent">dispatchTransformedTouchEvent</a></li>
+</ul></li>
+<li><a href="#view-对于事件的处理">View 对于事件的处理</a>
+<ul>
+<li><a href="#dispatchtouchevent-1">dispatchTouchEvent</a></li>
+<li><a href="#ontouchevent">onTouchEvent</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>android 事件体系比较繁杂，为了充分了解整个结构，我们需要完全搞清楚视图组成，事件来源，最后才是事件分发。</p>
+
+<h2 id="view-activity与windowmanager">View Activity与WindowManager</h2>
+
+<p>完整的视图层级如下，Activity最终会内嵌一个PhoneWindow，在PhoneWindow会内嵌一个DecorView，在DecorView
+中的content才是我们操作setContentView设置的布局。</p>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/decorview_2.png" />
+    </div>
+    <a href="/imgs/decorview_2.png" itemprop="contentUrl"></a>
+      <figcaption><h4>View 层级</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在视图的添加操作需要与WindowManagerService进行沟通，这样才能时刻与系统事件交互。而WindowManger
+就是沟通中介，如下图可知，WindowManagerImpl是WindowManger的实现者，而WindowManagerGlobal确是真正的工作者。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/WM_uml.png" />
+    </div>
+    <a href="/imgs/WM_uml.png" itemprop="contentUrl"></a>
+      <figcaption><h4>WindowManger</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在创建了ActivityThread之后，会开始创建Activity，具体过程如下。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_init_time.png" />
+    </div>
+    <a href="/imgs/view_init_time.png" itemprop="contentUrl"></a>
+      <figcaption><h4>View 添加时序</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在时序图中，步骤1到步骤3中WindowManager将添加DecorView的命令转发，最后会创建一个ViewRootImpl的关键对象；
+步骤5到步骤7ViewRootImpl会向WMS发出申请，希望向硬件获得一块绘制区域，具体为Surface；步骤8到步骤10就会在这块
+区域上开始布局绘制，ViewRootImpl会启动DecorView布局的子View的Measure，Layout，Draw，来生成布局层级关系；
+步骤12之后就会将生成的布局提交给WMS，这样才会在用户手机屏幕上显示出来布局效果。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_init_struc.png" />
+    </div>
+    <a href="/imgs/view_init_struc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>View 添加框图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h2 id="事件来源">事件来源</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//View
+</span><span class="c1"></span><span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">Thread</span><span class="o">.</span><span class="na">dumpStack</span><span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">1348</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">zxy</span><span class="o">.</span><span class="na">touchdemo</span><span class="o">.</span><span class="na">ToucheText</span><span class="o">.</span><span class="na">onTouchEvent</span><span class="o">(</span><span class="n">ToucheText</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">26</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">View</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">12527</span><span class="o">)</span>
+<span class="c1">//ViewGroup
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3032</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewGroup</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ViewGroup</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">2662</span><span class="o">)</span>
+<span class="c1">//DecorView
+</span><span class="c1"></span><span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">policy</span><span class="o">.</span><span class="na">DecorView</span><span class="o">.</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">DecorView</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">444</span><span class="o">)</span>
+<span class="c1">//PhoneWindow
+</span><span class="c1"></span><span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">policy</span><span class="o">.</span><span class="na">PhoneWindow</span><span class="o">.</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">PhoneWindow</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">1830</span><span class="o">)</span>
+<span class="c1">//Activity
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">Activity</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">Activity</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">3465</span><span class="o">)</span>
+<span class="c1">//CallBack
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v7</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">WindowCallbackWrapper</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">WindowCallbackWrapper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">69</span><span class="o">)</span>
+<span class="c1">//DecorView
+</span><span class="c1"></span><span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">policy</span><span class="o">.</span><span class="na">DecorView</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">DecorView</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">402</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">View</span><span class="o">.</span><span class="na">dispatchPointerEvent</span><span class="o">(</span><span class="n">View</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">12768</span><span class="o">)</span>
+<span class="c1">//ViewRootImpl
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$ViewPostImeInputStage</span><span class="o">.</span><span class="na">processPointerEvent</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">5270</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$ViewPostImeInputStage</span><span class="o">.</span><span class="na">onProcess</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">5070</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">deliver</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4585</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">onDeliverToNext</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4638</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">forward</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4604</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$AsyncInputStage</span><span class="o">.</span><span class="na">forward</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4744</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4612</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$AsyncInputStage</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4801</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">deliver</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4585</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">onDeliverToNext</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4638</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">forward</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4604</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4612</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$InputStage</span><span class="o">.</span><span class="na">deliver</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">4585</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl</span><span class="o">.</span><span class="na">deliverInputEvent</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">7313</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl</span><span class="o">.</span><span class="na">doProcessInputEvents</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">7282</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl</span><span class="o">.</span><span class="na">enqueueInputEvent</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">7243</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">ViewRootImpl$WindowInputEventReceiver</span><span class="o">.</span><span class="na">onInputEvent</span><span class="o">(</span><span class="n">ViewRootImpl</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">7419</span><span class="o">)</span>
+<span class="c1">//InputEventReceiver
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">view</span><span class="o">.</span><span class="na">InputEventReceiver</span><span class="o">.</span><span class="na">dispatchInputEvent</span><span class="o">(</span><span class="n">InputEventReceiver</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">247</span><span class="o">)</span>
+<span class="c1">//Native
+</span><span class="c1"></span><span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">MessageQueue</span><span class="o">.</span><span class="na">nativePollOnce</span><span class="o">(</span><span class="n">Native</span> <span class="n">Method</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">MessageQueue</span><span class="o">.</span><span class="na">next</span><span class="o">(</span><span class="n">MessageQueue</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">326</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">Looper</span><span class="o">.</span><span class="na">loop</span><span class="o">(</span><span class="n">Looper</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">165</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">android</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">ActivityThread</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">ActivityThread</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">6806</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">reflect</span><span class="o">.</span><span class="na">Method</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="n">Native</span> <span class="n">Method</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">RuntimeInit$MethodAndArgsCaller</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">RuntimeInit</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">547</span><span class="o">)</span>
+<span class="n">at</span> <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">os</span><span class="o">.</span><span class="na">ZygoteInit</span><span class="o">.</span><span class="na">main</span><span class="o">(</span><span class="n">ZygoteInit</span><span class="o">.</span><span class="na">java</span><span class="o">:</span><span class="n">873</span><span class="o">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上边是一次事件分发的函数调用栈轨迹，很明显，事件是从Native传给Java层，然后由完成分发</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">InputEventReceiver</span> <span class="o">{</span>
+    <span class="c1">// Called from native code.
+</span><span class="c1"></span>    <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unused&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dispatchInputEvent</span><span class="o">(</span><span class="kt">int</span> <span class="n">seq</span><span class="o">,</span> <span class="n">InputEvent</span> <span class="n">event</span><span class="o">,</span> <span class="kt">int</span> <span class="n">displayId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mSeqMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getSequenceNumber</span><span class="o">(),</span> <span class="n">seq</span><span class="o">);</span>
+        <span class="n">onInputEvent</span><span class="o">(</span><span class="n">event</span><span class="o">,</span> <span class="n">displayId</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在InputEventReceiver中dispatchInputEvent的注释明显，Native会调用这个方法，然后由这个方法完成分发。
+然后会经过ViewRootImpl这个类，在ViewRootImpl中存在不同类型的InputStage，这些InputStage形成责任链
+事件通过责任链，被能处理的InputStage环节所处理。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_event_stage.png" />
+    </div>
+    <a href="/imgs/view_event_stage.png" itemprop="contentUrl"></a>
+      <figcaption><h4>InputStage 关系图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_event_stage_flow.png" />
+    </div>
+    <a href="/imgs/view_event_stage_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>InputStage 责任链</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>从日志信息得知，在责任链中最终被ViewPostImeInputStage给通过processPointerEvent方法消耗掉该事件。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_event_flow.png" />
+    </div>
+    <a href="/imgs/view_event_flow.png" itemprop="contentUrl"></a>
+      <figcaption><h4>事件来源</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>事件不会直接传给Activity，会先经过DecorView发送给Window Callback。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DecorView</span>  <span class="o">{</span>
+ <span class="kd">private</span> <span class="n">PhoneWindow</span> <span class="n">mWindow</span><span class="o">;</span>
+ <span class="o">...</span>
+ <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">dispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">ev</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">Window</span><span class="o">.</span><span class="na">Callback</span> <span class="n">cb</span> <span class="o">=</span> <span class="n">mWindow</span><span class="o">.</span><span class="na">getCallback</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">cb</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mWindow</span><span class="o">.</span><span class="na">isDestroyed</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">mFeatureId</span> <span class="o">&lt;</span> <span class="n">0</span>
+                <span class="o">?</span> <span class="n">cb</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">)</span> <span class="o">:</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+ <span class="o">}</span>
+ <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>PhoneWindow的CallBack在创建Activity时由Activity传入。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Activity</span> <span class="kd">implements</span> <span class="n">Window</span><span class="o">.</span><span class="na">Callback</span><span class="o">,</span>  <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">final</span> <span class="kt">void</span> <span class="nf">attach</span><span class="o">(...)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="n">mWindow</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PhoneWindow</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">window</span><span class="o">,</span> <span class="n">activityConfigCallback</span><span class="o">);</span>
+        <span class="n">mWindow</span><span class="o">.</span><span class="na">setWindowControllerCallback</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="n">mWindow</span><span class="o">.</span><span class="na">setCallback</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="事件传递与特征">事件传递与特征</h2>
+
+<p>经过上述流程之后，正式进入事件分发阶段。其实对于事件分发有很多的结论分析，本文只想对于源码有一个深入理解，
+来反证这些结论。</p>
+
+<h3 id="activity-对于事件的处理">Activity 对于事件的处理</h3>
+
+<p>事件首先会经过Activity。onUserInteraction这个方法在源码注释中表示用于通知当前Activity正在接收事件。
+可以重写然后实现一些措施。随后会将事件进一步分发给PhoneWindow。同时，如果分发之后没有被处理
+Activity会自己调用onTouchEvent进行处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">dispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">ev</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">ev</span><span class="o">.</span><span class="na">getAction</span><span class="o">()</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">onUserInteraction</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">getWindow</span><span class="o">().</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">onTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>PhoneWindow 会继续将事件向内部的DecorView分发。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhoneWindow</span> <span class="kd">extends</span> <span class="n">Window</span> <span class="kd">implements</span> <span class="n">MenuBuilder</span><span class="o">.</span><span class="na">Callback</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">superDispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mDecor</span><span class="o">.</span><span class="na">superDispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="viewgroup-对于事件的处理">ViewGroup 对于事件的处理</h3>
+
+<h4 id="dispatchtouchevent">dispatchTouchEvent</h4>
+
+<p>DecovrView实际为一个ViewGroup，所以我们只需要分析ViewGroup的分发逻辑即可。</p>
+
+<p>对于ViewGroup需要重点分析的是dispatchTouchEvent方法，这里我们先按照结构呈现部分代码。
+来大致了解运行流程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">dispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">ev</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="c1">//位置1
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">cancelAndClearTouchTargets</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+        <span class="n">resetTouchState</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//位置2
+</span><span class="c1"></span>    <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">intercepted</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">||</span> <span class="n">mFirstTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">disallowIntercept</span> <span class="o">=</span> <span class="o">(</span><span class="n">mGroupFlags</span> <span class="o">&amp;</span> <span class="n">FLAG_DISALLOW_INTERCEPT</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">disallowIntercept</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">intercepted</span> <span class="o">=</span> <span class="n">onInterceptTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">);</span>
+            <span class="n">ev</span><span class="o">.</span><span class="na">setAction</span><span class="o">(</span><span class="n">action</span><span class="o">);</span> <span class="c1">// restore action in case it was changed
+</span><span class="c1"></span>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">intercepted</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">intercepted</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+    <span class="c1">//位置3
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(!</span><span class="n">canceled</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">intercepted</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="c1">//位置4      
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">mFirstTouchTarget</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">handled</span> <span class="o">=</span> <span class="n">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="n">canceled</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span><span class="n">TouchTarget</span><span class="o">.</span><span class="na">ALL_POINTER_IDS</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="c1">//位置5
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">canceled</span><span class="o">||</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_UP</span><span class="o">||</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_HOVER_MOVE</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">resetTouchState</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">split</span> <span class="o">&amp;&amp;</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_POINTER_UP</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">actionIndex</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getActionIndex</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">idBitsToRemove</span> <span class="o">=</span> <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">ev</span><span class="o">.</span><span class="na">getPointerId</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">);</span>
+        <span class="n">removePointersFromTouchTargets</span><span class="o">(</span><span class="n">idBitsToRemove</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span>  </code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置1</strong>表示每个新事件序列的开头事件DOWN来临时，会将状态全部初始化。</p>
+
+<p><strong>位置2</strong>需要了解一个点，就是mFirstTouchTarget这个变量不为空时，表示事件序列已经有合适的子View处理了，也就表示当前组件不曾拦截过这个
+事件序列。几个条件混合之后表示为 <strong>ViewGroup有拦截一个新事件的资格，如果拦截成功，就不会再继续调用onInterceptTouchEvent，如果没有拦截成功，只要FLAG_DISALLOW_INTERCEPT不为1，就可以一直拥有拦截事件序列中剩余事件的资格</strong></p>
+
+<p><strong>位置3</strong>是表示寻找符合资格的子View来作为处理事件序列的对象。</p>
+
+<p><strong>位置4</strong>表示没有子View能处理这个事时，当前ViewGroup会继续处理。</p>
+
+<p><strong>位置5</strong>表示在事件序列结束之后也会清空状态。</p>
+
+<p>下面我们再继续看看<strong>位置3</strong>的代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">View</span> <span class="n">childWithAccessibilityFocus</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">isTargetAccessibilityFocus</span><span class="o">()?</span> <span class="n">findChildWithAccessibilityFocus</span><span class="o">()</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+<span class="c1">//位置6
+</span><span class="c1"></span><span class="k">if</span> <span class="o">(</span><span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">||</span> <span class="o">(</span><span class="n">split</span> <span class="o">&amp;&amp;</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_POINTER_DOWN</span><span class="o">)||</span> <span class="n">actionMasked</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_HOVER_MOVE</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">actionIndex</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getActionIndex</span><span class="o">();</span> <span class="c1">// always 0 for down
+</span><span class="c1"></span>    <span class="kd">final</span> <span class="kt">int</span> <span class="n">idBitsToAssign</span> <span class="o">=</span> <span class="n">split</span> <span class="o">?</span> <span class="n">1</span> <span class="o">&lt;&lt;</span> <span class="n">ev</span><span class="o">.</span><span class="na">getPointerId</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">):</span> <span class="n">TouchTarget</span><span class="o">.</span><span class="na">ALL_POINTER_IDS</span><span class="o">;</span>
+
+    <span class="n">removePointersFromTouchTargets</span><span class="o">(</span><span class="n">idBitsToAssign</span><span class="o">);</span>
+
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">childrenCount</span> <span class="o">=</span> <span class="n">mChildrenCount</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">newTouchTarget</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">childrenCount</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getX</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getY</span><span class="o">(</span><span class="n">actionIndex</span><span class="o">);</span>
+        <span class="c1">//位置7
+</span><span class="c1"></span>        <span class="kd">final</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">View</span><span class="o">&gt;</span> <span class="n">preorderedList</span> <span class="o">=</span> <span class="n">buildTouchDispatchChildList</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">customOrder</span> <span class="o">=</span> <span class="n">preorderedList</span> <span class="o">==</span> <span class="kc">null</span><span class="o">&amp;&amp;</span> <span class="n">isChildrenDrawingOrderEnabled</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="n">View</span><span class="o">[]</span> <span class="n">children</span> <span class="o">=</span> <span class="n">mChildren</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">childrenCount</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="kt">int</span> <span class="n">childIndex</span> <span class="o">=</span> <span class="n">getAndVerifyPreorderedIndex</span><span class="o">(</span><span class="n">childrenCount</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">customOrder</span><span class="o">);</span>
+            <span class="kd">final</span> <span class="n">View</span> <span class="n">child</span> <span class="o">=</span> <span class="n">getAndVerifyPreorderedView</span><span class="o">(</span><span class="n">preorderedList</span><span class="o">,</span> <span class="n">children</span><span class="o">,</span> <span class="n">childIndex</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">childWithAccessibilityFocus</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">childWithAccessibilityFocus</span> <span class="o">!=</span> <span class="n">child</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">childWithAccessibilityFocus</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">childrenCount</span> <span class="o">-</span> <span class="n">1</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="k">if</span> <span class="o">(!</span><span class="n">canViewReceivePointerEvents</span><span class="o">(</span><span class="n">child</span><span class="o">)||</span> <span class="o">!</span><span class="n">isTransformedTouchPointInView</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">child</span><span class="o">,</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">ev</span><span class="o">.</span><span class="na">setTargetAccessibilityFocus</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">//位置8
+</span><span class="c1"></span>            <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">getTouchTarget</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">newTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">newTouchTarget</span><span class="o">.</span><span class="na">pointerIdBits</span> <span class="o">|=</span> <span class="n">idBitsToAssign</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="n">resetCancelNextUpFlag</span><span class="o">(</span><span class="n">child</span><span class="o">);</span>
+            <span class="c1">//位置9
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="n">child</span><span class="o">,</span> <span class="n">idBitsToAssign</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">mLastTouchDownTime</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getDownTime</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">preorderedList</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">childrenCount</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">children</span><span class="o">[</span><span class="n">childIndex</span><span class="o">]</span> <span class="o">==</span> <span class="n">mChildren</span><span class="o">[</span><span class="n">j</span><span class="o">])</span> <span class="o">{</span>
+                            <span class="n">mLastTouchDownIndex</span> <span class="o">=</span> <span class="n">j</span><span class="o">;</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">mLastTouchDownIndex</span> <span class="o">=</span> <span class="n">childIndex</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">mLastTouchDownX</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getX</span><span class="o">();</span>
+                <span class="n">mLastTouchDownY</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="na">getY</span><span class="o">();</span>
+                <span class="c1">//位置10
+</span><span class="c1"></span>                <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">addTouchTarget</span><span class="o">(</span><span class="n">child</span><span class="o">,</span> <span class="n">idBitsToAssign</span><span class="o">);</span>
+                <span class="n">alreadyDispatchedToNewTouchTarget</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">ev</span><span class="o">.</span><span class="na">setTargetAccessibilityFocus</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">preorderedList</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="n">preorderedList</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="c1">//位置11
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">newTouchTarget</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">mFirstTouchTarget</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">mFirstTouchTarget</span><span class="o">;</span>
+                <span class="k">while</span> <span class="o">(</span><span class="n">newTouchTarget</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">newTouchTarget</span> <span class="o">=</span> <span class="n">newTouchTarget</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">newTouchTarget</span><span class="o">.</span><span class="na">pointerIdBits</span> <span class="o">|=</span> <span class="n">idBitsToAssign</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置6</strong>中表示下列这三种事件，会重新为事件寻找新的处理者。</p>
+
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>场景</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>ACTION_DOWN</td>
+<td>单点触控</td>
+</tr>
+
+<tr>
+<td>ACTION_POINTER_DOWN</td>
+<td>多点触控</td>
+</tr>
+
+<tr>
+<td>ACTION_HOVER_MOVE</td>
+<td>鼠标移动</td>
+</tr>
+</tbody>
+</table>
+
+<p>ACTION_DOWN表示触摸事件的开头，ACTION_POINTER_DOWN表示存在多点触控的时候，ACTION_HOVER_MOVE表示鼠标移动事件</p>
+
+<p><strong>位置7</strong>会创建一个根据Z坐标从小到大排列的子View列表，并且在接下来遍历循环时是从大到小的去寻找合适的子View来处理事件。也就表示在视图布局上是从上到下的去寻找</p>
+
+<p><strong>位置8</strong>表示会优先从已经处理过事件的View中去找到合适的，这块适用于ACTION_POINTER_DOWN和ACTION_HOVER_MOVE事件，ACTION_DOWN事件是最开始mFistTouchTarget为空时才会触发。</p>
+
+<p><strong>位置9</strong>表示开始分发事件给符合条件的子View去处理。</p>
+
+<p><strong>位置10</strong>表示子View能处理掉时，就将该子View添加给mFistTouchTarget链表。</p>
+
+<p><strong>位置11</strong>表示如果没有找到合适处理对象就将当前事件赋予最最先的事件处理者，在多点触控中，最先处理者就是ACTION_DOWN事件的处理者。</p>
+
+<p>在<strong>位置4</strong>之后代码如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="k">if</span> <span class="o">(</span><span class="n">mFirstTouchTarget</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">handled</span> <span class="o">=</span> <span class="n">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="n">canceled</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span><span class="n">TouchTarget</span><span class="o">.</span><span class="na">ALL_POINTER_IDS</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="n">TouchTarget</span> <span class="n">predecessor</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="n">TouchTarget</span> <span class="n">target</span> <span class="o">=</span> <span class="n">mFirstTouchTarget</span><span class="o">;</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">target</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">TouchTarget</span> <span class="n">next</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">alreadyDispatchedToNewTouchTarget</span> <span class="o">&amp;&amp;</span> <span class="n">target</span> <span class="o">==</span> <span class="n">newTouchTarget</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">handled</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">cancelChild</span> <span class="o">=</span> <span class="n">resetCancelNextUpFlag</span><span class="o">(</span><span class="n">target</span><span class="o">.</span><span class="na">child</span><span class="o">)||</span> <span class="n">intercepted</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="n">cancelChild</span><span class="o">,</span><span class="n">target</span><span class="o">.</span><span class="na">child</span><span class="o">,</span> <span class="n">target</span><span class="o">.</span><span class="na">pointerIdBits</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">handled</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cancelChild</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">predecessor</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">mFirstTouchTarget</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">predecessor</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="n">target</span><span class="o">.</span><span class="na">recycle</span><span class="o">();</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">predecessor</span> <span class="o">=</span> <span class="n">target</span><span class="o">;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述代码表示如果没有处理对象能处理事件，事件就交由当前ViewGroup处理，如果在存在多个处理对象时，比如多点触控的时候，会对事件进行剥离分发，这块在之后代码会深入分析。</p>
+
+<h4 id="dispatchtransformedtouchevent">dispatchTransformedTouchEvent</h4>
+
+<p>ViewGroup对于具体处理事件的代码主要集中在dispatchTransformedTouchEvent，
+核心的处理逻辑如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">cancel</span><span class="o">,</span><span class="n">View</span> <span class="n">child</span><span class="o">,</span> <span class="kt">int</span> <span class="n">desiredPointerIdBits</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="c1">//如果child为空，就表示需要当前ViewGroup来处理该事件
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">handled</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="c1">//如果不为空，表示需要child来处理该事件
+</span><span class="c1"></span>        <span class="n">handled</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>具体的细节分析如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">dispatchTransformedTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">cancel</span><span class="o">,</span><span class="n">View</span> <span class="n">child</span><span class="o">,</span> <span class="kt">int</span> <span class="n">desiredPointerIdBits</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">handled</span><span class="o">;</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">oldAction</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+        <span class="c1">//位置1
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">cancel</span> <span class="o">||</span> <span class="n">oldAction</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_CANCEL</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">event</span><span class="o">.</span><span class="na">setAction</span><span class="o">(</span><span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_CANCEL</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">handled</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">handled</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">event</span><span class="o">.</span><span class="na">setAction</span><span class="o">(</span><span class="n">oldAction</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">handled</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">//位置2
+</span><span class="c1"></span>        <span class="kd">final</span> <span class="kt">int</span> <span class="n">oldPointerIdBits</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getPointerIdBits</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">newPointerIdBits</span> <span class="o">=</span> <span class="n">oldPointerIdBits</span> <span class="o">&amp;</span> <span class="n">desiredPointerIdBits</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">newPointerIdBits</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kd">final</span> <span class="n">MotionEvent</span> <span class="n">transformedEvent</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">newPointerIdBits</span> <span class="o">==</span> <span class="n">oldPointerIdBits</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">child</span><span class="o">.</span><span class="na">hasIdentityMatrix</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">handled</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="kd">final</span> <span class="kt">float</span> <span class="n">offsetX</span> <span class="o">=</span> <span class="n">mScrollX</span> <span class="o">-</span> <span class="n">child</span><span class="o">.</span><span class="na">mLeft</span><span class="o">;</span>
+                    <span class="kd">final</span> <span class="kt">float</span> <span class="n">offsetY</span> <span class="o">=</span> <span class="n">mScrollY</span> <span class="o">-</span> <span class="n">child</span><span class="o">.</span><span class="na">mTop</span><span class="o">;</span>
+                    <span class="n">event</span><span class="o">.</span><span class="na">offsetLocation</span><span class="o">(</span><span class="n">offsetX</span><span class="o">,</span> <span class="n">offsetY</span><span class="o">);</span>
+                    <span class="n">handled</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+                    <span class="n">event</span><span class="o">.</span><span class="na">offsetLocation</span><span class="o">(-</span><span class="n">offsetX</span><span class="o">,</span> <span class="o">-</span><span class="n">offsetY</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="n">handled</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">transformedEvent</span> <span class="o">=</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">obtain</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">//位置3
+</span><span class="c1"></span>            <span class="n">transformedEvent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">newPointerIdBits</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">child</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">handled</span> <span class="o">=</span> <span class="kd">super</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">transformedEvent</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">//位置4
+</span><span class="c1"></span>            <span class="kd">final</span> <span class="kt">float</span> <span class="n">offsetX</span> <span class="o">=</span> <span class="n">mScrollX</span> <span class="o">-</span> <span class="n">child</span><span class="o">.</span><span class="na">mLeft</span><span class="o">;</span>
+            <span class="kd">final</span> <span class="kt">float</span> <span class="n">offsetY</span> <span class="o">=</span> <span class="n">mScrollY</span> <span class="o">-</span> <span class="n">child</span><span class="o">.</span><span class="na">mTop</span><span class="o">;</span>
+            <span class="n">transformedEvent</span><span class="o">.</span><span class="na">offsetLocation</span><span class="o">(</span><span class="n">offsetX</span><span class="o">,</span> <span class="n">offsetY</span><span class="o">);</span>
+            <span class="c1">//位置5
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(!</span> <span class="n">child</span><span class="o">.</span><span class="na">hasIdentityMatrix</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">transformedEvent</span><span class="o">.</span><span class="na">transform</span><span class="o">(</span><span class="n">child</span><span class="o">.</span><span class="na">getInverseMatrix</span><span class="o">());</span>
+            <span class="o">}</span>
+            <span class="n">handled</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="na">dispatchTouchEvent</span><span class="o">(</span><span class="n">transformedEvent</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">transformedEvent</span><span class="o">.</span><span class="na">recycle</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">handled</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置1</strong>主要是对CANCEL事件进行分发处理。</p>
+
+<p><strong>位置2</strong>会对事件进行一个剥离，在多点触控的情况下是会存在一个事件有包含多个受众View，需要将相应的受众View在TouchTarget中记录的事件
+剥离出来，然后在进行一个分发。</p>
+
+<p><strong>位置3</strong>MotionEvent中getX和getY表示的当前这个事件距离这个当前受众View左上角的距离，所以当传给子View去处理时需要调用offsetLocation去
+重新调整MotionEvent的坐标。</p>
+
+<p><strong>位置4</strong>中hasIdentityMatrix是用来判断子View是否经过其他转换（位移，旋转等），如果经过转换，还需要将MotionEvent的做相应的
+转换，然后才能传给子View去处理</p>
+
+<p><strong>位置5</strong>表示需要将事件进行剥离，比如在多点触控中，一个事件其实包含了几个触控点，需要找到在一开始为POINT_DOWN对应的触控点，才能将这个事件准确发送给
+合适的子View去处理</p>
+
+<p><strong>结论</strong></p>
+
+<p>一次事件序列是以一个DOWN开始一个UP结尾，中间会穿插多个MOVE，也会在多点触控这样的场景中穿插POINT_DOWN和POINT_UP事件。在ViewGroup中每次DOWN和POINT_DOWN到来时都会找寻一个合适的子View处理者加入到mFirstTouchTarget链表中，之后剩余事件来临时，会在mFirstTouchTarget中去找合适的处理者。如果mFirstTouchTarget为空，就表示从一开始没有找到合适的处理者，也不会继续从子View们中去寻找了，直接交给ViewGroup处理了。</p>
+
+<h3 id="view-对于事件的处理">View 对于事件的处理</h3>
+
+<h4 id="dispatchtouchevent-1">dispatchTouchEvent</h4>
+
+<p>不管是ViewGroup还是View在真正去处理事件的时候都是调用的dispatchTouchEvent去处理的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">dispatchTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">onFilterTouchEventForSecurity</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">//位置1
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">((</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span> <span class="o">&amp;&amp;</span> <span class="n">handleScrollBarDragging</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//位置2
+</span><span class="c1"></span>        <span class="n">ListenerInfo</span> <span class="n">li</span> <span class="o">=</span> <span class="n">mListenerInfo</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">li</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span> <span class="o">!=</span> <span class="kc">null</span>
+            <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">mViewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">ENABLED</span>
+            <span class="o">&amp;&amp;</span> <span class="n">li</span><span class="o">.</span><span class="na">mOnTouchListener</span><span class="o">.</span><span class="na">onTouch</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//位置3
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">result</span> <span class="o">&amp;&amp;</span> <span class="n">onTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置1</strong>表示如果当前View处于激活状态，并且是属于鼠标拖拽滑动按钮时(当前view存在滑动按钮时)会处理的事件，这时就会在条件满足的情况下完成View滑动</p>
+
+<p><strong>位置2</strong>表示如果当前View处于激活状态，如果存在TouchListener，会优先调用TouchListener来处理事件</p>
+
+<p><strong>位置3</strong>如果TouchListener不存在或者这个事件没有被处理掉，才会调用onTouchEvent继续处理</p>
+
+<h4 id="ontouchevent">onTouchEvent</h4>
+
+<p>对于View 的onTouchEvent我们分成极端来分析</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"> <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onTouchEvent</span><span class="o">(</span><span class="n">MotionEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getX</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getY</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">viewFlags</span> <span class="o">=</span> <span class="n">mViewFlags</span><span class="o">;</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">action</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getAction</span><span class="o">();</span>
+        <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">clickable</span> <span class="o">=</span> <span class="o">((</span><span class="n">viewFlags</span> <span class="o">&amp;</span> <span class="n">CLICKABLE</span><span class="o">)</span> <span class="o">==</span> <span class="n">CLICKABLE</span>
+                <span class="o">||</span> <span class="o">(</span><span class="n">viewFlags</span> <span class="o">&amp;</span> <span class="n">LONG_CLICKABLE</span><span class="o">)</span> <span class="o">==</span> <span class="n">LONG_CLICKABLE</span><span class="o">)</span>
+                <span class="o">||</span> <span class="o">(</span><span class="n">viewFlags</span> <span class="o">&amp;</span> <span class="n">CONTEXT_CLICKABLE</span><span class="o">)</span> <span class="o">==</span> <span class="n">CONTEXT_CLICKABLE</span><span class="o">;</span>
+        <span class="c1">//位置1
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">((</span><span class="n">viewFlags</span> <span class="o">&amp;</span> <span class="n">ENABLED_MASK</span><span class="o">)</span> <span class="o">==</span> <span class="n">DISABLED</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">action</span> <span class="o">==</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_UP</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">mPrivateFlags</span> <span class="o">&amp;</span> <span class="n">PFLAG_PRESSED</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">setPressed</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">mPrivateFlags3</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">PFLAG3_FINGER_DOWN</span><span class="o">;</span>
+            <span class="k">return</span> <span class="n">clickable</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//位置2
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mTouchDelegate</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">mTouchDelegate</span><span class="o">.</span><span class="na">onTouchEvent</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="o">...</span>
+ <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置1</strong>中表示如果View不可用时，事件处理结果完全取决于View能否点击，但是这样实际是没有意义的，因为没有经过任何点击和长按事件</p>
+
+<p><strong>位置2</strong>表示如果当前View的区域是属于另外View的扩展点击区域，就直接将这个事件分发给另外的View，TouchDelegate本身就是用来做扩大一个View点击区域之用</p>
+
+<p>然后开始分析对于事件的分类处理</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="o">...</span>
+ <span class="k">case</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_DOWN</span><span class="o">:</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getSource</span><span class="o">()</span> <span class="o">==</span> <span class="n">InputDevice</span><span class="o">.</span><span class="na">SOURCE_TOUCHSCREEN</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mPrivateFlags3</span> <span class="o">|=</span> <span class="n">PFLAG3_FINGER_DOWN</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="n">mHasPerformedLongPress</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="k">if</span> <span class="o">(!</span><span class="n">clickable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">checkForLongClick</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">//位置1
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">performButtonActionOnTouchDown</span><span class="o">(</span><span class="n">event</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kt">boolean</span> <span class="n">isInScrollingContainer</span> <span class="o">=</span> <span class="n">isInScrollingContainer</span><span class="o">();</span>
+    <span class="c1">//位置2
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">isInScrollingContainer</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mPrivateFlags</span> <span class="o">|=</span> <span class="n">PFLAG_PREPRESSED</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mPendingCheckForTap</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mPendingCheckForTap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CheckForTap</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">mPendingCheckForTap</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getX</span><span class="o">();</span>
+        <span class="n">mPendingCheckForTap</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">getY</span><span class="o">();</span>
+        <span class="n">postDelayed</span><span class="o">(</span><span class="n">mPendingCheckForTap</span><span class="o">,</span> <span class="n">ViewConfiguration</span><span class="o">.</span><span class="na">getTapTimeout</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">setPressed</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="n">checkForLongClick</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">break</span><span class="o">;</span>
+<span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>对于DONW事件主要是一个长按事件的处理，在符合条件的情况，会启动一个处理长按的延时Runnable，如果到了事件这个Runnable没有没移除，就会执行</p>
+
+<p><strong>位置1</strong>用于处理鼠标右键点击，这种场景会触发view 的PFLAG_CANCEL_NEXT_UP_EVENT标志，在下一个事件来临时会在ViewGroup中的dispatchTouchEvent
+中将在mFirstTouchTarget中移除该view，表示这个view 不会接收余下事件。</p>
+
+<p><strong>位置2</strong>中表示一个对于滑动View的一个细致判断，这种情况下不会立马响应事件处理，会延时处理，同时会把PFLAG_PREPRESSED置位，PFLAG_PREPRESSED在UP事件中
+会起到作用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="o">...</span>
+<span class="k">case</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_MOVE</span><span class="o">:</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">clickable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">drawableHotspotChanged</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">//位置1
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(!</span><span class="n">pointInView</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">mTouchSlop</span><span class="o">))</span> <span class="o">{</span>
+        <span class="n">removeTapCallback</span><span class="o">();</span>
+        <span class="n">removeLongPressCallback</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">((</span><span class="n">mPrivateFlags</span> <span class="o">&amp;</span> <span class="n">PFLAG_PRESSED</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">setPressed</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">mPrivateFlags3</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">PFLAG3_FINGER_DOWN</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">break</span><span class="o">;</span>
+<span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>然后是关于MOVE事件的处理，MOVE事件的处理比较简单。</p>
+
+<p><strong>位置1</strong>表示如果在按下的过程中，事件区域远离了View区域，长按响应会被取消。同时PFLAG_PRESSED和PFLAG_PREPRESSED都会被归位。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="k">case</span> <span class="n">MotionEvent</span><span class="o">.</span><span class="na">ACTION_UP</span><span class="o">:</span>
+    <span class="n">mPrivateFlags3</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">PFLAG3_FINGER_DOWN</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">((</span><span class="n">viewFlags</span> <span class="o">&amp;</span> <span class="n">TOOLTIP</span><span class="o">)</span> <span class="o">==</span> <span class="n">TOOLTIP</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">handleTooltipUp</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">//位置1
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(!</span><span class="n">clickable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">removeTapCallback</span><span class="o">();</span>
+        <span class="n">removeLongPressCallback</span><span class="o">();</span>
+        <span class="n">mInContextButtonPress</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="n">mHasPerformedLongPress</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="n">mIgnoreNextUpEvent</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">break</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="kt">boolean</span> <span class="n">prepressed</span> <span class="o">=</span> <span class="o">(</span><span class="n">mPrivateFlags</span> <span class="o">&amp;</span> <span class="n">PFLAG_PREPRESSED</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span><span class="o">;</span>
+    <span class="c1">//位置2
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">((</span><span class="n">mPrivateFlags</span> <span class="o">&amp;</span> <span class="n">PFLAG_PRESSED</span><span class="o">)</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">||</span> <span class="n">prepressed</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">boolean</span> <span class="n">focusTaken</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">isFocusable</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">isFocusableInTouchMode</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isFocused</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">focusTaken</span> <span class="o">=</span> <span class="n">requestFocus</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">prepressed</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">setPressed</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">//位置3
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">mHasPerformedLongPress</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mIgnoreNextUpEvent</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">removeLongPressCallback</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">focusTaken</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">mPerformClick</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">mPerformClick</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PerformClick</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">post</span><span class="o">(</span><span class="n">mPerformClick</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">performClick</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mUnsetPressedState</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mUnsetPressedState</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UnsetPressedState</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">prepressed</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">postDelayed</span><span class="o">(</span><span class="n">mUnsetPressedState</span><span class="o">,</span><span class="n">ViewConfiguration</span><span class="o">.</span><span class="na">getPressedStateDuration</span><span class="o">());</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(!</span><span class="n">post</span><span class="o">(</span><span class="n">mUnsetPressedState</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">mUnsetPressedState</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="n">removeTapCallback</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">mIgnoreNextUpEvent</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="k">break</span><span class="o">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>位置1</strong>表示如果View是不可点击状态，会立马取消掉长按Runnable，清空状态。</p>
+
+<p><strong>位置2</strong>如果PFLAG_PRESSED和PFLAG_PREPRESSED都没有置位，那么就不继续执行。两种都不满足的情况在上述MOVE事件代码分析中会被触发。</p>
+
+<p><strong>位置3</strong>表示如果长按没有响应的情况下才会响应普通点击事件。同时FOUSE_TONUCH_INMODE状态存在时，也不会响应点击事件。这种情况主要发生在你需要
+将键盘收起只会才能触发点击事件的时候。</p>
+
+<p>需要注意的是onTouchEvent是不会接收多点触控事件，实际在传入给View的dispatchTouchEvent之前，就已经将多点触控事件拆分给了普通的DOWN和UP事件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">dispatchTransformedTouchEvent</span><span class="o">(...){</span>
+    <span class="o">...</span>
+    <span class="c1">//拆分
+</span><span class="c1"></span>    <span class="n">transformedEvent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="n">newPointerIdBits</span><span class="o">);</span>
+    <span class="o">...</span>
+
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>MontionEvent的split就将指定pointid的多点触控事件单独拆分出来。</p>
+
+<p><strong>结论</strong></p>
+
+<p>一个事件处理的优先级如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">onTouch(TouchListener) &gt;  onTouchEvent &gt; mTouchDelegate &gt; (onClickListenter|onLongClickListener)</pre></td></tr></table>
+</div>
+</div>
+<p>如果我们不小心点击一个按钮，滑动到按钮区域之外，就能避免事件的触发。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>网上流行的一些事件分发流程简图其实也不是很准确的，就比如事件传递中常用的冒泡式消费模型，如果子View的onTouchEvent不消耗一个事件，就会把事件传给父View的
+onTouchEvent消耗，这个其实就是有情况区分的，一般来说如果一个View不消耗除了Down事件之外的事件，这些事件还是会继续分发给该View，最后这些事件都会回传给Activity，而不是传给父View的onTouchEvent，有时候，别人的结论我们不能盲目的追随，一定要 reading the fuck code，才能得到属于自己的答案。</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-12-01
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/messagequeue/">
+            <span class="next-text nav-default">Android Java层消息队列详解</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

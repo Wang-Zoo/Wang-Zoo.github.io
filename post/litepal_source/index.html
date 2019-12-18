@@ -70,7 +70,7 @@
 
 <meta itemprop="datePublished" content="2019-07-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-07-21T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="5431">
+<meta itemprop="wordCount" content="5412">
 
 
 
@@ -390,18 +390,13 @@
 <h3 id="1-3-表的创建与分类">1.3 表的创建与分类</h3>
 
 <p>作者在存储一个对象时，将所有字段类型分别转换成如下三种表的形式</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">1.本体基本数据类型和一对多和多对一关联外键表，这个是主体表，表名字是className
-2.本体基本数据集合类型表(list或者set类型字段)，这个是第二张表，表名是className_fieldName
-4.本体多对多关系的中间表，这个是第三张表，表名是className_associationClassName</pre></td></tr></table>
-</div>
-</div>
+
+<ol>
+<li><strong>本体基本数据类型和一对多和多对一关联外键表，这个是主体表，表名字是className</strong></li>
+<li><strong>本体基本数据集合类型表(list或者set类型字段)，这个是第二张表，表名是className_fieldName</strong></li>
+<li><strong>本体多对多关系的中间表，这个是第三张表，表名是className_associationClassName</strong></li>
+</ol>
+
 <p>其中比较重要的解释就是关联表的处理，下文继续解释</p>
 
 <h2 id="2-增删改查的逻辑实现">2.增删改查的逻辑实现</h2>
@@ -448,32 +443,74 @@
 
 
 <p>一个对象与其他对象的关系可以归结为这几种</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">1. A -&gt; C1  A中有C1，C1中有A             一对一
-2. A -&gt; C2  A中有C2，C1中有A的集合        多对一
-3. A -&gt; C3  A中有C3，C3中无A             一对一
-4. A -&gt; C4  A中有C4的集合，C4中有A        一对多
-5. A -&gt; C5  A中有C5的集合，C5中有A的集合   多对多(需要中间表)
-6. A -&gt; C6  A中有C6的集合，C6中无A        一对多
 
-litepal作者简化为三种关系
+<table>
+<thead>
+<tr>
+<th>关联</th>
+<th>解释</th>
+<th>关系</th>
+<th>备注</th>
+</tr>
+</thead>
 
-一对一  多对一(一对多)  多对多</pre></td></tr></table>
-</div>
-</div>
+<tbody>
+<tr>
+<td>A -&gt; C1</td>
+<td>A中有C1，C1中有A</td>
+<td>一对一</td>
+<td></td>
+</tr>
+
+<tr>
+<td>A -&gt; C2</td>
+<td>A中有C2，C1中有A的集合</td>
+<td>多对一</td>
+<td></td>
+</tr>
+
+<tr>
+<td>A -&gt; C3</td>
+<td>A中有C3，C3中无A</td>
+<td>一对一</td>
+<td></td>
+</tr>
+
+<tr>
+<td>A -&gt; C4</td>
+<td>A中有C4的集合，C4中有A</td>
+<td>一对多</td>
+<td></td>
+</tr>
+
+<tr>
+<td>A -&gt; C5</td>
+<td>A中有C5的集合，C5中有A的集合</td>
+<td>多对多</td>
+<td>需要中间表</td>
+</tr>
+
+<tr>
+<td>A -&gt; C6</td>
+<td>A中有C6的集合，C6中无A</td>
+<td>一对多</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<div class="shortcode-notice note">
+  <div class="shortcode-notice-title note">
+    
+      litepal作者简化为三种关系
+    
+  </div>
+  
+
+<p>一对一 ;多对一(一对多) ; 多对多</p>
+
+<p></div></p>
+
 <p>代码实现如下，在LitepalBase中可以找到，oneToAnyConditions代码如下，注意代码中的注释的位置</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -981,20 +1018,33 @@ SaveHandler来处理，以下截图为SaveHandler中onSave()的代码逻辑。</
 </div>
 </div>
 <p>经过这三个大步骤，最后将一个对象的如下字段都分析了一遍</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">1.基本数据类型，字符串和时间类型
-2.基本数据类型的List和Set的集合数据
-3.其他Bean所产生的一对其他的关联关系数据
-4.其他Bean的List或者Set集合产生的多对其他的关联关系数据</pre></td></tr></table>
-</div>
-</div>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1.基本数据类型，字符串和时间类型</td>
+</tr>
+
+<tr>
+<td>2.基本数据类型的List和Set的集合数据</td>
+</tr>
+
+<tr>
+<td>3.其他Bean所产生的一对其他的关联关系数据</td>
+</tr>
+
+<tr>
+<td>4.其他Bean的List或者Set集合产生的多对其他的关联关系数据</td>
+</tr>
+</tbody>
+</table>
+
 <p>onSave中会先执行beforeSave方法</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

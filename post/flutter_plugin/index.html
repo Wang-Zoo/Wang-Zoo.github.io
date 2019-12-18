@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="WangZoo" />
-  <meta name="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链" />
+  <meta name="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 Name Function BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似于长连接" />
 
   <meta name="keywords" content="Hugo, theme, jane" />
 
@@ -58,26 +58,26 @@
 
 
 <meta property="og:title" content="Flutter 插件原理" />
-<meta property="og:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链" />
+<meta property="og:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 Name Function BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似于长连接" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://wang-zoo.github.io/post/flutter_plugin/" />
 <meta property="article:published_time" content="2019-10-21T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2019-10-21T00:00:00&#43;00:00"/>
 
 <meta itemprop="name" content="Flutter 插件原理">
-<meta itemprop="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链">
+<meta itemprop="description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 Name Function BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似于长连接">
 
 
 <meta itemprop="datePublished" content="2019-10-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-10-21T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2509">
+<meta itemprop="wordCount" content="2508">
 
 
 
 <meta itemprop="keywords" content="源码,Flutter," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Flutter 插件原理"/>
-<meta name="twitter:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 1 2 3 BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似与长链"/>
+<meta name="twitter:description" content="Platform Channel flutter的android平台的通讯Channel大致有三种。 Name Function BasicMessageChannel 用于简单的数据传递 MethodChannel 传递一个方法名和参数来完成通讯 EventChannel 类似于长连接"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -343,18 +343,33 @@
 <h2 id="platform-channel">Platform Channel</h2>
 
 <p>flutter的android平台的通讯Channel大致有三种。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">BasicMessageChannel 用于简单的数据传递
-MethodChannel 传递一个方法名和参数来完成通讯
-EventChannel  类似与长链接的通讯</pre></td></tr></table>
-</div>
-</div>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Function</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><strong>BasicMessageChannel</strong></td>
+<td>用于简单的数据传递</td>
+</tr>
+
+<tr>
+<td><strong>MethodChannel</strong></td>
+<td>传递一个方法名和参数来完成通讯</td>
+</tr>
+
+<tr>
+<td><strong>EventChannel</strong></td>
+<td>类似于长连接的通讯</td>
+</tr>
+</tbody>
+</table>
+
 
 <link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
 <div class="box">

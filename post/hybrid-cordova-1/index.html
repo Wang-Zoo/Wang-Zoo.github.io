@@ -70,7 +70,7 @@
 
 <meta itemprop="datePublished" content="2019-08-09T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2019-08-09T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="5247">
+<meta itemprop="wordCount" content="5221">
 
 
 
@@ -612,34 +612,37 @@ pc开发，多变的应用场景，让app需要适配各种场景，webview在�
 </div>
 </div>
 <p>那么这几个方法各自的优缺点呢？</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></pre></td>
-<td class="lntd">
-<pre class="chroma">实体注册：
-    优点-配置标准化且方便,并且可以直接获取到来自原生的返回值
-    缺点-存在安全隐患，在api17以前需要通过其他方式来规避
-        
-拦截url：
-    优点-不存在安全隐患
-    缺点-配置麻烦，且不能直接获得返回值
 
-拦截prompt：
-    优点-不存在安全隐患
-    缺点-配置麻烦，prompt可以直接设置返回值，需要对弹出框进行重写处理</pre></td></tr></table>
-</div>
-</div>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><strong>实体注册</strong></td>
+<td>配置标准化且方便,并且可以直接获取到来自原生的返回值</td>
+<td>存在安全隐患，在api17以前需要通过其他方式来规避</td>
+</tr>
+
+<tr>
+<td><strong>拦截url</strong></td>
+<td>不存在安全隐患</td>
+<td>配置麻烦，且不能直接获得返回值</td>
+</tr>
+
+<tr>
+<td><strong>拦截prompt</strong></td>
+<td>不存在安全隐患</td>
+<td>配置麻烦，prompt可以直接设置返回值，需要对弹出框进行重写处理</td>
+</tr>
+</tbody>
+</table>
+
 <h4 id="2-1-2-webview调用js">2.1.2 webview调用JS</h4>
 
 <p><strong>1.通过loadUrl的方式</strong></p>
