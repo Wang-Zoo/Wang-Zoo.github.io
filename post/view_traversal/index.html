@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>View 测绘分析 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="Vsync 测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/view_traversal/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.d73ab68241f8756b4a88d4c6b2c5895e47611d8270efaa98c35dfd6645c51d7d.css" integrity="sha256-1zq2gkH4dWtKiNTGssWJXkdhHYJw76qYw139ZkXFHX0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="View 测绘分析" />
+<meta property="og:description" content="Vsync 测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/view_traversal/" />
+<meta property="article:published_time" content="2019-12-20T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-20T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="View 测绘分析">
+<meta itemprop="description" content="Vsync 测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样">
+
+
+<meta itemprop="datePublished" content="2019-12-20T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-20T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="4227">
+
+
+
+<meta itemprop="keywords" content="源码,View 测绘," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="View 测绘分析"/>
+<meta name="twitter:description" content="Vsync 测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">View 测绘分析</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-12-20" class="post-time">
+          2019-12-20
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#vsync">Vsync</a></li>
+<li><a href="#choreographer">Choreographer</a>
+<ul>
+<li><a href="#vsync-请求">Vsync 请求</a></li>
+<li><a href="#vsync-回调">Vsync 回调</a></li>
+</ul></li>
+<li><a href="#traversal">Traversal</a>
+<ul>
+<li><a href="#measure">Measure</a></li>
+<li><a href="#layout">Layout</a></li>
+<li><a href="#draw">Draw</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="vsync">Vsync</h2>
+
+<p>测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样换算下来，也就是大概16ms需要
+更新一帧，在Android 系统中，硬件会发出类似的频率信号，然后经过软件层面的分发，最终交予绘制过程去调度，这个就是android上的Vsync的信号流程。</p>
+
+<p>每16ms一个信号来时，就要开始测绘，具体就是Java层开始执行measure layout draw 三大流程，三大流程之后，gpu开始工作，最后硬件完成渲染。整个过程理想状态下是应该
+在16ms内完成，如果超时，是无法进行下一个周期流程的，这里android 采用了双缓存，所谓双缓存，是因为一次测绘流程需要一个缓存区域，完成渲染后之后，才能释放这个缓存
+区域，如果不能在16ms内完成流程，就启动第二个缓存区域来开启下一个流程，这样两个缓存区域搭配使用，能够避免很多卡顿闪屏的情况。当然很多时候，如果两个缓存区域也无法
+满足使用，就会采用三缓存策略，具体原理跟双缓存的原理一样。</p>
+
+<p>至于提到不能在16ms内完成的情况，一般来说都是我们在设计布局时的不合理，导致了measure layout draw三大流程过慢，所以我们需要合理的设计布局，避免层级过深，避免冗余布局。</p>
+
+<h2 id="choreographer">Choreographer</h2>
+
+<p>Choreographer是Java层对于Vsync信号的一个中介者，拥有可以发起请求Vsync信号和响应Vsync信号的功能。</p>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_event_Choreographer.png" />
+    </div>
+    <a href="/imgs/view_event_Choreographer.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Choreographer分发</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>图中显示了一次完整的信号请求和回调，这里我们分为两个步骤来解说，步骤1步骤2为Vsync请求，步骤3和步骤4为Vsync回调</p>
+
+<h3 id="vsync-请求">Vsync 请求</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_request_vsync.png" />
+    </div>
+    <a href="/imgs/view_request_vsync.png" itemprop="contentUrl"></a>
+      <figcaption><h4>请求Vsync</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>我们在平时需要更新视图布局时会使用View的invalidate方法，这个方法会触发View本身绑定的ViewParent的invalidateChild方法，
+ViewParent是一个接口有两个实现者，一个是ViewGroup，一个就是ViewRootImpl，我们看看ViewGroup的具体实现</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//ViewGroup.java
+</span><span class="c1"></span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">invalidateChild</span><span class="o">(</span><span class="n">View</span> <span class="n">child</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Rect</span> <span class="n">dirty</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+        <span class="k">do</span> <span class="o">{</span>
+            <span class="o">...</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="na">invalidateChildInParent</span><span class="o">(</span><span class="n">location</span><span class="o">,</span> <span class="n">dirty</span><span class="o">);</span>
+            <span class="o">...</span>
+        <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">parent</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_structure.png" />
+    </div>
+    <a href="/imgs/view_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>View 与 ViewGroup</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>parent.invalidateChildInParent会将parent的parent返回，这样就不断向上调用，最终调用了ViewRootImpl。
+ViewRootImpl会将任务派发给Choreographer，Choreographer继续去请求Vsync，其实这里有个判断</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//Choreographer.java
+</span><span class="c1"></span><span class="kd">class</span> <span class="nc">Choreographer</span><span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">USE_VSYNC</span> <span class="o">=</span> <span class="n">SystemProperties</span><span class="o">.</span><span class="na">getBoolean</span><span class="o">(</span><span class="s">&#34;debug.choreographer.vsync&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">scheduleFrameLocked</span><span class="o">(</span><span class="kt">long</span> <span class="n">now</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">USE_VSYNC</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">...</span>                    
+            <span class="n">scheduleVsyncLocked</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="o">...</span>             
+            <span class="n">Message</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">mHandler</span><span class="o">.</span><span class="na">obtainMessage</span><span class="o">(</span><span class="n">MSG_DO_FRAME</span><span class="o">);</span>
+            <span class="n">msg</span><span class="o">.</span><span class="na">setAsynchronous</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+            <span class="n">mHandler</span><span class="o">.</span><span class="na">sendMessageAtTime</span><span class="o">(</span><span class="n">msg</span><span class="o">,</span> <span class="n">nextFrameTime</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>USE_VSYNC为系统配置，如果配置为false是不会走Vsync的信号协调的，会直接渲染（MSG_DO_FRAME信号表示进入三大流程）
+如果走Vsync信号，最终在FrameDisplayEventReceiver会调用JNI进入native。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//FrameDisplayEventReceiver.java
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">native</span> <span class="kt">void</span> <span class="nf">nativeScheduleVsync</span><span class="o">(</span><span class="kt">long</span> <span class="n">receiverPtr</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="vsync-回调">Vsync 回调</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_callback_vsync.png" />
+    </div>
+    <a href="/imgs/view_callback_vsync.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Vsync 信号回调</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>Vsync信号的回调还是会从FrameDisplayEventReceiver中回传来</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="c1">//FrameDisplayEventReceiver.java
+</span><span class="c1"></span>
+    <span class="c1">// Called from native code.
+</span><span class="c1"></span>    <span class="nd">@SuppressWarnings</span><span class="o">(</span><span class="s">&#34;unused&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dispatchVsync</span><span class="o">(</span><span class="kt">long</span> <span class="n">timestampNanos</span><span class="o">,</span> <span class="kt">int</span> <span class="n">builtInDisplayId</span><span class="o">,</span> <span class="kt">int</span> <span class="n">frame</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">onVsync</span><span class="o">(</span><span class="n">timestampNanos</span><span class="o">,</span> <span class="n">builtInDisplayId</span><span class="o">,</span> <span class="n">frame</span><span class="o">);</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在FrameHandler处理中会得到一个CallbackRecord，这个其实在Vsync请求时，存入的，到了doCallbacks方法时，会将存入的
+Runnable 任务遍历执行，TraversalRunnable就是其中一个，TraversalRunnable中的任务就是ViewRootImpl中的方法</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ViewRootImpl</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">final</span> <span class="kd">class</span> <span class="nc">TraversalRunnable</span> <span class="kd">implements</span> <span class="n">Runnable</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">doTraversal</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>doTraversal会继续执行performTraversals方法，performTraversals方法里面包含了三大流程。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">performTraversals</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">performMeasure</span><span class="o">(</span><span class="n">childWidthMeasureSpec</span><span class="o">,</span> <span class="n">childHeightMeasureSpec</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="n">performLayout</span><span class="o">(</span><span class="n">lp</span><span class="o">,</span> <span class="n">mWidth</span><span class="o">,</span> <span class="n">mHeight</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="n">performDraw</span><span class="o">();</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="traversal">Traversal</h2>
+
+<p>Traversal的一种解释就是“树的遍历”，这很贴切布局的遍历过程。</p>
+
+<h3 id="measure">Measure</h3>
+
+<p>测量是第一个流程，也是最重要的流程，View主要是确定自身的测量尺寸，ViewGroup需要在对子View进行遍历确定子View的尺寸之后，再确定自身的尺寸。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_measure.png" />
+    </div>
+    <a href="/imgs/view_measure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Measure流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>只要调用了setMeasuredDimension就算确定了测量尺寸。</p>
+
+<p>每个View在测量是都会有从父布局传入两个个int类型的数据 MeasureSpec，分别用于width和height的测量使用，MeasureSpec的32位数据中高两位表示三种测量模式，低30位表示父布局传入参考尺寸。三种测量模式分别是</p>
+
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>含义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>EXACTLY</td>
+<td>尺寸明确，就是传入的尺寸</td>
+</tr>
+
+<tr>
+<td>AT_MOST</td>
+<td>尺寸不能大于传入尺寸</td>
+</tr>
+
+<tr>
+<td>UNSPECIFIED</td>
+<td>尺寸不做限制</td>
+</tr>
+</tbody>
+</table>
+
+<p>在当前父布局传给子布局时会根据子布局的设定宽高来确定子布局的测量模式和参考尺寸。在上述流程图中的measureChild会经过这个计算过程，具体计算规则如下。</p>
+
+<table>
+<thead>
+<tr>
+<th>child\parent</th>
+<th>EXACTLY</th>
+<th>AT_MOST</th>
+<th>UNSPECIFIED</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>childSize</td>
+<td>childSize</td>
+<td>childSize</td>
+<td>childSize</td>
+</tr>
+
+<tr>
+<td>MATCH_PARENT</td>
+<td>parentSize</td>
+<td>parentSize</td>
+<td>parentSize</td>
+</tr>
+
+<tr>
+<td>WRAP_CONTENT</td>
+<td>parentSize</td>
+<td>parentSize</td>
+<td>parentSize</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>child\parent</th>
+<th>EXACTLY</th>
+<th>AT_MOST</th>
+<th>UNSPECIFIED</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>childSize</td>
+<td>EXACTLY</td>
+<td>EXACTLY</td>
+<td>EXACTLY</td>
+</tr>
+
+<tr>
+<td>MATCH_PARENT</td>
+<td>EXACTLY</td>
+<td>AT_MOST</td>
+<td>UNSPECIFIED</td>
+</tr>
+
+<tr>
+<td>WRAP_CONTENT</td>
+<td>AT_MOST</td>
+<td>AT_MOST</td>
+<td>UNSPECIFIED</td>
+</tr>
+</tbody>
+</table>
+
+<p>图中可以知道，一般子布局指定了确定尺寸就会使用指定尺寸，所以需要特殊考虑的就是在MATCH_PARENT 和 WRAP_CONTENT两种宽高模式下的尺寸确定。
+MATCH_PARENT的情况下，不管是测量大小还是测量模式都是直接使用父布局的。
+WRAP_CONTENT的情况下，大小会使用父布局传入的，但是测量模式除了UNSPECIFIED，都是AT_MOST。</p>
+
+<p>也就是说如果布局都是使用MATCH_PARENT或者WRAP_CONTENT这种不是很明确的方式来表示尺寸，最后可能导致使用WRAP_CONTENT却得到了MATCH_PARENT的效果</p>
+
+<p>当然这个是针对没有经过再定义的View，像TextView再定义的View都有各自关于这种情况的处理，避免错误表达。</p>
+
+<h3 id="layout">Layout</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_layout.png" />
+    </div>
+    <a href="/imgs/view_layout.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Layout流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>layout阶段主要是根据计算的测量尺寸来设定当前的view的坐标，在setFrame方法中，通过对mLeft，mTop，mRight，mBottom赋值来确定View的坐标和大小。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">setFrame</span><span class="o">(</span><span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="kt">int</span> <span class="n">top</span><span class="o">,</span> <span class="kt">int</span> <span class="n">right</span><span class="o">,</span> <span class="kt">int</span> <span class="n">bottom</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">boolean</span> <span class="n">changed</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mLeft</span> <span class="o">!=</span> <span class="n">left</span> <span class="o">||</span> <span class="n">mRight</span> <span class="o">!=</span> <span class="n">right</span> <span class="o">||</span> <span class="n">mTop</span> <span class="o">!=</span> <span class="n">top</span> <span class="o">||</span> <span class="n">mBottom</span> <span class="o">!=</span> <span class="n">bottom</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">...</span>
+            <span class="n">mLeft</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+            <span class="n">mTop</span> <span class="o">=</span> <span class="n">top</span><span class="o">;</span>
+            <span class="n">mRight</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+            <span class="n">mBottom</span> <span class="o">=</span> <span class="n">bottom</span><span class="o">;</span>
+            <span class="n">mRenderNode</span><span class="o">.</span><span class="na">setLeftTopRightBottom</span><span class="o">(</span><span class="n">mLeft</span><span class="o">,</span> <span class="n">mTop</span><span class="o">,</span> <span class="n">mRight</span><span class="o">,</span> <span class="n">mBottom</span><span class="o">);</span>
+            <span class="o">...</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">changed</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>图中也会更新一个mRenderNode的坐标，RenderNode是用作硬件加速使用的，在后续绘制流程中使用。</p>
+
+<p><strong>getMeasuredWidth和getWidth</strong></p>
+
+<p>这里讨论一下，这个两个长度的区别，两者代码如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">getMeasuredWidth</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mMeasuredWidth</span> <span class="o">&amp;</span> <span class="n">MEASURED_SIZE_MASK</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">getWidth</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">mRight</span> <span class="o">-</span> <span class="n">mLeft</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>mMeasuredWidth是在measure流程之后获得，而mRight和mLeft是在layout流程之后获得，mRight和mLeft依赖mMeasuredWidth，但是也可以我们在自定义时自动
+设置。比如下面代码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">layout</span><span class="o">(</span><span class="n">0</span><span class="o">,</span><span class="n">0</span><span class="o">,</span><span class="n">30</span><span class="o">,</span><span class="n">50</span><span class="o">);</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>所以如果是严格按照mMeasuredWidth的标准来设置mRight和mLeft的话，getMeasuredWidth和getWidth会得到一样的结果，否则结果不一样，并且getWidth的结果比getMeasuredWidth更准确。</p>
+
+<h3 id="draw">Draw</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_draw.png" />
+    </div>
+    <a href="/imgs/view_draw.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Draw流程</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>在ViewRootImpl的draw方法中有个很重要的分界点</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ViewRootImpl</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">draw</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">fullRedrawNeeded</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mAttachInfo</span><span class="o">.</span><span class="na">mThreadedRenderer</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">mAttachInfo</span><span class="o">.</span><span class="na">mThreadedRenderer</span><span class="o">.</span><span class="na">isEnabled</span><span class="o">())</span> <span class="o">{</span>
+            <span class="o">...</span>
+            <span class="n">mAttachInfo</span><span class="o">.</span><span class="na">mThreadedRenderer</span><span class="o">.</span><span class="na">draw</span><span class="o">(</span><span class="n">mView</span><span class="o">,</span> <span class="n">mAttachInfo</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="o">...</span>
+            <span class="n">drawSoftware</span><span class="o">(</span><span class="n">surface</span><span class="o">,</span> <span class="n">mAttachInfo</span><span class="o">,</span> <span class="n">xOffset</span><span class="o">,</span> <span class="n">yOffset</span><span class="o">,</span> <span class="n">scalingRequired</span><span class="o">,</span> <span class="n">dirty</span><span class="o">)</span>
+        <span class="o">}</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这个判断决定了Draw阶段是使用软件绘制还是硬件加速绘制。</p>
+
+<p><strong>软件绘制</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">drawSoftware</span><span class="o">(</span><span class="n">Surface</span> <span class="n">surface</span><span class="o">,</span> <span class="n">AttachInfo</span> <span class="n">attachInfo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">xoff</span><span class="o">,</span> <span class="kt">int</span> <span class="n">yoff</span><span class="o">,</span><span class="kt">boolean</span> <span class="n">scalingRequired</span><span class="o">,</span> <span class="n">Rect</span> <span class="n">dirty</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">Canvas</span> <span class="n">canvas</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="n">mSurface</span><span class="o">.</span><span class="na">lockCanvas</span><span class="o">(</span><span class="n">dirty</span><span class="o">);</span>
+        <span class="o">...</span>
+        <span class="n">mView</span><span class="o">.</span><span class="na">draw</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+        <span class="o">...</span>
+        <span class="n">surface</span><span class="o">.</span><span class="na">unlockCanvasAndPost</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+    <span class="o">}</span>   <span class="o">...</span>         
+    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>  
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>软件部分很简单，Surface向SurfaceFlinger申请一块匿名共享内存内存分配，获得一个画布Canvas，这个Canvas其实是Skiacanvas，用于调用Skia库，进行图形绘制
+在draw中通过递归操作子View绘制canvas，完成渲染。这个实际都是属于软件绘制，因为整个过程都要经过cpu完成，cpu对于图形渲染这种矩阵浮点操作本身不是很擅长，并且绘制过程一直处于主线程，不是最理想的绘制方式。</p>
+
+<p><strong>硬件加速</strong></p>
+
+<p>关于硬件绘制需要了解绘制主要是依赖的是RenderNode，每个View拥有一个RenderNode，每个RenderNode会产生一个DisplayListCanvas，DisplayListCanvas继承于Canvas，能够像普通的Canvas使用，也能绘制RenderNode，方法名为drawRenderNode。这样一个父RenderNode通过调用drawRenderNode可以将子View的RenderNode关联到父RenderNode，这样将View的绘制步骤都转换成一颗RenderNode 树。在native层RenderNode树的绘制过程会有专门的RenderThread来完成。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/view_render_node.png" />
+    </div>
+    <a href="/imgs/view_render_node.png" itemprop="contentUrl"></a>
+      <figcaption><h4>RenderNode 树</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">ThreadedRenderer</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kt">void</span> <span class="nf">draw</span><span class="o">(</span><span class="n">View</span> <span class="n">view</span><span class="o">,</span> <span class="n">AttachInfo</span> <span class="n">attachInfo</span><span class="o">,</span> <span class="n">DrawCallbacks</span> <span class="n">callbacks</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">...</span>
+        <span class="n">updateRootDisplayList</span><span class="o">(</span><span class="n">view</span><span class="o">,</span> <span class="n">callbacks</span><span class="o">);</span>
+        <span class="o">...</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>上述代码为硬件加速绘制部分，updateRootDisplayList完成根节点RenderNode的生成。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">updateRootDisplayList</span><span class="o">(</span><span class="n">View</span> <span class="n">view</span><span class="o">,</span> <span class="n">DrawCallbacks</span> <span class="n">callbacks</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">DisplayListCanvas</span> <span class="n">canvas</span> <span class="o">=</span> <span class="n">mRootNode</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">mSurfaceWidth</span><span class="o">,</span> <span class="n">mSurfaceHeight</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="n">canvas</span><span class="o">.</span><span class="na">drawRenderNode</span><span class="o">(</span><span class="n">view</span><span class="o">.</span><span class="na">updateDisplayListIfDirty</span><span class="o">());</span>
+    <span class="o">...</span>
+    <span class="n">mRootNode</span><span class="o">.</span><span class="na">end</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>同时调用view的updateDisplayListIfDirty完成层View的RenderNode递归绘制和添加操作</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="n">RenderNode</span> <span class="nf">updateDisplayListIfDirty</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">final</span> <span class="n">DisplayListCanvas</span> <span class="n">canvas</span> <span class="o">=</span> <span class="n">renderNode</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">width</span><span class="o">,</span> <span class="n">height</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="k">if</span> <span class="o">((</span><span class="n">mPrivateFlags</span> <span class="o">&amp;</span> <span class="n">PFLAG_SKIP_DRAW</span><span class="o">)</span> <span class="o">==</span> <span class="n">PFLAG_SKIP_DRAW</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dispatchDraw</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+        <span class="o">...</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">draw</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+    <span class="n">renderNode</span><span class="o">.</span><span class="na">end</span><span class="o">(</span><span class="n">canvas</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">renderNode</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>不管是在dispatchDraw还是draw方法，都会调用到dispatchDraw方法。draw方法中完成本层View 内容的绘制，dispatchDraw完成下一层级View的绘制</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">dispatchDraw</span><span class="o">(</span><span class="n">Canvas</span> <span class="n">canvas</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="k">for</span><span class="o">(...){</span>
+      <span class="n">drawChild</span><span class="o">(</span><span class="n">canvas</span><span class="o">,</span> <span class="n">transientChild</span><span class="o">,</span> <span class="n">drawingTime</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+
+<span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">drawChild</span><span class="o">(</span><span class="n">Canvas</span> <span class="n">canvas</span><span class="o">,</span> <span class="n">View</span> <span class="n">child</span><span class="o">,</span> <span class="kt">long</span> <span class="n">drawingTime</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">child</span><span class="o">.</span><span class="na">draw</span><span class="o">(</span><span class="n">canvas</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="n">drawingTime</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kt">boolean</span> <span class="nf">draw</span><span class="o">(</span><span class="n">Canvas</span> <span class="n">canvas</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">parent</span><span class="o">,</span> <span class="kt">long</span> <span class="n">drawingTime</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="c1">//递归
+</span><span class="c1"></span>    <span class="n">renderNode</span> <span class="o">=</span> <span class="n">updateDisplayListIfDirty</span><span class="o">();</span>
+    <span class="o">...</span>
+    <span class="o">((</span><span class="n">DisplayListCanvas</span><span class="o">)</span> <span class="n">canvas</span><span class="o">).</span><span class="na">drawRenderNode</span><span class="o">(</span><span class="n">renderNode</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>到了draw(Canvas,ViewGroup , long )这个三个参数的draw方法（前面的draw方法是单参数），就到了递归点，完成下下层RenderNode的添加。</p>
+
+<p>单是从代码上看，软件绘制和硬件绘制的区别就是，软件绘制是整个绘制过程都是用一个Canvas从上到下传递，而硬件绘制是每一层生成一个Canvas（DisplayListCanvas）
+绘制本层内容同时也绘制下一层的RenderNode。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>一次软件测绘分析，还是设计了大量方面的知识，我不仅了解了GPU，CPU绘制的区别，还要去看SurfaceFlinger的东西（虽然没什么进展）。还是那句话，虽然一吨棉花才能出一滴水，别人只看到了一滴水，但是你却能看到一吨棉花，下一次我还想挤一滴水的时候，就不需要再去找那么多的棉花了。共勉！！！</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-12-20
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E6%BA%90%E7%A0%81/">源码</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/view_event/">
+            <span class="next-text nav-default">View 事件体系分析</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

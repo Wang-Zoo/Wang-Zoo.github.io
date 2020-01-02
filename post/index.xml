@@ -6,10 +6,19 @@
     <description>Recent content in Posts on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 01 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 20 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>View 测绘分析</title>
+      <link>https://wang-zoo.github.io/post/view_traversal/</link>
+      <pubDate>Fri, 20 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/view_traversal/</guid>
+      <description>Vsync 测绘需要经过cpu的运算，gpu的分配，硬件的渲染，因为在人的眼睛感官中，每秒大于等于60帧画面时，我们就不会对于画面产生卡顿的感觉，这样</description>
+    </item>
     
     <item>
       <title>View 事件体系分析</title>
