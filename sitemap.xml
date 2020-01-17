@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://wang-zoo.github.io/post/apk_struc_arsc/</loc>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/view_traversal/</loc>
     <lastmod>2019-12-20T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -115,24 +122,42 @@
   
   <url>
     <loc>https://wang-zoo.github.io/post/</loc>
-    <lastmod>2019-12-20T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/tags/</loc>
-    <lastmod>2019-12-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://wang-zoo.github.io/tags/view-%E6%B5%8B%E7%BB%98/</loc>
-    <lastmod>2019-12-20T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/</loc>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/apk/</loc>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/resource.arsc/</loc>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</loc>
+    <lastmod>2020-01-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/view-%E6%B5%8B%E7%BB%98/</loc>
     <lastmod>2019-12-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -152,12 +177,6 @@
   <url>
     <loc>https://wang-zoo.github.io/tags/messagequeue/</loc>
     <lastmod>2019-11-12T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</loc>
-    <lastmod>2019-11-08T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

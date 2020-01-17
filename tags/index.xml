@@ -6,10 +6,37 @@
     <description>Recent content in Tags on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 20 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 06 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>apk</title>
+      <link>https://wang-zoo.github.io/tags/apk/</link>
+      <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/apk/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>resource.arsc</title>
+      <link>https://wang-zoo.github.io/tags/resource.arsc/</link>
+      <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/resource.arsc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>插件化</title>
+      <link>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</link>
+      <pubDate>Mon, 06 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>View 测绘</title>
@@ -44,15 +71,6 @@
       <pubDate>Tue, 12 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>https://wang-zoo.github.io/tags/messagequeue/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>插件化</title>
-      <link>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</link>
-      <pubDate>Fri, 08 Nov 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://wang-zoo.github.io/tags/%E6%8F%92%E4%BB%B6%E5%8C%96/</guid>
       <description></description>
     </item>
     
