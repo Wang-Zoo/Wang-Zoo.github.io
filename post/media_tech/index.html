@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>极客时间-音视频笔记(1) - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="webrtc 工作图 1.音视频设备检测 1.1 奈奎斯特定理 在进行模拟 / 数字信号的转换过程中，当采样率大于信号中最高频率的 2 倍时，采样之后的数字信号就完整地保留" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/media_tech/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="极客时间-音视频笔记(1)" />
+<meta property="og:description" content="webrtc 工作图 1.音视频设备检测 1.1 奈奎斯特定理 在进行模拟 / 数字信号的转换过程中，当采样率大于信号中最高频率的 2 倍时，采样之后的数字信号就完整地保留" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/media_tech/" />
+<meta property="article:published_time" content="2020-03-13T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-03-13T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="极客时间-音视频笔记(1)">
+<meta itemprop="description" content="webrtc 工作图 1.音视频设备检测 1.1 奈奎斯特定理 在进行模拟 / 数字信号的转换过程中，当采样率大于信号中最高频率的 2 倍时，采样之后的数字信号就完整地保留">
+
+
+<meta itemprop="datePublished" content="2020-03-13T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-13T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2275">
+
+
+
+<meta itemprop="keywords" content="笔记,webrtc," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="极客时间-音视频笔记(1)"/>
+<meta name="twitter:description" content="webrtc 工作图 1.音视频设备检测 1.1 奈奎斯特定理 在进行模拟 / 数字信号的转换过程中，当采样率大于信号中最高频率的 2 倍时，采样之后的数字信号就完整地保留"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">极客时间-音视频笔记(1)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-03-13" class="post-time">
+          2020-03-13
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-音视频设备检测">1.音视频设备检测</a>
+<ul>
+<li><a href="#1-1-奈奎斯特定理">1.1 奈奎斯特定理</a></li>
+<li><a href="#1-2-设备检测代码">1.2 设备检测代码</a></li>
+</ul></li>
+<li><a href="#2-摄像头">2.摄像头</a>
+<ul>
+<li><a href="#2-1-非编码帧-与-编码帧">2.1 非编码帧 与 编码帧</a></li>
+<li><a href="#2-2-获取视频流代码">2.2 获取视频流代码</a></li>
+<li><a href="#2-3拍照实现步骤">2.3拍照实现步骤</a></li>
+</ul></li>
+<li><a href="#3-录制">3. 录制</a>
+<ul>
+<li><a href="#3-1-分类">3.1 分类</a></li>
+<li><a href="#3-2-客户端录制">3.2 客户端录制</a></li>
+<li><a href="#3-3-录制api">3.3 录制api</a></li>
+</ul></li>
+<li><a href="#4-桌面共享">4.桌面共享</a>
+<ul>
+<li><a href="#4-1-原理">4.1 原理</a></li>
+<li><a href="#4-2-远程桌面协议">4.2 远程桌面协议</a></li>
+<li><a href="#4-3-调用api">4.3 调用api</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/webrtc.png" />
+    </div>
+    <a href="/imgs/webrtc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>webrtc 工作图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h3 id="1-音视频设备检测">1.音视频设备检测</h3>
+
+<h4 id="1-1-奈奎斯特定理">1.1 奈奎斯特定理</h4>
+
+<p><font color=#0080f0>在进行模拟 / 数字信号的转换过程中，当采样率大于信号中最高频率的 2 倍时，采样之后的数字信号就完整地保留了原始信号中的信息。</font></p>
+
+<h4 id="1-2-设备检测代码">1.2 设备检测代码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="p">...</span>
+
+<span class="c1">//判断浏览器是否支持这些 API
+</span><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span> <span class="o">||</span> <span class="o">!</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">enumerateDevices</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;enumerateDevices() not supported.&#34;</span><span class="p">);</span>
+  <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 枚举 cameras and microphones.
+</span><span class="c1"></span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">enumerateDevices</span><span class="p">()</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">deviceInfos</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="c1">//打印出每一个设备的信息
+</span><span class="c1"></span>  <span class="nx">deviceInfos</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">deviceInfo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">deviceInfo</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">deviceInfo</span><span class="p">.</span><span class="nx">kind</span> <span class="o">+</span> <span class="s2">&#34;: &#34;</span> <span class="o">+</span> <span class="nx">deviceInfo</span><span class="p">.</span><span class="nx">label</span> <span class="o">+</span>
+                <span class="s2">&#34; id = &#34;</span> <span class="o">+</span> <span class="nx">deviceInfo</span><span class="p">.</span><span class="nx">deviceId</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">})</span>
+<span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="s2">&#34;: &#34;</span> <span class="o">+</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-摄像头">2.摄像头</h3>
+
+<h4 id="2-1-非编码帧-与-编码帧">2.1 非编码帧 与 编码帧</h4>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>定义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>非编码帧</td>
+<td>采集的原始视频数据叫做非编码帧，属于YUV格式或者RGB格式</td>
+</tr>
+
+<tr>
+<td>编码帧</td>
+<td>通过编码器（如 H264/H265、VP8/VP9）压缩后的帧称为编码帧</td>
+</tr>
+</tbody>
+</table>
+
+<p>以 H264 为例，经过 H264 编码的帧包括以下三种类型</p>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>定义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>I帧</td>
+<td>关键帧。压缩率低，可以单独解码成一幅完整的图像。</td>
+</tr>
+
+<tr>
+<td>P帧</td>
+<td>参考帧。压缩率较高，解码时依赖于前面已解码的数据。</td>
+</tr>
+
+<tr>
+<td>B帧</td>
+<td>前后参考帧。压缩率最高，解码时不光依赖前面已经解码的帧，而且还依赖它后面的 P 帧。换句话说就是，B 帧后面的 P 帧要优先于它进行解码，然后才能将 B 帧解码。</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="2-2-获取视频流代码">2.2 获取视频流代码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="s1">&#39;use strict&#39;</span>
+
+<span class="c1">//获取HTML页面中的video标签  
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">videoplay</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;video#player&#39;</span><span class="p">);</span>
+
+<span class="c1">//播放视频流
+</span><span class="c1"></span><span class="kd">function</span> <span class="nx">gotMediaStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
+        <span class="nx">videoplay</span><span class="p">.</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">handleError</span><span class="p">(</span><span class="nx">err</span><span class="p">){</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;getUserMedia error:&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">//对采集的数据做一些限制
+</span><span class="c1"></span><span class="kd">var</span> <span class="nx">constraints</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="nx">video</span> <span class="o">:</span> <span class="p">{</span>
+                                <span class="nx">width</span><span class="o">:</span> <span class="mi">1280</span><span class="p">,</span>
+                                <span class="nx">height</span><span class="o">:</span> <span class="mi">720</span><span class="p">,</span>
+                                <span class="nx">frameRate</span><span class="o">:</span><span class="mi">15</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="nx">audio</span> <span class="o">:</span> <span class="kc">false</span>
+                   <span class="p">}</span>
+
+<span class="c1">//采集音视频数据流
+</span><span class="c1"></span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">constraints</span><span class="p">)</span>
+                        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">gotMediaStream</span><span class="p">)</span>
+                        <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">handleError</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-3拍照实现步骤">2.3拍照实现步骤</h4>
+
+<p>1.首先将摄像头的数据渲染到video标签上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getUserMedia</span><span class="p">(</span><span class="nx">constraints</span><span class="p">)</span>
+            <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">gotMediaStream</span><span class="p">)</span>
+            <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">handleError</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>2.将video的某一帧渲染在canvas上</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="nx">picture</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">&#39;2d&#39;</span><span class="p">).</span><span class="nx">drawImage</span><span class="p">(</span><span class="nx">videoplay</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">picture</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">picture</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><a href="https://github.com/avdance/webrtc_web/tree/master/03_takephoto/public/takephoto">demo地址</a></p>
+
+<h3 id="3-录制">3. 录制</h3>
+
+<h4 id="3-1-分类">3.1 分类</h4>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>优缺点</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>服务端录制</td>
+<td>服务端录制：优点是不用担心客户因自身电脑问题造成录制失败（如磁盘空间不足），也不会因录制时抢占资源（CPU 占用率过高）而导致其他应用出现问题等；缺点是实现的复杂度很高</td>
+</tr>
+
+<tr>
+<td>客户端录制</td>
+<td>优点是方便录制方（如老师）操控，并且所录制的视频清晰度高，实现相对简单；其中最主要的缺点就是录制失败率高。因为客户端在进行录制时会开启第二路编码器，这样会特别耗 CPU。而 CPU 占用过高后，就很容易造成应用程序卡死。除此之外，它对内存、硬盘的要求也特别高</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="3-2-客户端录制">3.2 客户端录制</h4>
+
+<p>1.三个问题</p>
+
+<p>录制的格式（flv等）；播放场景；什么时候开始播放</p>
+
+<p>2.二进制数据类型</p>
+
+<p>WebRTC 录制音视频流之后，最终是通过 Blob 对象将数据保存成多媒体文件的</p>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>使用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>ArrayBuffer</td>
+<td>let buffer = new ArrayBuffer(16); // 创建一个长度为 16 的 bufferlet view = new Uint32Array(buffer);</td>
+</tr>
+
+<tr>
+<td>ArrayBufferView</td>
+<td>ArrayBufferView 指的是 Int8Array、Uint8Array、DataView 等类型的总称，而这些类型都是使用 ArrayBuffer 类实现的</td>
+</tr>
+
+<tr>
+<td>Blob</td>
+<td>WebRTC 最终就是使用它将录制好的音视频流保存成多媒体文件的。而它的底层是由上面所讲的 ArrayBuffer 对象的封装类实现的，即 Int8Array、Uint8Array 等类型</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="3-3-录制api">3.3 录制api</h4>
+
+<p>1.录制</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">handleDataAvailable</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+	<span class="k">if</span><span class="p">(</span><span class="nx">e</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+	 	<span class="nx">buffer</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>			
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="p">.........</span>
+
+    <span class="nx">buffer</span> <span class="o">=</span> <span class="p">[];</span>
+
+	<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">mimeType</span><span class="o">:</span> <span class="s1">&#39;video/webm;codecs=vp8&#39;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">MediaRecorder</span><span class="p">.</span><span class="nx">isTypeSupported</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">mimeType</span><span class="p">)){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">options</span><span class="p">.</span><span class="nx">mimeType</span><span class="si">}</span><span class="sb"> is not supported!`</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>	
+	<span class="p">}</span>
+
+	<span class="k">try</span><span class="p">{</span>
+		<span class="nx">mediaRecorder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MediaRecorder</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+	<span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to create MediaRecorder:&#39;</span><span class="p">,</span> <span class="nx">e</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>	
+	<span class="p">}</span>
+
+	<span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">ondataavailable</span> <span class="o">=</span> <span class="nx">handleDataAvailable</span><span class="p">;</span>
+	<span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>2.使用</p>
+
+<p>通过对 buffer 进行转化，可以将视频流保存或者播放</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"> <span class="c1">//播放
+</span><span class="c1"></span>
+ <span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="p">{</span><span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;video/webm&#39;</span><span class="p">});</span>
+	<span class="nx">recvideo</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
+	<span class="nx">recvideo</span><span class="p">.</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+	<span class="nx">recvideo</span><span class="p">.</span><span class="nx">controls</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="nx">recvideo</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+
+<span class="c1">//保存
+</span><span class="c1"></span>
+<span class="kd">var</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">(</span><span class="nx">buffer</span><span class="p">,</span> <span class="p">{</span><span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;video/webm&#39;</span><span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">);</span>
+
+	<span class="nx">a</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">url</span><span class="p">;</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">;</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nx">download</span> <span class="o">=</span> <span class="s1">&#39;aaa.webm&#39;</span><span class="p">;</span>
+	<span class="nx">a</span><span class="p">.</span><span class="nx">click</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="4-桌面共享">4.桌面共享</h3>
+
+<h4 id="4-1-原理">4.1 原理</h4>
+
+<p><font color=#0080f0>对于共享者，每秒钟抓取多次屏幕（可以是 3 次、5 次等），每次抓取的屏幕都与上一次抓取的屏幕做比较，取它们的差值，然后对差值进行压缩；如果是第一次抓屏或切幕的情况，即本次抓取的屏幕与上一次抓取屏幕的变化率超过 80% 时，就做全屏的帧内压缩，其过程与 JPEG 图像压缩类似（有兴趣的可以自行学习）。最后再将压缩后的数据通过传输模块传送到观看端；数据到达观看端后，再进行解码，这样即可还原出整幅图片并显示出来</font></p>
+
+<p><font color=#0080f0>对于远程控制端，当用户通过鼠标点击共享桌面的某个位置时，会首先计算出鼠标实际点击的位置，然后将其作为参数，通过信令发送给共享端。共享端收到信令后，会模拟本地鼠标，即调用相关的 API，完成最终的操作。一般情况下，当操作完成后，共享端桌面也发生了一些变化，此时就又回到上面共享者的流程了</font></p>
+
+<p><strong>抓屏-&gt;压缩编码-&gt;传输-&gt;解码-&gt;显示-&gt;控制</strong></p>
+
+<h4 id="4-2-远程桌面协议">4.2 远程桌面协议</h4>
+
+<p><strong>桌面数据</strong>：包括了桌面的抓取 (采集)、编码（压缩）、传输、解码和渲染。</p>
+
+<p><strong>信令控制</strong>：包括键盘事件、鼠标事件以及接收到这些事件消息后的相关处理等</p>
+
+<p>其实在 WebRTC 中也可以实现共享远程桌面的功能。但由于共享桌面与音视频处理的流程是类似的，且 WebRTC 的远程桌面又不需要远程控制，所以其处理过程使用了视频的方式，而非传统意义上的 RDP/VNC 等远程桌面协议,具体的区别如下</p>
+
+<table>
+<thead>
+<tr>
+<th>过程</th>
+<th>内容</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>第一个环节，共享端桌面数据的采集</td>
+<td>WebRTC 对于桌面的采集与 RDP/VNC 使用的技术是相同的，都是利用各平台所提供的相关 API 进行桌面的抓取</td>
+</tr>
+
+<tr>
+<td>第二个环节，共享端桌面数据的编码</td>
+<td>WebRTC 对桌面的编码使用的是视频编码技术，即 H264/VP8 等；但 RDP/VNC 则不一样，它们使用的是图像压缩技术。使用视频编码技术的好处是压缩率高，而坏处是在网络不好的情况下会有模糊等问题</td>
+</tr>
+
+<tr>
+<td>第三个环节，传输</td>
+<td>编码后的桌面数据会通过流媒体传输协议发送到观看端。对于 WebRTC 来说，当网络有问题时，数据是可以丢失的。但对于 RDP/VNC 来说，桌面数据一定不能丢失</td>
+</tr>
+
+<tr>
+<td>第四个环节，观看端解码</td>
+<td>WebRTC 对收到的桌面数据通过视频解码技术解码，而 RDP/VNC 使用的是图像解码技术</td>
+</tr>
+
+<tr>
+<td>第五个环节，观看端渲染</td>
+<td>一般会通过 OpenGL/D3D 等 GPU 进行渲染，这个 WebRTC 与 RDP/VNC 都是类似的</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="4-3-调用api">4.3 调用api</h4>
+
+<p>1.共享</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">gotMediaStream</span><span class="p">(</span><span class="nx">stream</span><span class="p">){</span>
+
+	<span class="nb">window</span><span class="p">.</span><span class="nx">stream</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+	<span class="nx">videoplay</span><span class="p">.</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="p">......</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span> <span class="o">||!</span><span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getDisplayMedia</span><span class="p">){</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;getDisplayMedia is not supported!&#39;</span><span class="p">);</span>
+	<span class="k">return</span><span class="p">;</span>
+<span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">constraints</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">video</span> <span class="o">:</span> <span class="p">{</span>
+			<span class="nx">width</span><span class="o">:</span> <span class="mi">640</span><span class="p">,</span>	
+			<span class="nx">height</span><span class="o">:</span> <span class="mi">480</span><span class="p">,</span>
+			<span class="nx">frameRate</span><span class="o">:</span><span class="mi">15</span>
+		<span class="p">},</span> 
+		<span class="nx">audio</span> <span class="o">:</span> <span class="kc">false</span> 
+	<span class="p">}</span>
+
+	<span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getDisplayMedia</span><span class="p">(</span><span class="nx">constraints</span><span class="p">)</span>
+			<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">gotMediaStream</span><span class="p">)</span>
+			<span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">handleError</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>2.记录</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">handleDataAvailable</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+	<span class="k">if</span><span class="p">(</span><span class="nx">e</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span> <span class="o">&amp;&amp;</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+	 	<span class="nx">buffer</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>			
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">startRecord</span><span class="p">(){</span>
+	
+	<span class="nx">buffer</span> <span class="o">=</span> <span class="p">[];</span>
+
+	<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">mimeType</span><span class="o">:</span> <span class="s1">&#39;video/webm;codecs=vp8&#39;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">MediaRecorder</span><span class="p">.</span><span class="nx">isTypeSupported</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">mimeType</span><span class="p">)){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">options</span><span class="p">.</span><span class="nx">mimeType</span><span class="si">}</span><span class="sb"> is not supported!`</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>	
+	<span class="p">}</span>
+
+	<span class="k">try</span><span class="p">{</span>
+		<span class="nx">mediaRecorder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">MediaRecorder</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">stream</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+	<span class="p">}</span><span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Failed to create MediaRecorder:&#39;</span><span class="p">,</span> <span class="nx">e</span><span class="p">);</span>
+		<span class="k">return</span><span class="p">;</span>	
+	<span class="p">}</span>
+
+	<span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">ondataavailable</span> <span class="o">=</span> <span class="nx">handleDataAvailable</span><span class="p">;</span>
+	<span class="nx">mediaRecorder</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-03-13
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+          <a href="https://wang-zoo.github.io/tags/webrtc/">webrtc</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/apk_struc_arsc/">
+            <span class="next-text nav-default">Apk 结构详解(1)</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
