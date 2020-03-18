@@ -6,10 +6,19 @@
     <description>Recent content in Posts on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 13 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 16 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>极客时间-音视频笔记(2)</title>
+      <link>https://wang-zoo.github.io/post/media_tech_2/</link>
+      <pubDate>Mon, 16 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/media_tech_2/</guid>
+      <description>1.协议 1.1 使用udp 在 TCP 协议中，为了避免重传次数过多，定时器的超时时间会按 2 的指数增长。也就是说，假设第一次设置的超时时间是 1 秒，那么第二次</description>
+    </item>
     
     <item>
       <title>极客时间-音视频笔记(1)</title>
