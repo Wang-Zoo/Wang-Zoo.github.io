@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>极客时间-音视频笔记(3) - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="1.连接 对于 WebRTC 来讲，它认为通过中继的方式会增加 A 与 B 之间传输的时长，所以它优先使用 P2P 方式；如果 P2P 方式不通，才会使用中继的方式。 在本机收集所有" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/media_tech_3/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="极客时间-音视频笔记(3)" />
+<meta property="og:description" content="1.连接 对于 WebRTC 来讲，它认为通过中继的方式会增加 A 与 B 之间传输的时长，所以它优先使用 P2P 方式；如果 P2P 方式不通，才会使用中继的方式。 在本机收集所有" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/media_tech_3/" />
+<meta property="article:published_time" content="2020-03-18T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-03-18T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="极客时间-音视频笔记(3)">
+<meta itemprop="description" content="1.连接 对于 WebRTC 来讲，它认为通过中继的方式会增加 A 与 B 之间传输的时长，所以它优先使用 P2P 方式；如果 P2P 方式不通，才会使用中继的方式。 在本机收集所有">
+
+
+<meta itemprop="datePublished" content="2020-03-18T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-18T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3410">
+
+
+
+<meta itemprop="keywords" content="笔记,webrtc," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="极客时间-音视频笔记(3)"/>
+<meta name="twitter:description" content="1.连接 对于 WebRTC 来讲，它认为通过中继的方式会增加 A 与 B 之间传输的时长，所以它优先使用 P2P 方式；如果 P2P 方式不通，才会使用中继的方式。 在本机收集所有"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">极客时间-音视频笔记(3)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-03-18" class="post-time">
+          2020-03-18
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-连接">1.连接</a>
+<ul>
+<li><a href="#1-1-candidate">1.1 Candidate</a></li>
+<li><a href="#1-2-stun-协议">1.2 STUN 协议</a></li>
+<li><a href="#1-3-turn-协议">1.3 TURN 协议</a></li>
+<li><a href="#1-4-nat-打洞-p2p-穿越">1.4 NAT 打洞 /P2P 穿越</a></li>
+</ul></li>
+<li><a href="#2-打洞">2. 打洞</a>
+<ul>
+<li><a href="#2-1-完全锥型-nat">2.1 完全锥型 NAT</a></li>
+<li><a href="#2-2-ip-限制锥型-nat">2.2 IP 限制锥型 NAT</a></li>
+<li><a href="#2-3-端口限制锥型">2.3 端口限制锥型</a></li>
+<li><a href="#2-4-对称型-nat">2.4 对称型 NAT</a></li>
+<li><a href="#2-5-nat-检测">2.5 NAT 检测</a></li>
+</ul></li>
+<li><a href="#3-信令服务器">3. 信令服务器</a>
+<ul>
+<li><a href="#3-1-node-js">3.1 Node.js</a></li>
+<li><a href="#3-2-socket-io">3.2 Socket.io</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h3 id="1-连接">1.连接</h3>
+
+<p>对于 WebRTC 来讲，它认为通过中继的方式会增加 A 与 B 之间传输的时长，所以它优先使用 P2P 方式；如果 P2P 方式不通，才会使用中继的方式。</p>
+
+<ul>
+<li><p>在本机收集所有的 host 类型的 Candidate，通过 STUN 协议收集 srflx 类型的 Candidate，使用 TURN 协议收集 relay 类型的 Candidate</p></li>
+
+<li><p>优先使用内网连接，其次使用NAT穿透直接用公网ip连接，最后使用中继服务器来进行连接</p></li>
+</ul>
+
+<h4 id="1-1-candidate">1.1 Candidate</h4>
+
+<p>ICE Candidate （ICE 候选者）。它表示 WebRTC 与远端通信时使用的协议、IP 地址和端口，一般由以下字段组成：</p>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>本地 IP 地址</td>
+</tr>
+
+<tr>
+<td>本地端口号</td>
+</tr>
+
+<tr>
+<td>候选者类型，包括 host、srflx 和 relay</td>
+</tr>
+
+<tr>
+<td>优先级</td>
+</tr>
+
+<tr>
+<td>传输协议访问服务的用户名</td>
+</tr>
+</tbody>
+</table>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>类型</th>
+<th>数值</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>host</td>
+<td>表示本机候选者</td>
+<td>即本机内网的 IP 和端口</td>
+</tr>
+
+<tr>
+<td>srflx</td>
+<td>表示内网主机映射的外网的地址和端口</td>
+<td>即本机 NAT 映射后的外网的 IP 和端口</td>
+</tr>
+
+<tr>
+<td>relay</td>
+<td>表示中继候选者</td>
+<td>即中继服务器的 IP 和端口</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="1-2-stun-协议">1.2 STUN 协议</h4>
+
+<ul>
+<li><p>Session Traversal Utilities for NAT，NAT会话穿越应用程序</p></li>
+
+<li><p>它允许位于NAT（或多重NAT）后的客户端找出自己的公网地址，查出自己位于哪种类型的NAT之后以及NAT为某一个本地端口所绑定的Internet端端口。这些信息被用来在两个同时处于NAT路由器之后的主机之间创建UDP通信。该协议由RFC 5389定义</p></li>
+
+<li><p>首先在外网搭建一个 STUN 服务器，现在比较流行的 STUN 服务器是 CoTURN，你可以到 GitHub 上自己下载源码编译安装。</p></li>
+
+<li><p>当 STUN 服务器安装好后，从内网主机发送一个 binding request 的 STUN 消息到 STUN 服务器。</p></li>
+
+<li><p>STUN 服务器收到该请求后，会将请求的 IP 地址和端口填充到 binding response 消息中，然后顺原路将该消息返回给内网主机。此时，收到 binding response 消息的内网主机就可以解析 binding response 消息了，并可以从中得到自己的外网 IP 和端口</p></li>
+</ul>
+
+<h4 id="1-3-turn-协议">1.3 TURN 协议</h4>
+
+<ul>
+<li><p>TURN的全称为Traversal Using Relay NAT，即通过Relay方式穿越NAT</p></li>
+
+<li><p>TURN方式解决NAT问题的思路与STUN相似，是基于私网接入用户通过某种机制预先得到其私有地址对应在公网的地址（STUN方式得到的地址为出口NAT上的地址，TURN方式得到地址为TURNServer上的地址），然后在报文负载中所描述的地址信息直接填写该公网地址的方式，实际应用原理也是一样的</p></li>
+
+<li><p>TURN的全称为Traversal Using Relay NAT，即通过Relay方式穿越NAT，TURN应用模型通过分配TURNServer的地址和端口作为客户端对外的接受地址和端口，即私网用户发出的报文都要经过TURNServer进行Relay转发。</p></li>
+
+<li><p>这种方式应用模型除了具有STUN方式的优点外，还解决了STUN应用无法穿透对称NAT（SymmetricNAT）以及类似的Firewall设备的缺陷，即无论企业网/驻地网出口为哪种类型的NAT/FW，都可以实现NAT的穿透。</p></li>
+
+<li><p>同时TURN支持基于TCP的应用，如H323协议。此外TURNServer控制分配地址和端口，能分配RTP/RTCP地址对（RTCP端口号为RTP端口号加1）作为本端客户的接受地址，避免了STUN应用模型下出口NAT对RTP/RTCP地址端口号的任意分配，使得客户端无法收到对端发过来的RTCP报文（对端发RTCP报文时，目的端口号缺省按RTP端口号加1发送）</p></li>
+
+<li><p>TURN的局限性在于所有报文都必须经过TURNServer转发，增大了包的延迟和丢包的可能性</p></li>
+</ul>
+
+<h4 id="1-4-nat-打洞-p2p-穿越">1.4 NAT 打洞 /P2P 穿越</h4>
+
+<ul>
+<li><p>双方是在同一局域网内，那么就直接在它们之间建立一条连接。</p></li>
+
+<li><p>但如果两台主机不在同一个内网，WebRTC 将尝试 NAT 打洞，即 P2P 穿越</p></li>
+</ul>
+
+<p>WebRTC 将 NAT 分类为 4 种类型</p>
+
+<table>
+<thead>
+<tr>
+<th>分类</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>完全锥型 NATIP</td>
+</tr>
+
+<tr>
+<td>限制型 NAT</td>
+</tr>
+
+<tr>
+<td>端口限制型 NAT</td>
+</tr>
+
+<tr>
+<td>对称型 NAT</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="2-打洞">2. 打洞</h3>
+
+<h4 id="2-1-完全锥型-nat">2.1 完全锥型 NAT</h4>
+
+<ul>
+<li><p>当 host 主机通过 NAT 访问外网的 B 主机时，就会在 NAT 上打个“洞”，所有知道这个“洞”的主机都可以通过它与内网主机上的侦听程序通信</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+内网IP，
+内网端口，
+映射的外网IP，
+映射的外网端口
+}</pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<h4 id="2-2-ip-限制锥型-nat">2.2 IP 限制锥型 NAT</h4>
+
+<ul>
+<li><p>只有 host 主机访问过的外网主机才能穿越 NAT。</p></li>
+
+<li><p>一定会发现大多数打洞都是使用的 UDP 协议。之所以会这样，是因为 UDP 是无连接协议，它没有连接状态的判断，也就是说只要你发送数据给它，它就能收到。而 TCP 协议就做不到这一点，它必须建立连接后，才能收发数据，因此大多数人都选用 UDP 作为打洞协议。</p></li>
+
+<li><p>IP 限制型 NAT 只限制 IP 地址，如果是同一主机的不同端口穿越 NAT 是没有任何问题的。</p></li>
+</ul>
+
+<p><strong>映射表</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+  内网IP，
+  内网端口，
+  映射的外网IP，
+  映射的外网端口，
+  被访问主机的IP
+}</pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-3-端口限制锥型">2.3 端口限制锥型</h4>
+
+<ul>
+<li><p>端口限制锥型比 IP 限制锥型 NAT 更加严格，它主要的特点是，不光在 NAT 上对打洞的 IP 地址做了限制，而且还对具体的端口做了限制</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+内网IP，
+内网端口，
+映射的外网IP，
+映射的外网端口，
+被访问主机的IP,
+被访问主机的端口
+}</pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<h4 id="2-4-对称型-nat">2.4 对称型 NAT</h4>
+
+<ul>
+<li><p>对称型 NAT 是所有 NAT 类型中最严格的一种类型</p></li>
+
+<li><p>也就是说对称型 NAT 对每个连接都使用不同的端口，甚至更换 IP 地址，而端口限制型 NAT 的多个连接则使用同一个端口</p></li>
+</ul>
+
+<h4 id="2-5-nat-检测">2.5 NAT 检测</h4>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/nat_check.png" />
+    </div>
+    <a href="/imgs/nat_check.png" itemprop="contentUrl"></a>
+      <figcaption><h4>NAT 检测</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p><strong>第一步，判断是否有 NAT 防护</strong></p>
+
+<ul>
+<li><p>主机向服务器 #1 的某个 IP 和端口发送一个请求，服务器 #1 收到请求后，会通过同样的 IP 和端口返回一个响应消息。</p></li>
+
+<li><p>如果主机收不到服务器 #1 返回的消息，则说明用户的网络限制了 UDP 协议，直接退出。</p></li>
+
+<li><p>如果能收到包，则判断返回的主机的外网 IP 地址是否与主机自身的 IP 地址一样。如果一样，说明主机就是一台拥有公网地址的主机；如果不一样，就跳到下面的步骤 6。</p></li>
+
+<li><p>如果主机拥有公网 IP，则还需要进一步判断其防火墙类型。所以它会再向服务器 #1 发一次请求，此时，服务器 #1 从另外一个网卡的 IP 和不同端口返回响应消息。</p></li>
+
+<li><p>如果主机能收到，说明它是一台没有防护的公网主机；如果收不到，则说明有对称型的防火墙保护着它。</p></li>
+
+<li><p>继续分析第 3 步，如果返回的外网 IP 地址与主机自身 IP 不一致，说明主机是处于 NAT 的防护之下，此时就需要对主机的 NAT 防护类型做进一步探测。</p></li>
+</ul>
+
+<p><strong>第二步，探测 NAT 环境</strong></p>
+
+<ul>
+<li><p>在 NAT 环境下，主机向服务器 #1 发请求，服务器 #1 通过另一个网卡的 IP 和不同端口给主机返回响应消息。</p></li>
+
+<li><p>如果此时主机可以收到响应消息，说明它是在一个完全锥型 NAT 之下。如果收不到消息还需要再做进一步判断。</p></li>
+
+<li><p>如果主机收不到消息，它向服务器 #2（也就是第二台服务器）发请求，服务器 #2 使用收到请求的 IP 地址和端口向主机返回消息。</p></li>
+
+<li><p>主机收到消息后，判断从服务器 #2 获取的外网 IP 和端口与之前从服务器 #1 获取的外网 IP 和端口是否一致，如果不一致说明该主机是在对称型 NAT 之下。</p></li>
+
+<li><p>如果 IP 地址一样，则需要再次发送请求。此时主机向服务器 #1 再次发送请求，服务器 #1 使用同样的 IP 和不同的端口返回响应消息。</p></li>
+
+<li><p>此时，如果主机可以收到响应消息说明是 IP 限制型 NAT，否则就为端口限制型 NAT</p></li>
+</ul>
+
+<h3 id="3-信令服务器">3. 信令服务器</h3>
+
+<ul>
+<li>房间管理</li>
+<li>信令交换</li>
+</ul>
+
+<h4 id="3-1-node-js">3.1 Node.js</h4>
+
+<p>Node.js 的强大就在于 JavaScript 与 C/C++ 可以相互调用，从而达到使其能力可以无限扩展的效果</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/node_http.png" />
+    </div>
+    <a href="/imgs/node_http.png" itemprop="contentUrl"></a>
+      <figcaption><h4>Node.js 事件处理模型图</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<ul>
+<li><p>当有网络请求过来时，首先会被插入到一个事件处理队列中。libuv 会监控该事件队列，当发现有事件时，先对请求做判断，如果是简单的请求，就直接返回响应了；如果是复杂请求，则从线程池中取一个线程进行异步处理</p></li>
+
+<li><p>线程处理完后，有两种可能：一种是已经处理完成，则向用户发送响应；另一种情况是还需要进一步处理，则再生成一个事件插入到事件队列中等待处理。事件处理就这样循环往复下去，永不停歇。</p></li>
+</ul>
+
+<h4 id="3-2-socket-io">3.2 Socket.io</h4>
+
+<p><strong>客户端代码</strong></p>
+
+<ul>
+<li>socket.io.js 文件需要单独获取</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="c1">//index.html
+</span><span class="c1"></span>
+<span class="o">&lt;!</span><span class="nx">DOCTYPE</span> <span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="nx">head</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">title</span><span class="o">&gt;</span><span class="nx">WebRTC</span> <span class="nx">client</span><span class="o">&lt;</span><span class="err">/title&gt;</span>
+  <span class="o">&lt;</span><span class="err">/head&gt;</span>
+  <span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">&#39;./js/socket.io.js&#39;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+    <span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s1">&#39;./js/client.js&#39;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+  <span class="o">&lt;</span><span class="err">/body&gt;</span>
+<span class="o">&lt;</span><span class="err">/html&gt;</span>
+
+<span class="c1">//client.js
+</span><span class="c1"></span>
+<span class="kd">var</span> <span class="nx">isInitiator</span><span class="p">;</span>
+<span class="nx">room</span> <span class="o">=</span> <span class="nx">prompt</span><span class="p">(</span><span class="s1">&#39;Enter room name:&#39;</span><span class="p">);</span> <span class="c1">//弹出一个输入窗口
+</span><span class="c1"></span><span class="k">const</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;http://localhost:2013&#39;</span><span class="p">);</span> <span class="c1">//与服务端建立socket连接
+</span><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="nx">room</span> <span class="o">!==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//如果房间不空，则发送 &#34;create or join&#34; 消息
+</span><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Joining room &#39;</span> <span class="o">+</span> <span class="nx">room</span><span class="p">);</span>
+  <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;create or join&#39;</span><span class="p">,</span> <span class="nx">room</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">room</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">//如果从服务端收到 &#34;full&#34; 消息
+</span><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Room &#39;</span> <span class="o">+</span> <span class="nx">room</span> <span class="o">+</span> <span class="s1">&#39; is full&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">room</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">//如果从服务端收到 &#34;empty&#34; 消息
+</span><span class="c1"></span>  <span class="nx">isInitiator</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Room &#39;</span> <span class="o">+</span> <span class="nx">room</span> <span class="o">+</span> <span class="s1">&#39; is empty&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;join&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">room</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">//如果从服务端收到 “join&#34; 消息
+</span><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Making request to join room &#39;</span> <span class="o">+</span> <span class="nx">room</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;You are the initiator!&#39;</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">console</span><span class="p">,</span> <span class="nx">array</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>服务端代码</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-javascript" data-lang="javascript"><span class="k">const</span> <span class="kr">static</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;node-static&#39;</span><span class="p">);</span>
+<span class="k">const</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+<span class="k">const</span> <span class="nx">file</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="kr">static</span><span class="p">.</span><span class="nx">Server</span><span class="p">)();</span>
+<span class="k">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">file</span><span class="p">.</span><span class="nx">serve</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">);</span>
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">2013</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">);</span>
+<span class="k">const</span> <span class="nx">io</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;socket.io&#39;</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span> <span class="c1">//侦听 2013
+</span><span class="c1"></span><span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">socket</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;connection&#39;</span><span class="p">);</span>
+  <span class="c1">// convenience function to log server messages to the client
+</span><span class="c1"></span>  <span class="kd">function</span> <span class="nx">log</span><span class="p">(){</span> 
+    <span class="k">const</span> <span class="nx">array</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&gt;&gt;&gt; Message from server: &#39;</span><span class="p">];</span> 
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arguments</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">array</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">arguments</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+    <span class="p">}</span> 
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="nx">array</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">//收到message时，进行广播
+</span><span class="c1"></span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Got message:&#39;</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span>
+    <span class="c1">// for a real app, would be room only (not broadcast)
+</span><span class="c1"></span>    <span class="nx">socket</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="nx">message</span><span class="p">);</span> <span class="c1">//在真实的应用中，应该只在房间内广播
+</span><span class="c1"></span>  <span class="p">});</span>
+  <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;create or join&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">room</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">//收到 “create or join” 消息
+</span><span class="c1"></span>  <span class="kd">var</span> <span class="nx">clientsInRoom</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">adapter</span><span class="p">.</span><span class="nx">rooms</span><span class="p">[</span><span class="nx">room</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">numClients</span> <span class="o">=</span> <span class="nx">clientsInRoom</span> <span class="o">?</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">clientsInRoom</span><span class="p">.</span><span class="nx">sockets</span><span class="p">).</span><span class="nx">length</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">//房间里的人数
+</span><span class="c1"></span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Room &#39;</span> <span class="o">+</span> <span class="nx">room</span> <span class="o">+</span> <span class="s1">&#39; has &#39;</span> <span class="o">+</span> <span class="nx">numClients</span> <span class="o">+</span> <span class="s1">&#39; client(s)&#39;</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Request to create or join room &#39;</span> <span class="o">+</span> <span class="nx">room</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">numClients</span> <span class="o">===</span> <span class="mi">0</span><span class="p">){</span> <span class="c1">//如果房间里没人
+</span><span class="c1"></span>      <span class="nx">socket</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">room</span><span class="p">);</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;created&#39;</span><span class="p">,</span> <span class="nx">room</span><span class="p">);</span> <span class="c1">//发送 &#34;created&#34; 消息
+</span><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">numClients</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//如果房间里有一个人
+</span><span class="c1"></span>    <span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="k">in</span><span class="p">(</span><span class="nx">room</span><span class="p">).</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;join&#39;</span><span class="p">,</span> <span class="nx">room</span><span class="p">);</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">room</span><span class="p">);</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;joined&#39;</span><span class="p">,</span> <span class="nx">room</span><span class="p">);</span> <span class="c1">//发送 “joined”消息
+</span><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span> <span class="c1">// max two clients
+</span><span class="c1"></span>      <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;full&#39;</span><span class="p">,</span> <span class="nx">room</span><span class="p">);</span> <span class="c1">//发送 &#34;full&#34; 消息
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;emit(): client &#39;</span> <span class="o">+</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span>
+      <span class="s1">&#39; joined room &#39;</span> <span class="o">+</span> <span class="nx">room</span><span class="p">);</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;broadcast(): client &#39;</span> <span class="o">+</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span>
+      <span class="s1">&#39; joined room &#39;</span> <span class="o">+</span> <span class="nx">room</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-03-18
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/%E7%AC%94%E8%AE%B0/">笔记</a>
+          <a href="https://wang-zoo.github.io/tags/webrtc/">webrtc</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/media_tech_2/">
+            <span class="next-text nav-default">极客时间-音视频笔记(2)</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
