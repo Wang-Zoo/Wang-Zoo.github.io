@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ffmpeg on WangZoo - 码字坞</title>
+    <link>https://wang-zoo.github.io/tags/ffmpeg/</link>
+    <description>Recent content in ffmpeg on WangZoo - 码字坞</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://wang-zoo.github.io/tags/ffmpeg/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>FFmpeg 命令介绍</title>
+      <link>https://wang-zoo.github.io/post/ffmpeg_order/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/ffmpeg_order/</guid>
+      <description>1.基本信息查询命令 ffmpeg 查询参数 示例 1 ffmpeg -version //查看版本 2.录制命令 先查看设备支持情况 1 2 3 4 5 6 7 8 9 ffmpeg -devices //查看设备支持情况 =========================================== Devices: D. = Demuxing supported .E =</description>
+    </item>
+    
+  </channel>
+</rss>
