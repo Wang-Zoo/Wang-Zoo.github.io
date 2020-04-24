@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>FFmpeg 开发进阶(SDL) - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="1. H264 编解码 1.1 结构体 1 2 3 AVCodec//编码器结构体 AVCodecContext//编码器上下文 AVFrame//解码后的帧 1.2 方法 1 2 3 a" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/ffmpeg_use_2/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="FFmpeg 开发进阶(SDL)" />
+<meta property="og:description" content="1. H264 编解码 1.1 结构体 1 2 3 AVCodec//编码器结构体 AVCodecContext//编码器上下文 AVFrame//解码后的帧 1.2 方法 1 2 3 a" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/ffmpeg_use_2/" />
+<meta property="article:published_time" content="2020-04-07T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-04-07T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="FFmpeg 开发进阶(SDL)">
+<meta itemprop="description" content="1. H264 编解码 1.1 结构体 1 2 3 AVCodec//编码器结构体 AVCodecContext//编码器上下文 AVFrame//解码后的帧 1.2 方法 1 2 3 a">
+
+
+<meta itemprop="datePublished" content="2020-04-07T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-04-07T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2610">
+
+
+
+<meta itemprop="keywords" content="ffmpeg,SDL," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="FFmpeg 开发进阶(SDL)"/>
+<meta name="twitter:description" content="1. H264 编解码 1.1 结构体 1 2 3 AVCodec//编码器结构体 AVCodecContext//编码器上下文 AVFrame//解码后的帧 1.2 方法 1 2 3 a"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">FFmpeg 开发进阶(SDL)</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-04-07" class="post-time">
+          2020-04-07
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-h264-编解码">1. H264 编解码</a>
+<ul>
+<li><a href="#1-1-结构体">1.1 结构体</a></li>
+<li><a href="#1-2-方法">1.2 方法</a></li>
+<li><a href="#1-3-解码步骤">1.3 解码步骤</a></li>
+<li><a href="#1-4-编码步骤">1.4 编码步骤</a></li>
+<li><a href="#1-4-实例">1.4 实例</a></li>
+</ul></li>
+<li><a href="#2-aac-编码">2. AAC 编码</a>
+<ul>
+<li><a href="#2-1-编码方法">2.1 编码方法</a></li>
+<li><a href="#2-2-实例">2.2 实例</a></li>
+</ul></li>
+<li><a href="#3-视频转图片">3. 视频转图片</a>
+<ul>
+<li><a href="#3-1-获取avframe">3.1 获取AVFrame</a></li>
+<li><a href="#3-2-存储格式转化">3.2 存储格式转化</a></li>
+<li><a href="#3-3-生成图片">3.3 生成图片</a></li>
+</ul></li>
+<li><a href="#4-sdl-开发">4.SDL 开发</a>
+<ul>
+<li><a href="#4-1-使用步骤">4,1 使用步骤</a></li>
+<li><a href="#4-2-实例">4.2 实例</a></li>
+</ul></li>
+<li><a href="#5-sdl-事件">5. SDL 事件</a>
+<ul>
+<li><a href="#5-1-方法">5.1 方法</a></li>
+</ul></li>
+<li><a href="#6-纹理渲染">6. 纹理渲染</a>
+<ul>
+<li><a href="#6-1-方法">6.1 方法</a></li>
+<li><a href="#6-2-实例">6.2 实例</a></li>
+</ul></li>
+<li><a href="#7-yuv播放">7.YUV播放</a>
+<ul>
+<li><a href="#7-1-线程创建">7.1 线程创建</a></li>
+<li><a href="#7-2-更新纹理">7.2 更新纹理</a></li>
+<li><a href="#7-3-实例">7.3 实例</a></li>
+</ul></li>
+<li><a href="#8-sdl-播放音频">8. SDL 播放音频</a>
+<ul>
+<li><a href="#8-1-方法">8.1 方法</a></li>
+<li><a href="#8-2-实例">8.2 实例</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h3 id="1-h264-编解码">1. H264 编解码</h3>
+
+<h4 id="1-1-结构体">1.1 结构体</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">AVCodec</span><span class="c1">//编码器结构体
+</span><span class="c1"></span><span class="n">AVCodecContext</span><span class="c1">//编码器上下文
+</span><span class="c1"></span><span class="n">AVFrame</span><span class="c1">//解码后的帧
+</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="1-2-方法">1.2 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">av_frame_alloc</span><span class="p">()</span><span class="o">/</span><span class="n">av_frame_free</span><span class="p">()</span><span class="c1">//结构体分配与释放
+</span><span class="c1"></span><span class="n">avcodec_alloc_context3</span><span class="p">()</span><span class="c1">//分配上下文
+</span><span class="c1"></span><span class="n">avcodec_free_context</span><span class="p">()</span><span class="c1">//释放上下文
+</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="1-3-解码步骤">1.3 解码步骤</h4>
+
+<p><strong>查找解码器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_find_coder</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>打开解码器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_open2</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>解码</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_decode_video2</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="1-4-编码步骤">1.4 编码步骤</h4>
+
+<p><strong>查找编码器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_find_encoder_by_name</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>设置编码参数，打开编码器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_open2</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>编码</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avcodec_encode_video2</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="1-4-实例">1.4 实例</h4>
+
+<p><strong>初始化</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++">    <span class="p">...</span>
+    <span class="c1">//注册
+</span><span class="c1"></span>    <span class="n">avcodec_register_all</span><span class="p">();</span>
+    <span class="p">...</span>
+    <span class="c1">// codec_name = libx264 
+</span><span class="c1"></span>    <span class="n">codec</span> <span class="o">=</span> <span class="n">avcodec_find_encoder_by_name</span><span class="p">(</span><span class="n">codec_name</span><span class="p">);</span>    
+    <span class="p">...</span>
+    <span class="c1">// 获得AVCodecContext
+</span><span class="c1"></span>    <span class="n">c</span> <span class="o">=</span> <span class="n">avcodec_alloc_context3</span><span class="p">(</span><span class="n">codec</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="c1">// 参数
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">bit_rate</span> <span class="o">=</span> <span class="mi">400000</span><span class="p">;</span><span class="c1">//码率
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">=</span> <span class="mi">352</span><span class="p">;</span><span class="c1">//宽度
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">=</span> <span class="mi">288</span><span class="p">;</span><span class="c1">//高度
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">time_base</span> <span class="o">=</span> <span class="p">(</span><span class="n">AVRational</span><span class="p">){</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">};</span><span class="c1">//时间基
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">framerate</span> <span class="o">=</span> <span class="p">(</span><span class="n">AVRational</span><span class="p">){</span><span class="mi">25</span><span class="p">,</span> <span class="mi">1</span><span class="p">};</span><span class="c1">//帧率
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">gop_size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span><span class="c1">//GOP 大小
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">max_b_frames</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="c1">//b帧大小
+</span><span class="c1"></span>    <span class="n">c</span><span class="o">-&gt;</span><span class="n">pix_fmt</span> <span class="o">=</span> <span class="n">AV_PIX_FMT_YUV420P</span><span class="p">;</span><span class="c1">//存储格式
+</span><span class="c1"></span>    <span class="p">...</span>
+    <span class="c1">// 打开
+</span><span class="c1"></span>    <span class="n">avcodec_open2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">codec</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="c1">// 分配frame 变量
+</span><span class="c1"></span>    <span class="n">frame</span> <span class="o">=</span> <span class="n">av_frame_alloc</span><span class="p">();</span>
+    <span class="p">...</span>
+    <span class="n">frame</span><span class="o">-&gt;</span><span class="n">format</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">pix_fmt</span><span class="p">;</span>
+    <span class="n">frame</span><span class="o">-&gt;</span><span class="n">width</span>  <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span>
+    <span class="n">frame</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">=</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">av_frame_get_buffer</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+    <span class="p">...</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>编码</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++">    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">25</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">av_init_packet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="n">pkt</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>    <span class="c1">// packet data will be allocated by the encoder
+</span><span class="c1"></span>        <span class="n">pkt</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+        <span class="cm">/* make sure the frame data is writable */</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">av_frame_make_writable</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="cm">/* prepare a dummy image */</span>
+        <span class="cm">/* Y */</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="n">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="n">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">y</span> <span class="o">*</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">linesize</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="cm">/* Cb and Cr */</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="n">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span> <span class="n">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">y</span> <span class="o">*</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">linesize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">128</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+                <span class="n">frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">y</span> <span class="o">*</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">linesize</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">+</span> <span class="n">x</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">5</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">frame</span><span class="o">-&gt;</span><span class="n">pts</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+        <span class="cm">/* encode the image */</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_encode_video2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_output</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error encoding frame</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">got_output</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Write frame %3d (size=%5d)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
+            <span class="n">fwrite</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+            <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+     <span class="cm">/* get the delayed frames */</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">got_output</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">got_output</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_encode_video2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_output</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error encoding frame</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">got_output</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Write frame %3d (size=%5d)</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
+            <span class="n">fwrite</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+            <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="cm">/* add sequence end code to have a real MPEG file */</span>
+    <span class="n">fwrite</span><span class="p">(</span><span class="n">endcode</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">endcode</span><span class="p">),</span> <span class="n">f</span><span class="p">);</span>
+    <span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+    <span class="n">avcodec_free_context</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+    <span class="n">av_frame_free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">frame</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-aac-编码">2. AAC 编码</h3>
+
+<h4 id="2-1-编码方法">2.1 编码方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//编码器寻找方法
+</span><span class="c1"></span><span class="n">avcodec_find_encoder_by_name</span><span class="p">();</span>
+<span class="c1">//上下文
+</span><span class="c1"></span><span class="n">avcodec_alloc_context3</span><span class="p">();</span>
+<span class="c1">//编码
+</span><span class="c1"></span><span class="n">avcodec_encodec_audio2</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-2-实例">2.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++">    <span class="p">...</span>
+    <span class="n">avcodec_register_all</span><span class="p">();</span>
+    <span class="p">...</span>
+    <span class="n">codec</span> <span class="o">=</span> <span class="n">avcodec_find_encoder</span><span class="p">(</span><span class="n">AV_CODEC_ID_MP2</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">avcodec_alloc_context3</span><span class="p">(</span><span class="n">codec</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">bit_rate</span> <span class="o">=</span> <span class="mi">64000</span><span class="p">;</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">sample_fmt</span> <span class="o">=</span> <span class="n">AV_SAMPLE_FMT_S16</span><span class="p">;</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">sample_rate</span>    <span class="o">=</span> <span class="n">select_sample_rate</span><span class="p">(</span><span class="n">codec</span><span class="p">);</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">channel_layout</span> <span class="o">=</span> <span class="n">select_channel_layout</span><span class="p">(</span><span class="n">codec</span><span class="p">);</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">channels</span>       <span class="o">=</span> <span class="n">av_get_channel_layout_nb_channels</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">channel_layout</span><span class="p">);</span>
+    <span class="p">...</span>
+     <span class="n">ret</span> <span class="o">=</span> <span class="n">av_frame_get_buffer</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">tincr</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">M_PI</span> <span class="o">*</span> <span class="mf">440.0</span> <span class="o">/</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">sample_rate</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">av_init_packet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="n">pkt</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// packet data will be allocated by the encoder
+</span><span class="c1"></span>        <span class="n">pkt</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="cm">/* make sure the frame is writable -- makes a copy if the encoder
+</span><span class="cm">         * kept a reference internally */</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">av_frame_make_writable</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint16_t</span><span class="o">*</span><span class="p">)</span><span class="n">frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">frame_size</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">samples</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10000</span><span class="p">);</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">c</span><span class="o">-&gt;</span><span class="n">channels</span><span class="p">;</span> <span class="n">k</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">samples</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">j</span><span class="p">];</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="n">tincr</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="cm">/* encode the samples */</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_encode_audio2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_output</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error encoding audio frame</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">got_output</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fwrite</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+            <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">got_output</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">got_output</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_encode_audio2</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_output</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error encoding frame</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">got_output</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">fwrite</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+            <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">fclose</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+    <span class="n">av_frame_free</span><span class="p">(</span><span class="o">&amp;</span><span class="n">frame</span><span class="p">);</span>
+    <span class="n">avcodec_free_context</span><span class="p">(</span><span class="o">&amp;</span><span class="n">c</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-视频转图片">3. 视频转图片</h3>
+
+<h4 id="3-1-获取avframe">3.1 获取AVFrame</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="k">static</span> <span class="kt">int</span> <span class="nf">decode_write_frame</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">outfilename</span><span class="p">,</span> <span class="n">AVCodecContext</span> <span class="o">*</span><span class="n">avctx</span><span class="p">,</span>
+                              <span class="k">struct</span> <span class="n">SwsContext</span> <span class="o">*</span><span class="n">img_convert_ctx</span><span class="p">,</span> <span class="n">AVFrame</span> <span class="o">*</span><span class="n">frame</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">frame_count</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">last</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">len</span><span class="p">,</span> <span class="n">got_frame</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+
+    <span class="n">len</span> <span class="o">=</span> <span class="n">avcodec_decode_video2</span><span class="p">(</span><span class="n">avctx</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">got_frame</span><span class="p">,</span> <span class="n">pkt</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error while decoding frame %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">*</span><span class="n">frame_count</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">len</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">got_frame</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;Saving %sframe %3d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">last</span> <span class="o">?</span> <span class="s">&#34;last &#34;</span> <span class="o">:</span> <span class="s">&#34;&#34;</span><span class="p">,</span> <span class="o">*</span><span class="n">frame_count</span><span class="p">);</span>
+        <span class="n">fflush</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+        <span class="n">snprintf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buf</span><span class="p">),</span> <span class="s">&#34;%s-%d.bmp&#34;</span><span class="p">,</span> <span class="n">outfilename</span><span class="p">,</span> <span class="o">*</span><span class="n">frame_count</span><span class="p">);</span>
+        <span class="n">saveBMP</span><span class="p">(</span><span class="n">img_convert_ctx</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">buf</span><span class="p">);</span>
+
+        <span class="p">(</span><span class="o">*</span><span class="n">frame_count</span><span class="p">)</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pkt</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">pkt</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">-=</span> <span class="n">len</span><span class="p">;</span>
+        <span class="n">pkt</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-存储格式转化">3.2 存储格式转化</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++">    <span class="c1">//YUV-&gt;RGB
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="n">w</span> <span class="o">=</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">h</span> <span class="o">=</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">numBytes</span><span class="o">=</span><span class="n">avpicture_get_size</span><span class="p">(</span><span class="n">AV_PIX_FMT_BGR24</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">uint8_t</span> <span class="o">*</span><span class="n">buffer</span><span class="o">=</span><span class="p">(</span><span class="n">uint8_t</span> <span class="o">*</span><span class="p">)</span><span class="n">av_malloc</span><span class="p">(</span><span class="n">numBytes</span><span class="o">*</span><span class="k">sizeof</span><span class="p">(</span><span class="n">uint8_t</span><span class="p">));</span>
+    <span class="n">AVFrame</span> <span class="o">*</span><span class="n">pFrameRGB</span> <span class="o">=</span> <span class="n">av_frame_alloc</span><span class="p">();</span>
+    <span class="n">avpicture_fill</span><span class="p">((</span><span class="n">AVPicture</span> <span class="o">*</span><span class="p">)</span><span class="n">pFrameRGB</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">AV_PIX_FMT_BGR24</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">);</span>
+    <span class="n">sws_scale</span><span class="p">(</span><span class="n">img_convert_ctx</span><span class="p">,</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">frame</span><span class="o">-&gt;</span><span class="n">linesize</span><span class="p">,</span>
+              <span class="mi">0</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">pFrameRGB</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="n">pFrameRGB</span><span class="o">-&gt;</span><span class="n">linesize</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-3-生成图片">3.3 生成图片</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++">    <span class="c1">//2 构造 BITMAPINFOHEADER
+</span><span class="c1"></span>    <span class="n">BITMAPINFOHEADER</span> <span class="n">header</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biSize</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPINFOHEADER</span><span class="p">);</span>
+
+    <span class="n">header</span><span class="p">.</span><span class="n">biWidth</span> <span class="o">=</span> <span class="n">w</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biHeight</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biBitCount</span> <span class="o">=</span> <span class="mi">24</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biCompression</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biSizeImage</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biClrImportant</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biClrUsed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biXPelsPerMeter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biYPelsPerMeter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">header</span><span class="p">.</span><span class="n">biPlanes</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">//3 构造文件头
+</span><span class="c1"></span>    <span class="n">BITMAPFILEHEADER</span> <span class="n">bmpFileHeader</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,};</span>
+    <span class="c1">//HANDLE hFile = NULL;
+</span><span class="c1"></span>    <span class="n">DWORD</span> <span class="n">dwTotalWriten</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">DWORD</span> <span class="n">dwWriten</span><span class="p">;</span>
+
+    <span class="n">bmpFileHeader</span><span class="p">.</span><span class="n">bfType</span> <span class="o">=</span> <span class="mh">0x4d42</span><span class="p">;</span> <span class="c1">//&#39;BM&#39;;
+</span><span class="c1"></span>    <span class="n">bmpFileHeader</span><span class="p">.</span><span class="n">bfSize</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPFILEHEADER</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPINFOHEADER</span><span class="p">)</span><span class="o">+</span> <span class="n">numBytes</span><span class="p">;</span>
+    <span class="n">bmpFileHeader</span><span class="p">.</span><span class="n">bfOffBits</span><span class="o">=</span><span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPFILEHEADER</span><span class="p">)</span><span class="o">+</span><span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPINFOHEADER</span><span class="p">);</span>
+
+    <span class="n">FILE</span><span class="o">*</span> <span class="n">pf</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#34;wb&#34;</span><span class="p">);</span>
+    <span class="n">fwrite</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bmpFileHeader</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPFILEHEADER</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pf</span><span class="p">);</span>
+    <span class="n">fwrite</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">BITMAPINFOHEADER</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">pf</span><span class="p">);</span>
+    <span class="n">fwrite</span><span class="p">(</span><span class="n">pFrameRGB</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">numBytes</span><span class="p">,</span> <span class="n">pf</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="4-sdl-开发">4.SDL 开发</h3>
+
+<h4 id="4-1-使用步骤">4,1 使用步骤</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//1.添加头文件
+</span><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;SDL.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="c1">//2.初始化
+</span><span class="c1"></span><span class="n">SDL_Init</span><span class="p">();</span>
+<span class="c1">//创建窗口
+</span><span class="c1"></span><span class="n">SDL_Window</span><span class="p">();</span>
+<span class="c1">//创建渲染器
+</span><span class="c1"></span><span class="n">SDL_CreateRender</span><span class="p">();</span>
+<span class="c1">//清除
+</span><span class="c1"></span><span class="n">SDL_RenderClear</span><span class="p">();</span>
+<span class="c1">//推送
+</span><span class="c1"></span><span class="n">SDL_RenderPresent</span><span class="p">();</span>
+<span class="c1">//销毁渲染器
+</span><span class="c1"></span><span class="n">SDL_DestoryRenderer</span><span class="p">();</span>
+<span class="c1">//销毁窗口
+</span><span class="c1"></span><span class="n">SDL_DestroyWindow</span><span class="p">();</span>
+<span class="c1">//3.退出
+</span><span class="c1"></span><span class="n">SDL_Quit</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="4-2-实例">4.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;SDL.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]){</span>
+    <span class="n">SDL_Window</span> <span class="o">*</span><span class="n">window</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">SDL_Init</span><span class="p">(</span><span class="n">SDL_INIT_VIDEO</span><span class="p">);</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">SDL_CreateWindow</span><span class="p">(</span><span class="s">&#34;SDL2 Window&#34;</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="mi">640</span><span class="p">,</span><span class="mi">480</span><span class="p">,</span><span class="n">SDL_WINDOW_SHOWN</span> <span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">window</span><span class="p">){</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;failed to create window&#34;</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">_EXIT</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">SDL_Renderer</span> <span class="o">*</span><span class="n">render</span> <span class="o">=</span> <span class="n">SDL_CreateRenderer</span><span class="p">(</span><span class="n">window</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">render</span><span class="p">){</span>
+        <span class="n">SDL_Log</span><span class="p">(</span><span class="s">&#34;failed to create render&#34;</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">_DWINDOW</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">SDL_SetRenderDrawColor</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">);</span>
+    <span class="n">SDL_RenderClear</span><span class="p">(</span><span class="n">render</span><span class="p">);</span>
+    <span class="n">SDL_RenderPresent</span><span class="p">(</span><span class="n">render</span><span class="p">);</span>
+    <span class="n">SDL_Event</span> <span class="n">event</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">SDL_PollEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">))</span> <span class="p">{</span>
+          <span class="n">printf</span><span class="p">(</span><span class="s">&#34;event is %#x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">);</span> <span class="c1">// test code
+</span><span class="c1"></span>          <span class="k">if</span> <span class="p">(</span><span class="n">SDL_QUIT</span> <span class="o">==</span> <span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="p">{</span>
+             <span class="k">break</span><span class="p">;</span>
+          <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+<span class="nl">_DWINDOW</span><span class="p">:</span>
+    <span class="n">SDL_DestroyWindow</span><span class="p">(</span><span class="n">window</span><span class="p">);</span>
+<span class="nl">_EXIT</span><span class="p">:</span>
+    <span class="n">SDL_Quit</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">clang -g -o [bin] *.c `pkg-config --cflags --libs sdl2`</pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-sdl-事件">5. SDL 事件</h3>
+
+<p>SDL将所有的事件都存放在一个队列中，所有对事件的操作，其实就是对队列的操作</p>
+
+<p>SDL 事件分类</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">SDL_WindowEvent:窗口事件
+SDL_KeyboardEvent:键盘事件
+SDL_MouseMotionEvent:鼠标事件</pre></td></tr></table>
+</div>
+</div>
+<h4 id="5-1-方法">5.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//取出事件
+</span><span class="c1"></span><span class="n">SDL_PollEvent</span><span class="p">();</span>
+<span class="c1">//等待事件
+</span><span class="c1"></span><span class="n">SDL_WaitEvent</span><span class="p">();</span>
+<span class="c1">//等待指定时间长度
+</span><span class="c1"></span><span class="n">SDL_WaitTimeOut</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="6-纹理渲染">6. 纹理渲染</h3>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/sdlture.png" />
+    </div>
+    <a href="/imgs/sdlture.png" itemprop="contentUrl"></a>
+      <figcaption><h4>纹理渲染</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h4 id="6-1-方法">6.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//纹理创建
+</span><span class="c1"></span><span class="n">SDL_CreateTexture</span><span class="p">(</span><span class="n">format</span><span class="p">,</span><span class="n">access</span><span class="p">);</span>
+    <span class="nl">format</span><span class="p">:</span><span class="n">YUV</span><span class="p">,</span><span class="n">RGB</span>
+    <span class="nl">access</span><span class="p">:</span><span class="n">Texture类型</span><span class="err">，</span><span class="n">Target</span><span class="err">，</span><span class="n">Stream</span>
+<span class="c1">//销毁
+</span><span class="c1"></span><span class="n">SDL_DestroyTexture</span><span class="p">();</span>
+<span class="c1">//纹理设置
+</span><span class="c1"></span><span class="n">SDL_SetRenderTarget</span><span class="p">();</span>
+<span class="c1">//清除
+</span><span class="c1"></span><span class="n">SDL_RenderClear</span><span class="p">();</span>
+<span class="c1">//拷贝数据到纹理
+</span><span class="c1"></span><span class="n">SDL_RenderCopy</span><span class="p">();</span>
+<span class="c1">//推送纹理
+</span><span class="c1"></span><span class="n">SDL_RenderPresent</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="6-2-实例">6.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">SDL_Rect</span> <span class="n">rect</span><span class="p">;</span>
+<span class="n">rect</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+<span class="n">rect</span><span class="p">.</span><span class="n">h</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+<span class="n">rect</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span><span class="o">%</span><span class="mi">600</span><span class="p">;</span>
+<span class="n">rect</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">rand</span><span class="p">()</span><span class="o">%</span><span class="mi">480</span><span class="p">;</span>
+<span class="c1">//设置背景为黑色
+</span><span class="c1"></span><span class="n">SDL_SetRenderTarget</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="n">texture</span><span class="p">);</span>
+<span class="n">SDL_SetRenderDrawColor</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">SDL_RenderClear</span><span class="p">(</span><span class="n">render</span><span class="p">);</span>
+<span class="c1">//渲染rect
+</span><span class="c1"></span><span class="n">SDL_RenderDrawRect</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="o">&amp;</span><span class="n">rect</span><span class="p">);</span>
+<span class="n">SDL_SetRenderDrawColor</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">SDL_RenderFillRect</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="o">&amp;</span><span class="n">rect</span><span class="p">);</span>
+<span class="c1">//数据复制
+</span><span class="c1"></span><span class="n">SDL_SetRenderTarget</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">SDL_RenderCopy</span><span class="p">(</span><span class="n">render</span><span class="p">,</span><span class="n">texture</span><span class="p">,</span><span class="nb">NULL</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="c1">//显示
+</span><span class="c1"></span><span class="n">SDL_RenderPresent</span><span class="p">(</span><span class="n">render</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="7-yuv播放">7.YUV播放</h3>
+
+<h4 id="7-1-线程创建">7.1 线程创建</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//创建
+</span><span class="c1"></span><span class="n">SDL_CreateThread</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="n">name</span><span class="p">);</span>
+    <span class="nl">fn</span><span class="p">:</span><span class="err">执行的方法名</span>
+    <span class="nl">name</span><span class="p">:</span><span class="err">线程名字</span>
+    <span class="nl">data</span><span class="p">:</span><span class="err">参数</span>
+<span class="c1">//等待
+</span><span class="c1"></span><span class="n">SDL_WaitThead</span><span class="p">();</span>
+
+<span class="c1">//创建锁 销毁锁
+</span><span class="c1"></span><span class="n">SDL_CreateMutex</span><span class="o">/</span><span class="n">SDL_destroyMutex</span>
+<span class="c1">//上锁 开锁
+</span><span class="c1"></span><span class="n">SDL_LockMutex</span><span class="o">/</span><span class="n">SDL_UnlockMutex</span>
+
+<span class="c1">//创建条件/销毁条件
+</span><span class="c1"></span><span class="n">SDL_CreateCond</span><span class="o">/</span><span class="n">SDL_DestroyCond</span>
+<span class="c1">//等待条件/发送信号
+</span><span class="c1"></span><span class="n">SDL_CondWait</span><span class="o">/</span><span class="n">SDL_CondSignal</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>入队</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"> <span class="kt">int</span> <span class="nf">packet_queue_put</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">pkt1</span><span class="p">;</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">av_dup_packet</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">pkt1</span> <span class="o">=</span> <span class="n">av_malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">AVPacketList</span><span class="p">));</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">pkt1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span> <span class="o">=</span> <span class="o">*</span><span class="n">pkt</span><span class="p">;</span>
+  <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+  <span class="n">SDL_LockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+  <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+    <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="p">;</span>
+  <span class="n">q</span><span class="o">-&gt;</span><span class="n">nb_packets</span><span class="o">++</span><span class="p">;</span>
+  <span class="n">q</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">+=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+  <span class="n">SDL_CondSignal</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">);</span>
+
+  <span class="n">SDL_UnlockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p>出队</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="kt">int</span> <span class="nf">packet_queue_get</span><span class="p">(</span><span class="n">PacketQueue</span> <span class="o">*</span><span class="n">q</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">pkt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">block</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">AVPacketList</span> <span class="o">*</span><span class="n">pkt1</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+  <span class="n">SDL_LockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+
+  <span class="k">for</span><span class="p">(;;)</span> <span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">quit</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">pkt1</span> <span class="o">=</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pkt1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">first_pkt</span><span class="p">)</span>
+    <span class="n">q</span><span class="o">-&gt;</span><span class="n">last_pkt</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+      <span class="n">q</span><span class="o">-&gt;</span><span class="n">nb_packets</span><span class="o">--</span><span class="p">;</span>
+      <span class="n">q</span><span class="o">-&gt;</span><span class="n">size</span> <span class="o">-=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">;</span>
+      <span class="o">*</span><span class="n">pkt</span> <span class="o">=</span> <span class="n">pkt1</span><span class="o">-&gt;</span><span class="n">pkt</span><span class="p">;</span>
+      <span class="n">av_free</span><span class="p">(</span><span class="n">pkt1</span><span class="p">);</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">block</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">SDL_CondWait</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">cond</span><span class="p">,</span> <span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="n">SDL_UnlockMutex</span><span class="p">(</span><span class="n">q</span><span class="o">-&gt;</span><span class="n">mutex</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="7-2-更新纹理">7.2 更新纹理</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">SDL_UpdateTexture</span><span class="p">();</span>
+<span class="n">SDL_UpdateYUVTexture</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="7-3-实例">7.3 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cm">/**单独线程产生渲染频率**/</span>
+<span class="kt">int</span> <span class="nf">refresh_video_timer</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">udata</span><span class="p">){</span>
+
+    <span class="n">thread_exit</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">thread_exit</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">SDL_Event</span> <span class="n">event</span><span class="p">;</span>
+        <span class="n">event</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">REFRESH_EVENT</span><span class="p">;</span>
+        <span class="n">SDL_PushEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+        <span class="n">SDL_Delay</span><span class="p">(</span><span class="mi">40</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">thread_exit</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">//push quit event
+</span><span class="c1"></span>    <span class="n">SDL_Event</span> <span class="n">event</span><span class="p">;</span>
+    <span class="n">event</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">QUIT_EVENT</span><span class="p">;</span>
+    <span class="n">SDL_PushEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+    <span class="p">...</span>
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]){</span>
+    <span class="p">...</span>
+    <span class="cm">/**开启频率线程**/</span>
+    <span class="n">timer_thread</span> <span class="o">=</span> <span class="n">SDL_CreateThread</span><span class="p">(</span><span class="n">refresh_video_timer</span><span class="p">,</span>
+                                    <span class="nb">NULL</span><span class="p">,</span>
+                                    <span class="nb">NULL</span><span class="p">);</span>
+    <span class="cm">/**持续渲染texture***/</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="c1">//Wait
+</span><span class="c1"></span>        <span class="n">SDL_WaitEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">event</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="o">==</span><span class="n">REFRESH_EVENT</span><span class="p">){</span>
+            <span class="p">...</span>
+            <span class="n">SDL_UpdateTexture</span><span class="p">(</span> <span class="n">texture</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">video_pos</span><span class="p">,</span> <span class="n">video_width</span><span class="p">);</span>
+            <span class="c1">//FIX: If window is resize
+</span><span class="c1"></span>            <span class="n">rect</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">rect</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="n">rect</span><span class="p">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">w_width</span><span class="p">;</span>
+            <span class="n">rect</span><span class="p">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">w_height</span><span class="p">;</span>
+            <span class="n">SDL_RenderClear</span><span class="p">(</span> <span class="n">renderer</span> <span class="p">);</span>
+            <span class="n">SDL_RenderCopy</span><span class="p">(</span> <span class="n">renderer</span><span class="p">,</span> <span class="n">texture</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">rect</span><span class="p">);</span>
+            <span class="n">SDL_RenderPresent</span><span class="p">(</span> <span class="n">renderer</span> <span class="p">);</span>
+            <span class="p">...</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="o">==</span><span class="n">SDL_WINDOWEVENT</span><span class="p">){</span>
+            <span class="c1">//If Resize
+</span><span class="c1"></span>            <span class="n">SDL_GetWindowSize</span><span class="p">(</span><span class="n">win</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">w_width</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">w_height</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="o">==</span><span class="n">SDL_QUIT</span><span class="p">){</span>
+            <span class="n">thread_exit</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="o">==</span><span class="n">QUIT_EVENT</span><span class="p">){</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span><span class="k">while</span> <span class="p">(</span> <span class="mi">1</span> <span class="p">);</span>
+<span class="p">}</span>   
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-sdl-播放音频">8. SDL 播放音频</h3>
+
+<h4 id="8-1-方法">8.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//打开音频设备
+</span><span class="c1"></span><span class="n">SDL_OpenAudio</span><span class="p">()</span><span class="o">/</span><span class="n">SDL_CloseAudio</span><span class="p">()</span>
+<span class="c1">//播放与暂停
+</span><span class="c1"></span><span class="n">SDL_PauseAudio</span><span class="p">()</span>
+<span class="c1">//混音
+</span><span class="c1"></span><span class="n">SDL_MixAudio</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="8-2-实例">8.2 实例</h4>
+
+<p><strong>初始化</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="p">...</span>
+<span class="n">SDL_Init</span><span class="p">(</span><span class="n">SDL_INIT_VIDEO</span> <span class="o">|</span> <span class="n">SDL_INIT_AUDIO</span> <span class="o">|</span> <span class="n">SDL_INIT_TIMER</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="n">audio_fd</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#34;r&#34;</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">//SDL_AudioSpec
+</span><span class="c1"></span><span class="n">spec</span><span class="p">.</span><span class="n">freq</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">;;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">AUDIO_S16SYS</span><span class="p">;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">channels</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">silence</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">samples</span> <span class="o">=</span> <span class="mi">2048</span><span class="p">;;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">read_audio_data</span><span class="p">;;</span>
+<span class="n">spec</span><span class="p">.</span><span class="n">userdata</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="n">SDL_OpenAudio</span><span class="p">(</span><span class="o">&amp;</span><span class="n">spec</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="n">SDL_PauseAudio</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>读取数据</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="k">do</span><span class="p">{</span>
+    <span class="c1">//read data from pcm file
+</span><span class="c1"></span>    <span class="n">buffer_len</span> <span class="o">=</span> <span class="n">fread</span><span class="p">(</span><span class="n">audio_buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">BLOCK_SIZE</span><span class="p">,</span> <span class="n">audio_fd</span><span class="p">);</span>
+    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;block size is %zu</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">buffer_len</span><span class="p">);</span>
+
+    <span class="n">audio_pos</span> <span class="o">=</span> <span class="n">audio_buf</span><span class="p">;</span>
+
+    <span class="c1">//the main thread wait for a moment
+</span><span class="c1"></span>    <span class="k">while</span><span class="p">(</span><span class="n">audio_pos</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">audio_buf</span> <span class="o">+</span> <span class="n">buffer_len</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">SDL_Delay</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span><span class="k">while</span><span class="p">(</span><span class="n">buffer_len</span> <span class="o">!=</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">SDL_CloseAudio</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>消耗数据</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//SDL回调使用，消耗audio_pos所指的数据 一秒25帧
+</span><span class="c1"></span><span class="kt">void</span> <span class="nf">read_audio_data</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">udata</span><span class="p">,</span> <span class="n">Uint8</span> <span class="o">*</span><span class="n">stream</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">){</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">buffer_len</span> <span class="o">==</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">SDL_memset</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+
+    <span class="n">len</span> <span class="o">=</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;</span> <span class="n">buffer_len</span><span class="p">)</span> <span class="o">?</span> <span class="nl">len</span> <span class="p">:</span> <span class="n">buffer_len</span><span class="p">;</span>
+    <span class="n">SDL_MixAudio</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">audio_pos</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">SDL_MIX_MAXVOLUME</span><span class="p">);</span>
+
+    <span class="n">audio_pos</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
+    <span class="n">buffer_len</span> <span class="o">-=</span> <span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-04-07
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/ffmpeg/">ffmpeg</a>
+          <a href="https://wang-zoo.github.io/tags/sdl/">SDL</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/ffmpeg_sdl_videoplayer/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">FFmpeg 播放器实现(SDL)</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/ffmpeg_use/">
+            <span class="next-text nav-default">FFmpeg 开发</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

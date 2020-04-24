@@ -6,15 +6,24 @@
     <description>Recent content in Tags on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>SDL</title>
+      <link>https://wang-zoo.github.io/tags/sdl/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/sdl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ffmpeg</title>
       <link>https://wang-zoo.github.io/tags/ffmpeg/</link>
-      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://wang-zoo.github.io/tags/ffmpeg/</guid>
       <description></description>

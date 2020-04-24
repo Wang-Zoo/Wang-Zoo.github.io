@@ -6,10 +6,37 @@
     <description>Recent content in ffmpeg on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/ffmpeg/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>FFmpeg 播放器实现(SDL)</title>
+      <link>https://wang-zoo.github.io/post/ffmpeg_sdl_videoplayer/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/ffmpeg_sdl_videoplayer/</guid>
+      <description>前言 本篇主要介绍ffmpeg实现视频播放器的思路，终端API使用的是SDL，实现端为mac。 播放器结构 播放器架构 如图所示，视频文件能被播放，</description>
+    </item>
+    
+    <item>
+      <title>FFmpeg 开发进阶(SDL)</title>
+      <link>https://wang-zoo.github.io/post/ffmpeg_use_2/</link>
+      <pubDate>Tue, 07 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/ffmpeg_use_2/</guid>
+      <description>1. H264 编解码 1.1 结构体 1 2 3 AVCodec//编码器结构体 AVCodecContext//编码器上下文 AVFrame//解码后的帧 1.2 方法 1 2 3 a</description>
+    </item>
+    
+    <item>
+      <title>FFmpeg 开发</title>
+      <link>https://wang-zoo.github.io/post/ffmpeg_use/</link>
+      <pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/post/ffmpeg_use/</guid>
+      <description>1.基础知识 1.1 vim 基本命令 命令 作用 命令 作用 dd 删除一行 dw 删除一个 yy 复制一行 yw 复制一个 h 光标左移动 l 光标右移 j 光标下移动 k 光标上移 gg 跳到文件头 G 跳</description>
+    </item>
     
     <item>
       <title>FFmpeg 命令介绍</title>

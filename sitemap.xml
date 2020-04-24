@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://wang-zoo.github.io/post/ffmpeg_sdl_videoplayer/</loc>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/post/ffmpeg_use_2/</loc>
+    <lastmod>2020-04-07T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/post/ffmpeg_use/</loc>
+    <lastmod>2020-04-01T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wang-zoo.github.io/post/ffmpeg_order/</loc>
     <lastmod>2020-03-31T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -157,25 +178,31 @@
   
   <url>
     <loc>https://wang-zoo.github.io/post/</loc>
-    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://wang-zoo.github.io/tags/sdl/</loc>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/tags/</loc>
-    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/</loc>
-    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://wang-zoo.github.io/tags/ffmpeg/</loc>
-    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

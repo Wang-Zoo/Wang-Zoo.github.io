@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>FFmpeg 开发 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="1.基础知识 1.1 vim 基本命令 命令 作用 命令 作用 dd 删除一行 dw 删除一个 yy 复制一行 yw 复制一个 h 光标左移动 l 光标右移 j 光标下移动 k 光标上移 gg 跳到文件头 G 跳" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/ffmpeg_use/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="FFmpeg 开发" />
+<meta property="og:description" content="1.基础知识 1.1 vim 基本命令 命令 作用 命令 作用 dd 删除一行 dw 删除一个 yy 复制一行 yw 复制一个 h 光标左移动 l 光标右移 j 光标下移动 k 光标上移 gg 跳到文件头 G 跳" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/ffmpeg_use/" />
+<meta property="article:published_time" content="2020-04-01T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-04-01T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="FFmpeg 开发">
+<meta itemprop="description" content="1.基础知识 1.1 vim 基本命令 命令 作用 命令 作用 dd 删除一行 dw 删除一个 yy 复制一行 yw 复制一个 h 光标左移动 l 光标右移 j 光标下移动 k 光标上移 gg 跳到文件头 G 跳">
+
+
+<meta itemprop="datePublished" content="2020-04-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-04-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2845">
+
+
+
+<meta itemprop="keywords" content="ffmpeg," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="FFmpeg 开发"/>
+<meta name="twitter:description" content="1.基础知识 1.1 vim 基本命令 命令 作用 命令 作用 dd 删除一行 dw 删除一个 yy 复制一行 yw 复制一个 h 光标左移动 l 光标右移 j 光标下移动 k 光标上移 gg 跳到文件头 G 跳"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">FFmpeg 开发</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-04-01" class="post-time">
+          2020-04-01
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-基础知识">1.基础知识</a>
+<ul>
+<li><a href="#1-1-vim">1.1 vim</a></li>
+<li><a href="#1-2-编译器">1.2 编译器</a></li>
+<li><a href="#1-3-调试器">1.3 调试器</a></li>
+</ul></li>
+<li><a href="#2-ffmpeg-结构">2. FFmpeg 结构</a></li>
+<li><a href="#3-ffmpeg-日志功能">3. FFmpeg 日志功能</a>
+<ul>
+<li><a href="#3-1-导入库">3.1 导入库</a></li>
+<li><a href="#3-2-设置日志级别">3.2 设置日志级别</a></li>
+<li><a href="#3-3-打印">3.3 打印</a></li>
+<li><a href="#3-4-实例">3.4 实例</a></li>
+</ul></li>
+<li><a href="#4-文件删除与重命名">4.文件删除与重命名</a>
+<ul>
+<li><a href="#4-1-导入">4.1 导入</a></li>
+<li><a href="#4-2-操作">4.2 操作</a></li>
+<li><a href="#4-3-实例">4.3 实例</a></li>
+</ul></li>
+<li><a href="#5-文件目录操作">5. 文件目录操作</a>
+<ul>
+<li><a href="#5-1方法与结构体">5.1方法与结构体</a></li>
+<li><a href="#5-2-实例">5.2 实例</a></li>
+</ul></li>
+<li><a href="#6-音视频文件结构">6. 音视频文件结构</a></li>
+<li><a href="#7-获取音视频信息">7. 获取音视频信息</a>
+<ul>
+<li><a href="#7-1-方法">7.1 方法</a></li>
+<li><a href="#7-2-实例">7.2 实例</a></li>
+</ul></li>
+<li><a href="#8-抽取音频数据">8. 抽取音频数据</a>
+<ul>
+<li><a href="#8-1-方法">8.1 方法</a></li>
+<li><a href="#8-2-实例">8.2 实例</a></li>
+</ul></li>
+<li><a href="#9-抽取视频数据">9. 抽取视频数据</a>
+<ul>
+<li><a href="#9-1-h264">9.1 h264</a></li>
+<li><a href="#9-2-sps-pps">9.2 sps pps</a></li>
+<li><a href="#9-3-解码">9.3 解码</a></li>
+</ul></li>
+<li><a href="#10-格式转换">10. 格式转换</a>
+<ul>
+<li><a href="#10-1-关键方法">10.1 关键方法</a></li>
+<li><a href="#10-2-实例">10.2 实例</a></li>
+</ul></li>
+<li><a href="#11-裁剪">11. 裁剪</a>
+<ul>
+<li><a href="#11-1-方法">11.1 方法</a></li>
+<li><a href="#11-2-时间戳概念">11.2 时间戳概念</a></li>
+<li><a href="#11-3-实例">11.3 实例</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h3 id="1-基础知识">1.基础知识</h3>
+
+<h4 id="1-1-vim">1.1 vim</h4>
+
+<p><strong>基本命令</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>dd</td>
+<td>删除一行</td>
+<td>dw</td>
+<td>删除一个</td>
+</tr>
+
+<tr>
+<td>yy</td>
+<td>复制一行</td>
+<td>yw</td>
+<td>复制一个</td>
+</tr>
+
+<tr>
+<td>h</td>
+<td>光标左移动</td>
+<td>l</td>
+<td>光标右移</td>
+</tr>
+
+<tr>
+<td>j</td>
+<td>光标下移动</td>
+<td>k</td>
+<td>光标上移</td>
+</tr>
+
+<tr>
+<td>gg</td>
+<td>跳到文件头</td>
+<td>G</td>
+<td>跳到文件尾部</td>
+</tr>
+
+<tr>
+<td>^</td>
+<td>移动行首</td>
+<td>$</td>
+<td>移动行尾</td>
+</tr>
+
+<tr>
+<td>w</td>
+<td>前移一位</td>
+<td>2w</td>
+<td>前移2位</td>
+</tr>
+
+<tr>
+<td>b</td>
+<td>后移一位</td>
+<td>2b</td>
+<td>后移2位</td>
+</tr>
+
+<tr>
+<td>/关键字</td>
+<td>查找关键字</td>
+<td>%s/关键字/替换字/gc</td>
+<td>查找替换</td>
+</tr>
+
+<tr>
+<td>p</td>
+<td>粘贴</td>
+<td>set number</td>
+<td>查看行号</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">替换使用范围
+:number1,number2s/关键字/替换字/gc</pre></td></tr></table>
+</div>
+</div>
+<p><strong>多窗口</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>:split</td>
+<td>上下划分窗口</td>
+</tr>
+
+<tr>
+<td>:vsplit</td>
+<td>左右划分窗口</td>
+</tr>
+
+<tr>
+<td>control+ww</td>
+<td>窗口切换</td>
+</tr>
+
+<tr>
+<td>:close</td>
+<td>窗口关闭</td>
+</tr>
+
+<tr>
+<td>control+w+-</td>
+<td>窗口撑开</td>
+</tr>
+
+<tr>
+<td>control+w+=</td>
+<td>窗口缩小</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="1-2-编译器">1.2 编译器</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">gcc/clang -g  -O2 -o test test.c -I... -L... -l...
+--------------------------------------------------
+
+-g:输出文件中的调试信息     -I:指定头文件
+-O:对输出文件做指令优化     -L:指定库文件位置
+-o:输出文件               -l:指定使用哪个库
+
+--------------------------------------------------
+
+预编译-------&gt;编译------&gt;链接</pre></td></tr></table>
+</div>
+</div>
+<h4 id="1-3-调试器">1.3 调试器</h4>
+
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>gdb</th>
+<th>lldb</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>设置断点</td>
+<td>b</td>
+<td>b</td>
+</tr>
+
+<tr>
+<td>运行程序</td>
+<td>r</td>
+<td>r</td>
+</tr>
+
+<tr>
+<td>单步执行</td>
+<td>n</td>
+<td>n</td>
+</tr>
+
+<tr>
+<td>跳入函数</td>
+<td>s</td>
+<td>s</td>
+</tr>
+
+<tr>
+<td>跳出函数</td>
+<td>finish</td>
+<td>finish</td>
+</tr>
+
+<tr>
+<td>打印内容</td>
+<td>p</td>
+<td>p</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">//查看生成可执行文件的调试信息
+dwarfdump dbug.dSYM/Contents/Resources/DWARF/dbug </pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-ffmpeg-结构">2. FFmpeg 结构</h3>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/ffmpeg_structure.png" />
+    </div>
+    <a href="/imgs/ffmpeg_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>FFmpeg 结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h3 id="3-ffmpeg-日志功能">3. FFmpeg 日志功能</h3>
+
+<h4 id="3-1-导入库">3.1 导入库</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;libavutil/log.h&gt;</span><span class="cp">
+</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-设置日志级别">3.2 设置日志级别</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//DEBUG 以及以上级别的日志都会打印
+</span><span class="c1"></span><span class="cm">/**
+</span><span class="cm">AV_LOG_ERROR
+</span><span class="cm">AV_LOG_WARNING
+</span><span class="cm">AV_LOG_INFO
+</span><span class="cm">AV_LOG_DEBUG
+</span><span class="cm">*/</span>
+<span class="n">av_log_set_level</span><span class="p">(</span><span class="n">AV_LOG_DEBUG</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-3-打印">3.3 打印</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//打印AV_LOG_INFO 级别的日志
+</span><span class="c1"></span><span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_INFO</span><span class="p">,</span><span class="s">&#34;...%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">op</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-4-实例">3.4 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span><span class="cpf">&lt;libavutil/log.h&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">arc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">av_log_set_level</span><span class="p">(</span><span class="n">AV_LOG_DEBUG</span><span class="p">);</span>
+
+    <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_INFO</span><span class="p">,</span><span class="s">&#34;hello world!&#34;</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">clang -g -o ffmegp_log ffmpeg_log.c -lavutil</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="4-文件删除与重命名">4.文件删除与重命名</h3>
+
+<h4 id="4-1-导入">4.1 导入</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;libavformat/avformat.h&gt;</span><span class="cp">
+</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="4-2-操作">4.2 操作</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//删除
+</span><span class="c1"></span><span class="n">avpriv_io_delete</span><span class="p">();</span>
+<span class="c1">//移动
+</span><span class="c1"></span><span class="n">avpriv_io_move</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="4-3-实例">4.3 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;libavformat/avformat.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avpriv_io_move</span><span class="p">(</span><span class="s">&#34;111.txt&#34;</span><span class="p">,</span><span class="s">&#34;22.txt&#34;</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_ERROR</span><span class="p">,</span><span class="s">&#34;failed to move txt&#34;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_INFO</span><span class="p">,</span><span class="s">&#34;success to move&#34;</span><span class="p">);</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avpriv_io_delete</span><span class="p">(</span><span class="s">&#34;./mytest.txt&#34;</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_ERROR</span><span class="p">,</span><span class="s">&#34;failed to delete file mytest.txt</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_INFO</span><span class="p">,</span><span class="s">&#34;success to delete&#34;</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">clang -g -o ffmpeg_io ffmpeg_io.c <span class="sb">`</span>pkg-config --libs libavformat<span class="sb">`</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-文件目录操作">5. 文件目录操作</h3>
+
+<h4 id="5-1方法与结构体">5.1方法与结构体</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avio_open_dir</span><span class="p">();</span>
+<span class="n">avio_read_dir</span><span class="p">();</span>
+<span class="n">avio_close_dir</span><span class="p">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//操作目录的上下文
+</span><span class="c1"></span><span class="n">AVIODirContext</span>
+<span class="c1">//目录项，用于存放文件名，文件大小等信息
+</span><span class="c1"></span><span class="n">AVIODirEntry</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="5-2-实例">5.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;libavutil/log.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;libavformat/avformat.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="n">AVIODirContext</span> <span class="o">*</span><span class="n">ctx</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">AVIODirEntry</span> <span class="o">*</span><span class="n">entry</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="n">av_log_set_level</span><span class="p">(</span><span class="n">AV_LOG_INFO</span><span class="p">);</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avio_open_dir</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="s">&#34;./&#34;</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">){</span>
+        <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_ERROR</span><span class="p">,</span><span class="s">&#34;Cant open dir:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">av_err2str</span><span class="p">(</span><span class="n">ret</span><span class="p">));</span>
+        <span class="k">goto</span> <span class="n">_fail</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">avio_read_dir</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span><span class="o">&amp;</span><span class="n">entry</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">){</span>
+            <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_ERROR</span><span class="p">,</span><span class="s">&#34;Cant read dir:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">av_err2str</span><span class="p">(</span><span class="n">ret</span><span class="p">));</span>
+            <span class="k">goto</span> <span class="n">_fail</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">entry</span><span class="p">){</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_INFO</span><span class="p">,</span><span class="s">&#34;%12&#34;</span><span class="n">PRId64</span><span class="s">&#34;%s </span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">,</span><span class="n">entry</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">);</span>
+        <span class="c1">//entry释放
+</span><span class="c1"></span>        <span class="n">avio_free_directory_entry</span><span class="p">(</span><span class="o">&amp;</span><span class="n">entry</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="nl">_fail</span><span class="p">:</span>
+    <span class="c1">//目录句柄释放
+</span><span class="c1"></span>    <span class="n">avio_close_dir</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="6-音视频文件结构">6. 音视频文件结构</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/ffmepg_data_structure.png" />
+    </div>
+    <a href="/imgs/ffmepg_data_structure.png" itemprop="contentUrl"></a>
+      <figcaption><h4>FFmpeg  数据结构</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<h3 id="7-获取音视频信息">7. 获取音视频信息</h3>
+
+<h4 id="7-1-方法">7.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//注册
+</span><span class="c1"></span><span class="n">av_register_all</span><span class="p">();</span>
+<span class="c1">//获取/关闭
+</span><span class="c1"></span><span class="n">avformat_open_input</span><span class="p">()</span><span class="o">/</span><span class="n">avformat_close_input</span><span class="p">();</span>
+<span class="c1">//打印
+</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="7-2-实例">7.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;libavutil/log.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;libavformat/avformat.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span> <span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="n">AVFormatContext</span> <span class="o">*</span><span class="n">fmt_ctx</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="n">av_log_set_level</span><span class="p">(</span><span class="n">AV_LOG_INFO</span><span class="p">);</span>
+    <span class="n">av_register_all</span><span class="p">();</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avformat_open_input</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fmt_ctx</span><span class="p">,</span><span class="s">&#34;./test.mp4&#34;</span><span class="p">,</span><span class="nb">NULL</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+        <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_ERROR</span><span class="p">,</span><span class="s">&#34;cant open file: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">av_err2str</span><span class="p">(</span><span class="n">ret</span><span class="p">));</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">av_dump_format</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="s">&#34;./test.mp4&#34;</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">avformat_close_input</span><span class="p">(</span><span class="o">&amp;</span><span class="n">fmt_ctx</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">clang -g -o ffmpeg_mediainfo ffmpeg_mediainfo.c  <span class="sb">`</span>pkg-config --libs libavformat libavutil<span class="sb">`</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-抽取音频数据">8. 抽取音频数据</h3>
+
+<h4 id="8-1-方法">8.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//初始化包
+</span><span class="c1"></span><span class="n">av_init_packet</span><span class="p">();</span>
+<span class="c1">//找到最佳流
+</span><span class="c1"></span><span class="n">av_find_best_stream</span><span class="p">();</span>
+<span class="c1">//读取帧/去掉引用
+</span><span class="c1"></span><span class="n">av_read_frame</span><span class="p">()</span><span class="o">/</span><span class="n">av_packet_unref</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="8-2-实例">8.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="kt">void</span> <span class="nf">adts_header</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">szAdtsHeader</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dataLen</span><span class="p">){</span>
+
+    <span class="kt">int</span> <span class="n">audio_object_type</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">sampling_frequency_index</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">channel_config</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">adtsLen</span> <span class="o">=</span> <span class="n">dataLen</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+
+    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0xff</span><span class="p">;</span>         <span class="c1">//syncword:0xfff                          高8bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0xf0</span><span class="p">;</span>         <span class="c1">//syncword:0xfff                          低4bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">);</span>    <span class="c1">//MPEG Version:0 for MPEG-4,1 for MPEG-2  1bit
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">);</span>    <span class="c1">//Layer:0                                 2bits 
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>           <span class="c1">//protection absent:1                     1bit
+</span><span class="c1"></span>
+    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">audio_object_type</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">6</span><span class="p">;</span>            <span class="c1">//profile:audio_object_type - 1                      2bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="n">sampling_frequency_index</span> <span class="o">&amp;</span> <span class="mh">0x0f</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">2</span><span class="p">;</span> <span class="c1">//sampling frequency index:sampling_frequency_index  4bits 
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">);</span>                             <span class="c1">//private bit:0                                      1bit
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="n">channel_config</span> <span class="o">&amp;</span> <span class="mh">0x04</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">2</span><span class="p">;</span>           <span class="c1">//channel configuration:channel_config               高1bit
+</span><span class="c1"></span>
+    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">channel_config</span> <span class="o">&amp;</span> <span class="mh">0x03</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">6</span><span class="p">;</span>     <span class="c1">//channel configuration:channel_config      低2bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">);</span>                      <span class="c1">//original：0                               1bit
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">);</span>                      <span class="c1">//home：0                                   1bit
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">);</span>                      <span class="c1">//copyright id bit：0                       1bit  
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">);</span>                      <span class="c1">//copyright id start：0                     1bit
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">|=</span> <span class="p">((</span><span class="n">adtsLen</span> <span class="o">&amp;</span> <span class="mh">0x1800</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">11</span><span class="p">);</span>           <span class="c1">//frame length：value   高2bits
+</span><span class="c1"></span>
+    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint8_t</span><span class="p">)((</span><span class="n">adtsLen</span> <span class="o">&amp;</span> <span class="mh">0x7f8</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">3</span><span class="p">);</span>     <span class="c1">//frame length:value    中间8bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">uint8_t</span><span class="p">)((</span><span class="n">adtsLen</span> <span class="o">&amp;</span> <span class="mh">0x7</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">);</span>       <span class="c1">//frame length:value    低3bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">|=</span> <span class="mh">0x1f</span><span class="p">;</span>                                 <span class="c1">//buffer fullness:0x7ff 高5bits
+</span><span class="c1"></span>    <span class="n">szAdtsHeader</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0xfc</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">ret</span> <span class="o">=</span> <span class="n">av_find_best_stream</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span><span class="n">AVMEDIA_TYPE_AUDIO</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span> <span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">NULL</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span> 
+<span class="p">...</span>
+<span class="n">av_init_packet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+<span class="n">av_read_frame</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+<span class="k">while</span><span class="p">(</span><span class="n">av_read_frame</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">){</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span> <span class="o">==</span> <span class="n">audio_index</span><span class="p">){</span>
+        <span class="kt">char</span> <span class="n">adts_header_buf</span><span class="p">[</span><span class="mi">7</span><span class="p">];</span>
+        <span class="n">adts_header</span><span class="p">(</span><span class="n">adts_header_buf</span><span class="p">,</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">);</span>
+        <span class="n">fwrite</span><span class="p">(</span><span class="n">adts_header_buf</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">dst_fd</span><span class="p">);</span>
+
+        <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">fwrite</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span><span class="n">dst_fd</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">len</span> <span class="o">!=</span> <span class="n">pkt</span><span class="p">.</span><span class="n">size</span><span class="p">){</span>
+            <span class="n">av_log</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span><span class="n">AV_LOG_WARNING</span><span class="p">,</span><span class="s">&#34;warnig! length of data is not equal size of pkt&#34;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="9-抽取视频数据">9. 抽取视频数据</h3>
+
+<h4 id="9-1-h264">9.1 h264</h4>
+
+<p>h264有两种封装，
+一种是annexb模式，传统模式，有startcode，SPS和PPS是在ES中
+一种是mp4模式，一般mp4 mkv会有，没有startcode，SPS和PPS以及其它信息被封装在container中，每一个frame前面是这个frame的长度
+很多解码器只支持annexb这种模式，因此需要将mp4做转换</p>
+
+<p>H.264原始码流（又称为“裸流”）是由一个一个的NALU组成的。他们的结构如下图所示。</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/ffmepg_h264_data.png" />
+    </div>
+    <a href="/imgs/ffmepg_h264_data.png" itemprop="contentUrl"></a>
+      <figcaption><h4>h264</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>其中每个NALU之间通过startcode（起始码）进行分隔，起始码分成两种：0x000001（3Byte）或者0x00000001（4Byte）。如果NALU对应的Slice为一帧的开始就用0x00000001，否则就用0x000001</p>
+
+<p>H.264码流解析的步骤就是首先从码流中搜索0x000001和0x00000001，分离出NALU；然后再分析NALU的各个字段</p>
+
+<h4 id="9-2-sps-pps">9.2 sps pps</h4>
+
+<p>H.264码流第一个 NALU 是 SPS（序列参数集Sequence Parameter Set）
+H.264码流第二个 NALU 是 PPS（图像参数集Picture Parameter Set）
+H.264码流第三个 NALU 是 IDR（即时解码器刷新）</p>
+
+<p>H.264的SPS和PPS串，包含了初始化H.264解码器所需要的信息参数，包括编码所用的profile，level，图像的宽和高，deblock滤波器等。</p>
+
+<h4 id="9-3-解码">9.3 解码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="k">static</span> <span class="kt">int</span> <span class="nf">alloc_and_copy</span><span class="p">(</span><span class="n">AVPacket</span> <span class="o">*</span><span class="n">out</span><span class="p">,</span>
+                          <span class="k">const</span> <span class="n">uint8_t</span> <span class="o">*</span><span class="n">sps_pps</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="n">sps_pps_size</span><span class="p">,</span>
+                          <span class="k">const</span> <span class="n">uint8_t</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="n">in_size</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">uint32_t</span> <span class="n">offset</span>         <span class="o">=</span> <span class="n">out</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span>
+    <span class="n">uint8_t</span> <span class="n">nal_header_size</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">?</span> <span class="mi">3</span> <span class="o">:</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">err</span><span class="p">;</span>
+
+    <span class="n">err</span> <span class="o">=</span> <span class="n">av_grow_packet</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">sps_pps_size</span> <span class="o">+</span> <span class="n">in_size</span> <span class="o">+</span> <span class="n">nal_header_size</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">sps_pps</span><span class="p">)</span>
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">sps_pps</span><span class="p">,</span> <span class="n">sps_pps_size</span><span class="p">);</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">sps_pps_size</span> <span class="o">+</span> <span class="n">nal_header_size</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">in</span><span class="p">,</span> <span class="n">in_size</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">offset</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">AV_WB32</span><span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">sps_pps_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">sps_pps_size</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>
+        <span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">sps_pps_size</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">(</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span> <span class="o">+</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">sps_pps_size</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">h264_extradata_to_annexb</span><span class="p">(</span><span class="k">const</span> <span class="n">uint8_t</span> <span class="o">*</span><span class="n">codec_extradata</span><span class="p">,</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">codec_extradata_size</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">out_extradata</span><span class="p">,</span> <span class="kt">int</span> <span class="n">padding</span><span class="p">){</span>
+    <span class="p">...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">unit_nb</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">...</span>  
+        <span class="k">if</span> <span class="p">((</span><span class="n">err</span> <span class="o">=</span> <span class="n">av_reallocp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out</span><span class="p">,</span> <span class="n">total_size</span> <span class="o">+</span> <span class="n">padding</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">err</span><span class="p">;</span>
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">out</span> <span class="o">+</span> <span class="n">total_size</span> <span class="o">-</span> <span class="n">unit_size</span> <span class="o">-</span> <span class="mi">4</span><span class="p">,</span> <span class="n">nalu_header</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+        <span class="n">memcpy</span><span class="p">(</span><span class="n">out</span> <span class="o">+</span> <span class="n">total_size</span> <span class="o">-</span> <span class="n">unit_size</span><span class="p">,</span> <span class="n">extradata</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">unit_size</span><span class="p">);</span>
+        <span class="n">extradata</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">unit_size</span><span class="p">;</span>
+<span class="nl">pps</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">unit_nb</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">sps_done</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">unit_nb</span> <span class="o">=</span> <span class="o">*</span><span class="n">extradata</span><span class="o">++</span><span class="p">;</span> <span class="cm">/* number of pps unit(s) */</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">unit_nb</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">pps_offset</span> <span class="o">=</span> <span class="n">total_size</span><span class="p">;</span>
+                <span class="n">pps_seen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">memset</span><span class="p">(</span><span class="n">out</span> <span class="o">+</span> <span class="n">total_size</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">padding</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">h264_mp4toannexb</span><span class="p">(</span><span class="n">AVFormatContext</span> <span class="o">*</span><span class="n">fmt_ctx</span><span class="p">,</span> <span class="n">AVPacket</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span> <span class="n">FILE</span> <span class="o">*</span><span class="n">dst_fd</span><span class="p">){</span>
+    <span class="p">...</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="p">...</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">unit_type</span> <span class="o">==</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">h264_extradata_to_annexb</span><span class="p">(</span> <span class="n">fmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">in</span><span class="o">-&gt;</span><span class="n">stream_index</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">extradata</span><span class="p">,</span>
+                                      <span class="n">fmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">in</span><span class="o">-&gt;</span><span class="n">stream_index</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">extradata_size</span><span class="p">,</span>
+                                      <span class="o">&amp;</span><span class="n">spspps_pkt</span><span class="p">,</span>
+                                      <span class="n">AV_INPUT_BUFFER_PADDING_SIZE</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">ret</span><span class="o">=</span><span class="n">alloc_and_copy</span><span class="p">(</span><span class="n">out</span><span class="p">,</span>
+                               <span class="n">spspps_pkt</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">spspps_pkt</span><span class="p">.</span><span class="n">size</span><span class="p">,</span>
+                               <span class="n">buf</span><span class="p">,</span> <span class="n">nal_size</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">goto</span> <span class="n">fail</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="p">...</span>
+        <span class="n">len</span> <span class="o">=</span> <span class="n">fwrite</span><span class="p">(</span> <span class="n">out</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">out</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">,</span> <span class="n">dst_fd</span><span class="p">);</span>
+        <span class="n">fflush</span><span class="p">(</span><span class="n">dst_fd</span><span class="p">);</span>
+        <span class="p">...</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">cumul_size</span> <span class="o">&lt;</span> <span class="n">buf_size</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[]){</span>
+
+    <span class="p">...</span>
+     <span class="k">while</span><span class="p">(</span><span class="n">av_read_frame</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">)</span> <span class="o">&gt;=</span><span class="mi">0</span> <span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span> <span class="o">==</span> <span class="n">video_stream_index</span><span class="p">){</span>
+            <span class="n">h264_mp4toannexb</span><span class="p">(</span><span class="n">fmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="n">dst_fd</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="10-格式转换">10. 格式转换</h3>
+
+<h4 id="10-1-关键方法">10.1 关键方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="c1">//获取输出上下文
+</span><span class="c1"></span><span class="n">avformat_alloc_output_context2</span><span class="p">()</span><span class="o">/</span><span class="n">avformat_free_context</span><span class="p">()</span>
+<span class="c1">//生成新的流
+</span><span class="c1"></span><span class="n">avformat_new_stream</span><span class="p">()</span>
+<span class="c1">//复制宽高等信息
+</span><span class="c1"></span><span class="n">avformat_parameters_copy</span><span class="p">()</span>
+<span class="c1">//生成文件头
+</span><span class="c1"></span><span class="n">avformat_write_header</span><span class="p">()</span>
+<span class="c1">//写帧
+</span><span class="c1"></span><span class="n">av_write_frame</span><span class="p">()</span><span class="o">/</span><span class="n">av_interleaved_write_frame</span><span class="p">()</span>
+<span class="c1">//写尾
+</span><span class="c1"></span><span class="n">av_write_trailer</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="10-2-实例">10.2 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">avformat_alloc_output_context2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">out_filename</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">//只提取视频、音频、字幕，将基本参数直接复制
+</span><span class="c1"></span><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ifmt_ctx</span><span class="o">-&gt;</span><span class="n">nb_streams</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">AVStream</span> <span class="o">*</span><span class="n">out_stream</span><span class="p">;</span>
+    <span class="n">AVStream</span> <span class="o">*</span><span class="n">in_stream</span> <span class="o">=</span> <span class="n">ifmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">AVCodecParameters</span> <span class="o">*</span><span class="n">in_codecpar</span> <span class="o">=</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">codecpar</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">in_codecpar</span><span class="o">-&gt;</span><span class="n">codec_type</span> <span class="o">!=</span> <span class="n">AVMEDIA_TYPE_AUDIO</span> <span class="o">&amp;&amp;</span>
+        <span class="n">in_codecpar</span><span class="o">-&gt;</span><span class="n">codec_type</span> <span class="o">!=</span> <span class="n">AVMEDIA_TYPE_VIDEO</span> <span class="o">&amp;&amp;</span>
+        <span class="n">in_codecpar</span><span class="o">-&gt;</span><span class="n">codec_type</span> <span class="o">!=</span> <span class="n">AVMEDIA_TYPE_SUBTITLE</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">stream_mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+        <span class="k">continue</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">stream_mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stream_index</span><span class="o">++</span><span class="p">;</span>
+
+    <span class="n">out_stream</span> <span class="o">=</span> <span class="n">avformat_new_stream</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">out_stream</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Failed allocating output stream</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">AVERROR_UNKNOWN</span><span class="p">;</span>
+        <span class="k">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_parameters_copy</span><span class="p">(</span><span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">codecpar</span><span class="p">,</span> <span class="n">in_codecpar</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Failed to copy codec parameters</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">codecpar</span><span class="o">-&gt;</span><span class="n">codec_tag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="c1">//写入头部
+</span><span class="c1"></span><span class="n">ret</span> <span class="o">=</span> <span class="n">avformat_write_header</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">AVStream</span> <span class="o">*</span><span class="n">in_stream</span><span class="p">,</span> <span class="o">*</span><span class="n">out_stream</span><span class="p">;</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">av_read_frame</span><span class="p">(</span><span class="n">ifmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="c1">//读取一包数据，找到相应的输出流
+</span><span class="c1"></span>    <span class="n">in_stream</span>  <span class="o">=</span> <span class="n">ifmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span> <span class="o">&gt;=</span> <span class="n">stream_mapping_size</span> <span class="o">||</span>
+        <span class="n">stream_mapping</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="k">continue</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span> <span class="o">=</span> <span class="n">stream_mapping</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">];</span>
+    <span class="n">out_stream</span> <span class="o">=</span> <span class="n">ofmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">];</span>
+    <span class="n">log_packet</span><span class="p">(</span><span class="n">ifmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="s">&#34;in&#34;</span><span class="p">);</span>
+
+    <span class="cm">/* copy packet */</span>
+    <span class="c1">//重新计算时间基等参数
+</span><span class="c1"></span>    <span class="n">pkt</span><span class="p">.</span><span class="n">pts</span> <span class="o">=</span> <span class="n">av_rescale_q_rnd</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">pts</span><span class="p">,</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">AV_ROUND_NEAR_INF</span><span class="o">|</span><span class="n">AV_ROUND_PASS_MINMAX</span><span class="p">);</span>
+    <span class="n">pkt</span><span class="p">.</span><span class="n">dts</span> <span class="o">=</span> <span class="n">av_rescale_q_rnd</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">dts</span><span class="p">,</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">AV_ROUND_NEAR_INF</span><span class="o">|</span><span class="n">AV_ROUND_PASS_MINMAX</span><span class="p">);</span>
+    <span class="n">pkt</span><span class="p">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">av_rescale_q</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">);</span>
+    <span class="n">pkt</span><span class="p">.</span><span class="n">pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">log_packet</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">,</span> <span class="s">&#34;out&#34;</span><span class="p">);</span>
+    <span class="c1">//写入数据
+</span><span class="c1"></span>    <span class="n">ret</span> <span class="o">=</span> <span class="n">av_interleaved_write_frame</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Error muxing packet</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">av_packet_unref</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">//写入尾部
+</span><span class="c1"></span><span class="n">av_write_trailer</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="11-裁剪">11. 裁剪</h3>
+
+<h4 id="11-1-方法">11.1 方法</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="n">av_seek_frame</span><span class="p">()</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="11-2-时间戳概念">11.2 时间戳概念</h4>
+
+<p><a href="https://www.cnblogs.com/leisure_chn/p/10584910.html">时间戳解释</a></p>
+
+<h4 id="11-3-实例">11.3 实例</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-C++" data-lang="C++"><span class="p">...</span>
+<span class="c1">//获取输出句柄
+</span><span class="c1"></span><span class="n">avformat_alloc_output_context2</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">out_filename</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">//复制编码器
+</span><span class="c1"></span><span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">ifmt_ctx</span><span class="o">-&gt;</span><span class="n">nb_streams</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">AVStream</span> <span class="o">*</span><span class="n">in_stream</span> <span class="o">=</span> <span class="n">ifmt_ctx</span><span class="o">-&gt;</span><span class="n">streams</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">AVStream</span> <span class="o">*</span><span class="n">out_stream</span> <span class="o">=</span> <span class="n">avformat_new_stream</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">codec</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">out_stream</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Failed allocating output stream</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">AVERROR_UNKNOWN</span><span class="p">;</span>
+        <span class="k">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+ 
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">avcodec_copy_context</span><span class="p">(</span><span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">codec</span><span class="p">,</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">codec</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Failed to copy context from input to output stream codec context</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+        <span class="k">goto</span> <span class="n">end</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">codec_tag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ofmt_ctx</span><span class="o">-&gt;</span><span class="n">oformat</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">AVFMT_GLOBALHEADER</span><span class="p">)</span>
+        <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">codec</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">|=</span> <span class="n">AV_CODEC_FLAG_GLOBAL_HEADER</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="c1">//写入头部
+</span><span class="c1"></span><span class="n">ret</span> <span class="o">=</span> <span class="n">avformat_write_header</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">//定位开头
+</span><span class="c1"></span><span class="n">ret</span> <span class="o">=</span> <span class="n">av_seek_frame</span><span class="p">(</span><span class="n">ifmt_ctx</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">from_seconds</span><span class="o">*</span><span class="n">AV_TIME_BASE</span><span class="p">,</span> <span class="n">AVSEEK_FLAG_ANY</span><span class="p">);</span>
+<span class="p">...</span>
+<span class="c1">//循环读入数据
+</span><span class="c1"></span><span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
+    <span class="p">...</span>
+    <span class="c1">//读入一帧
+</span><span class="c1"></span>    <span class="n">ret</span> <span class="o">=</span> <span class="n">av_read_frame</span><span class="p">(</span><span class="n">ifmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="c1">//判断结尾
+</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="n">av_q2d</span><span class="p">(</span><span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">)</span> <span class="o">*</span> <span class="n">pkt</span><span class="p">.</span><span class="n">pts</span> <span class="o">&gt;</span> <span class="n">end_seconds</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">av_free_packet</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+    <span class="c1">//转换时间戳
+</span><span class="c1"></span>    <span class="n">pkt</span><span class="p">.</span><span class="n">pts</span> <span class="o">=</span> <span class="n">av_rescale_q_rnd</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">pts</span> <span class="o">-</span> <span class="n">pts_start_from</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">],</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">AV_ROUND_NEAR_INF</span><span class="o">|</span><span class="n">AV_ROUND_PASS_MINMAX</span><span class="p">);</span>
+    <span class="n">pkt</span><span class="p">.</span><span class="n">dts</span> <span class="o">=</span> <span class="n">av_rescale_q_rnd</span><span class="p">(</span><span class="n">pkt</span><span class="p">.</span><span class="n">dts</span> <span class="o">-</span> <span class="n">dts_start_from</span><span class="p">[</span><span class="n">pkt</span><span class="p">.</span><span class="n">stream_index</span><span class="p">],</span> <span class="n">in_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">out_stream</span><span class="o">-&gt;</span><span class="n">time_base</span><span class="p">,</span> <span class="n">AV_ROUND_NEAR_INF</span><span class="o">|</span><span class="n">AV_ROUND_PASS_MINMAX</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="c1">//写入一帧
+</span><span class="c1"></span>    <span class="n">ret</span> <span class="o">=</span> <span class="n">av_interleaved_write_frame</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pkt</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="c1">//写入尾
+</span><span class="c1"></span><span class="n">av_write_trailer</span><span class="p">(</span><span class="n">ofmt_ctx</span><span class="p">);</span>
+<span class="p">...</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-04-01
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/ffmpeg/">ffmpeg</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/ffmpeg_use_2/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">FFmpeg 开发进阶(SDL)</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/ffmpeg_order/">
+            <span class="next-text nav-default">FFmpeg 命令介绍</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
