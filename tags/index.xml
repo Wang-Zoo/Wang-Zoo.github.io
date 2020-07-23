@@ -6,10 +6,19 @@
     <description>Recent content in Tags on WangZoo - 码字坞</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://wang-zoo.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>LeakCanary</title>
+      <link>https://wang-zoo.github.io/tags/leakcanary/</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://wang-zoo.github.io/tags/leakcanary/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>SDL</title>

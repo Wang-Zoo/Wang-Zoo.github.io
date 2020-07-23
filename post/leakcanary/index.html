@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>LeakCanary 源码分析 - WangZoo - 码字坞</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="WangZoo" />
+  <meta name="description" content="前言 LeakCanary是Android内存分析利器，分析其源码，对于以后在内存优化原理与工具制造上都有裨益。 框架概览 框架 根据LeakCan" />
+
+  <meta name="keywords" content="Hugo, theme, jane" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<link rel="canonical" href="https://wang-zoo.github.io/post/leakcanary/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="LeakCanary 源码分析" />
+<meta property="og:description" content="前言 LeakCanary是Android内存分析利器，分析其源码，对于以后在内存优化原理与工具制造上都有裨益。 框架概览 框架 根据LeakCan" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wang-zoo.github.io/post/leakcanary/" />
+<meta property="article:published_time" content="2020-05-20T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-05-20T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="LeakCanary 源码分析">
+<meta itemprop="description" content="前言 LeakCanary是Android内存分析利器，分析其源码，对于以后在内存优化原理与工具制造上都有裨益。 框架概览 框架 根据LeakCan">
+
+
+<meta itemprop="datePublished" content="2020-05-20T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-05-20T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3024">
+
+
+
+<meta itemprop="keywords" content="LeakCanary," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="LeakCanary 源码分析"/>
+<meta name="twitter:description" content="前言 LeakCanary是Android内存分析利器，分析其源码，对于以后在内存优化原理与工具制造上都有裨益。 框架概览 框架 根据LeakCan"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">码字坞</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      码字坞
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/">This is Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wang-zoo.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">LeakCanary 源码分析</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-05-20" class="post-time">
+          2020-05-20
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+<li><a href="#框架概览">框架概览</a>
+<ul>
+<li><a href="#1-观察">1.观察</a>
+<ul>
+<li><a href="#1-1-弱引用">1.1 弱引用</a></li>
+<li><a href="#1-2-线程转换">1.2 线程转换</a></li>
+<li><a href="#1-3-gc">1.3 GC</a></li>
+<li><a href="#1-4-转存">1.4 转存</a></li>
+</ul></li>
+<li><a href="#2-分析">2 分析</a>
+<ul>
+<li><a href="#2-1-获取泄漏引用">2.1 获取泄漏引用</a></li>
+<li><a href="#2-2-获取泄漏路径-和-支配内存">2.2 获取泄漏路径 和 支配内存</a></li>
+</ul></li>
+<li><a href="#3-显示">3 显示</a></li>
+</ul></li>
+<li><a href="#总结">总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h2 id="前言">前言</h2>
+
+<p>LeakCanary是Android内存分析利器，分析其源码，对于以后在内存优化原理与工具制造上都有裨益。</p>
+
+<h2 id="框架概览">框架概览</h2>
+
+
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_struc.png" />
+    </div>
+    <a href="/imgs/leakcanary_struc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>框架</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>根据LeakCanary的执行流程，可以大致将其分为四个部分，<strong>观察者RefWatcher，堆转存HeapDumper，堆分析器HeapAnalyzer，显示器DisplayLeak</strong></p>
+
+<p><strong>观察者RefWatcher</strong>主要用于为所需检测的对象绑定引用标记，并且执行GC操作。</p>
+
+<p><strong>堆转存HeapDumper</strong>用来获取内存堆的数据记录，为后续分析提供详细的现场数据。</p>
+
+<p><strong>堆分析器HeapAnalyzer</strong>堆与内存数据进行分析，寻找是否存在观察的泄漏对象，并且为其寻找到引用路经。</p>
+
+<p><strong>显示器DisplayLeak</strong>对于结果进行显示</p>
+
+<h3 id="1-观察">1.观察</h3>
+
+<h4 id="1-1-弱引用">1.1 弱引用</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">RefWatcher</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">watch</span><span class="o">(</span><span class="n">Object</span> <span class="n">watchedReference</span><span class="o">,</span> <span class="n">String</span> <span class="n">referenceName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">DISABLED</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">checkNotNull</span><span class="o">(</span><span class="n">watchedReference</span><span class="o">,</span> <span class="s">&#34;watchedReference&#34;</span><span class="o">);</span>
+        <span class="n">checkNotNull</span><span class="o">(</span><span class="n">referenceName</span><span class="o">,</span> <span class="s">&#34;referenceName&#34;</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="kt">long</span> <span class="n">watchStartNanoTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+        <span class="n">retainedKeys</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">KeyedWeakReference</span> <span class="n">reference</span> <span class="o">=</span>
+            <span class="k">new</span> <span class="n">KeyedWeakReference</span><span class="o">(</span><span class="n">watchedReference</span><span class="o">,</span> <span class="n">key</span><span class="o">,</span> <span class="n">referenceName</span><span class="o">,</span> <span class="n">queue</span><span class="o">);</span>
+
+        <span class="n">ensureGoneAsync</span><span class="o">(</span><span class="n">watchStartNanoTime</span><span class="o">,</span> <span class="n">reference</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>代码中显示，我们一般使用RefWatcher的watch方法对一个对象进行观察。对于一个对象我们会为其创建一个KeyedWeakReference，KeyedWeakReference就是直接继承于
+WeakReference。如果这个对象在该销毁时被回收，KeyedWeakReference就不能在获取观察对象，并且能在KeyedWeakReference关联的ReferenceQueue中找到，如果没有找到，这个对象一定是泄漏了。</p>
+
+<h4 id="1-2-线程转换">1.2 线程转换</h4>
+
+<p>绑定了KeyedWeakReference之后，我们需要在适当时候进行一次GC操作，然后才能判断观察对象是否泄漏，LeakCanary这里会将之后的GC操作推给AndroidWatchExecutor
+去调度。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">RefWatcher</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">ensureGoneAsync</span><span class="o">(</span><span class="kd">final</span> <span class="kt">long</span> <span class="n">watchStartNanoTime</span><span class="o">,</span> <span class="kd">final</span> <span class="n">KeyedWeakReference</span> <span class="n">reference</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">watchExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">Retryable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span> <span class="kd">public</span> <span class="n">Retryable</span><span class="o">.</span><span class="na">Result</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">ensureGone</span><span class="o">(</span><span class="n">reference</span><span class="o">,</span> <span class="n">watchStartNanoTime</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_change_thread.png" />
+    </div>
+    <a href="/imgs/leakcanary_change_thread.png" itemprop="contentUrl"></a>
+      <figcaption><h4>线程切换</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>AndroidWatchExecutor在内存存在两个Hander，一个是用HanderThread创建的backgroundHandler，一个使用主线程创建的mainHandler。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">AndroidWatchExecutor</span> <span class="kd">implements</span> <span class="n">WatchExecutor</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="nf">AndroidWatchExecutor</span><span class="o">(</span><span class="kt">long</span> <span class="n">initialDelayMillis</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mainHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">Looper</span><span class="o">.</span><span class="na">getMainLooper</span><span class="o">());</span>
+        <span class="n">HandlerThread</span> <span class="n">handlerThread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HandlerThread</span><span class="o">(</span><span class="n">LEAK_CANARY_THREAD_NAME</span><span class="o">);</span>
+        <span class="n">handlerThread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="n">backgroundHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="n">handlerThread</span><span class="o">.</span><span class="na">getLooper</span><span class="o">());</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">initialDelayMillis</span> <span class="o">=</span> <span class="n">initialDelayMillis</span><span class="o">;</span>
+        <span class="n">maxBackoffFactor</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">MAX_VALUE</span> <span class="o">/</span> <span class="n">initialDelayMillis</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>AndroidWatchExecutor会将RefWatcher封装的任务传给主线程，在主线程的闲时去处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">AndroidWatchExecutor</span> <span class="kd">implements</span> <span class="n">WatchExecutor</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">execute</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="n">Retryable</span> <span class="n">retryable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">Looper</span><span class="o">.</span><span class="na">getMainLooper</span><span class="o">().</span><span class="na">getThread</span><span class="o">()</span> <span class="o">==</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">waitForIdle</span><span class="o">(</span><span class="n">retryable</span><span class="o">,</span> <span class="n">0</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">postWaitForIdle</span><span class="o">(</span><span class="n">retryable</span><span class="o">,</span> <span class="n">0</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">waitForIdle</span><span class="o">(</span><span class="kd">final</span> <span class="n">Retryable</span> <span class="n">retryable</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">failedAttempts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// This needs to be called from the main thread.
+</span><span class="c1"></span>        <span class="n">Looper</span><span class="o">.</span><span class="na">myQueue</span><span class="o">().</span><span class="na">addIdleHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MessageQueue</span><span class="o">.</span><span class="na">IdleHandler</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">queueIdle</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">postToBackgroundWithDelay</span><span class="o">(</span><span class="n">retryable</span><span class="o">,</span> <span class="n">failedAttempts</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这个地方需要知道这样处理的用意，因为GC操作是会对于app的UI渲染产生影响，所以GC的时机最好是放在UI渲染都完成之后，也就是
+Looper的IdleHandler之中去处理。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">AndroidWatchExecutor</span> <span class="kd">implements</span> <span class="n">WatchExecutor</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">postToBackgroundWithDelay</span><span class="o">(</span><span class="kd">final</span> <span class="n">Retryable</span> <span class="n">retryable</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">failedAttempts</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">exponentialBackoffFactor</span> <span class="o">=</span> <span class="o">(</span><span class="kt">long</span><span class="o">)</span> <span class="n">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">pow</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">failedAttempts</span><span class="o">),</span> <span class="n">maxBackoffFactor</span><span class="o">);</span>
+        <span class="kt">long</span> <span class="n">delayMillis</span> <span class="o">=</span> <span class="n">initialDelayMillis</span> <span class="o">*</span> <span class="n">exponentialBackoffFactor</span><span class="o">;</span>
+        <span class="n">backgroundHandler</span><span class="o">.</span><span class="na">postDelayed</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">Retryable</span><span class="o">.</span><span class="na">Result</span> <span class="n">result</span> <span class="o">=</span> <span class="n">retryable</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">RETRY</span><span class="o">)</span> <span class="o">{</span>
+                   <span class="n">postWaitForIdle</span><span class="o">(</span><span class="n">retryable</span><span class="o">,</span> <span class="n">failedAttempts</span> <span class="o">+</span> <span class="n">1</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">},</span> <span class="n">delayMillis</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>执行GC操作时会再次切换到backgroundHandler所在线程，如果失败，会重试。现在我们就来看看具体的GC是怎么操作的。</p>
+
+<h4 id="1-3-gc">1.3 GC</h4>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_gc.png" />
+    </div>
+    <a href="/imgs/leakcanary_gc.png" itemprop="contentUrl"></a>
+      <figcaption><h4>GC</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">RefWatcher</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">Retryable</span><span class="o">.</span><span class="na">Result</span> <span class="nf">ensureGone</span><span class="o">(</span><span class="kd">final</span> <span class="n">KeyedWeakReference</span> <span class="n">reference</span><span class="o">,</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">watchStartNanoTime</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">gcStartNanoTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">watchDurationMs</span> <span class="o">=</span> <span class="n">NANOSECONDS</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">gcStartNanoTime</span> <span class="o">-</span> <span class="n">watchStartNanoTime</span><span class="o">);</span>
+        <span class="c1">//清除回收队列
+</span><span class="c1"></span>        <span class="n">removeWeaklyReachableReferences</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">debuggerControl</span><span class="o">.</span><span class="na">isDebuggerAttached</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">RETRY</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//判断是否泄漏
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">gone</span><span class="o">(</span><span class="n">reference</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">DONE</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">//执行GC操作
+</span><span class="c1"></span>        <span class="n">gcTrigger</span><span class="o">.</span><span class="na">runGc</span><span class="o">();</span>
+        <span class="c1">//再次清除回收队列
+</span><span class="c1"></span>        <span class="n">removeWeaklyReachableReferences</span><span class="o">();</span>
+        <span class="c1">//如果泄漏就执行dump
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">gone</span><span class="o">(</span><span class="n">reference</span><span class="o">))</span> <span class="o">{</span>
+            <span class="o">...</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">DONE</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>从代码中可以看到，会首先判断对象是否已经被回收，如果回收的话就不用继续观察了，如果没有，就会强行执行一次GC，然后再次判断，如果对象还是没有回收
+那么就可以判断对象已经泄漏。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="n">GcTrigger</span> <span class="n">DEFAULT</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GcTrigger</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">runGc</span><span class="o">()</span> <span class="o">{</span>
+            <span class="c1">// Code taken from AOSP FinalizationTest:
+</span><span class="c1"></span>            <span class="c1">// https://android.googlesource.com/platform/libcore/+/master/support/src/test/java/libcore/
+</span><span class="c1"></span>            <span class="c1">// java/lang/ref/FinalizationTester.java
+</span><span class="c1"></span>            <span class="c1">// System.gc() does not garbage collect every time. Runtime.gc() is
+</span><span class="c1"></span>            <span class="c1">// more likely to perform a gc.
+</span><span class="c1"></span>            <span class="n">Runtime</span><span class="o">.</span><span class="na">getRuntime</span><span class="o">().</span><span class="na">gc</span><span class="o">();</span>
+            <span class="n">enqueueReferences</span><span class="o">();</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">runFinalization</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="kd">private</span> <span class="kt">void</span> <span class="nf">enqueueReferences</span><span class="o">()</span> <span class="o">{</span>
+            <span class="c1">// Hack. We don&#39;t have a programmatic way to wait for the reference queue daemon to move
+</span><span class="c1"></span>            <span class="c1">// references to the appropriate queues.
+</span><span class="c1"></span>            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">100</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="n">AssertionError</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">};</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>而android 中执行GC的API，这里选择了Runtime.getRuntime().gc()，因为Runtime.getRuntime().gc()会比System.gc()更加可靠，并且在GC之后，执行适当的延时，让GC操作有充足时间，才执行下一步。</p>
+
+<h4 id="1-4-转存">1.4 转存</h4>
+
+<p>上一步我们知道，如果引用泄漏，就会执行dump操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java">    <span class="k">if</span> <span class="o">(!</span><span class="n">gone</span><span class="o">(</span><span class="n">reference</span><span class="o">))</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">startDumpHeap</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="kt">long</span> <span class="n">gcDurationMs</span> <span class="o">=</span> <span class="n">NANOSECONDS</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">startDumpHeap</span> <span class="o">-</span> <span class="n">gcStartNanoTime</span><span class="o">);</span>
+        <span class="c1">//dump操作
+</span><span class="c1"></span>        <span class="n">File</span> <span class="n">heapDumpFile</span> <span class="o">=</span> <span class="n">heapDumper</span><span class="o">.</span><span class="na">dumpHeap</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">heapDumpFile</span> <span class="o">==</span> <span class="n">RETRY_LATER</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">RETRY</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kt">long</span> <span class="n">heapDumpDurationMs</span> <span class="o">=</span> <span class="n">NANOSECONDS</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">startDumpHeap</span><span class="o">);</span>
+        <span class="n">HeapDump</span> <span class="n">heapDump</span> <span class="o">=</span> <span class="n">heapDumpBuilder</span><span class="o">.</span><span class="na">heapDumpFile</span><span class="o">(</span><span class="n">heapDumpFile</span><span class="o">).</span><span class="na">referenceKey</span><span class="o">(</span><span class="n">reference</span><span class="o">.</span><span class="na">key</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">referenceName</span><span class="o">(</span><span class="n">reference</span><span class="o">.</span><span class="na">name</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">watchDurationMs</span><span class="o">(</span><span class="n">watchDurationMs</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">gcDurationMs</span><span class="o">(</span><span class="n">gcDurationMs</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">heapDumpDurationMs</span><span class="o">(</span><span class="n">heapDumpDurationMs</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">heapdumpListener</span><span class="o">.</span><span class="na">analyze</span><span class="o">(</span><span class="n">heapDump</span><span class="o">);</span>
+    <span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>dump操作如下，调用到Debug的方法，输出一个hprof文件。之后封装之后就直接传送给分析器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">Debug</span><span class="o">.</span><span class="na">dumpHprofData</span><span class="o">(</span><span class="n">heapDumpFile</span><span class="o">.</span><span class="na">getAbsolutePath</span><span class="o">());</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-分析">2 分析</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_service.png" />
+    </div>
+    <a href="/imgs/leakcanary_service.png" itemprop="contentUrl"></a>
+      <figcaption><h4>分析器继承关系</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>分析任务会先传给HeapAnalyzerService，HeapAnalyzerService继承于IntentService，属于后台服务，HeapAnalyzerService才会将分析任务交给
+HeapAnalyzer，分析细节都归于HeapAnalyzer。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">HeapAnalyzer</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">public</span> <span class="nd">@NonNull</span> <span class="n">AnalysisResult</span> <span class="nf">checkForLeak</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="n">File</span> <span class="n">heapDumpFile</span><span class="o">,</span>
+        <span class="nd">@NonNull</span> <span class="n">String</span> <span class="n">referenceKey</span><span class="o">,</span>
+        <span class="kt">boolean</span> <span class="n">computeRetainedSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">analysisStartNanoTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="o">...</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="c1">//内存直接映射
+</span><span class="c1"></span>            <span class="n">HprofBuffer</span> <span class="n">buffer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MemoryMappedFileBuffer</span><span class="o">(</span><span class="n">heapDumpFile</span><span class="o">);</span>
+            <span class="c1">//hprof解析
+</span><span class="c1"></span>            <span class="n">HprofParser</span> <span class="n">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HprofParser</span><span class="o">(</span><span class="n">buffer</span><span class="o">);</span>
+            <span class="n">Snapshot</span> <span class="n">snapshot</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="na">parse</span><span class="o">();</span>
+            <span class="c1">//复制GCRoot
+</span><span class="c1"></span>            <span class="n">deduplicateGcRoots</span><span class="o">(</span><span class="n">snapshot</span><span class="o">);</span>
+            <span class="c1">//寻找到泄漏实例
+</span><span class="c1"></span>            <span class="n">Instance</span> <span class="n">leakingRef</span> <span class="o">=</span> <span class="n">findLeakingReference</span><span class="o">(</span><span class="n">referenceKey</span><span class="o">,</span> <span class="n">snapshot</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">leakingRef</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">noLeak</span><span class="o">(</span><span class="n">since</span><span class="o">(</span><span class="n">analysisStartNanoTime</span><span class="o">));</span>
+            <span class="o">}</span>
+            <span class="c1">//丰富泄漏详情
+</span><span class="c1"></span>            <span class="k">return</span> <span class="n">findLeakTrace</span><span class="o">(</span><span class="n">analysisStartNanoTime</span><span class="o">,</span> <span class="n">snapshot</span><span class="o">,</span> <span class="n">leakingRef</span><span class="o">,</span> <span class="n">computeRetainedSize</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">failure</span><span class="o">(</span><span class="n">e</span><span class="o">,</span> <span class="n">since</span><span class="o">(</span><span class="n">analysisStartNanoTime</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="2-1-获取泄漏引用">2.1 获取泄漏引用</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">HeapAnalyzer</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="kd">private</span> <span class="n">Instance</span> <span class="nf">findLeakingReference</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span><span class="o">,</span> <span class="n">Snapshot</span> <span class="n">snapshot</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ClassObj</span> <span class="n">refClass</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="na">findClass</span><span class="o">(</span><span class="n">KeyedWeakReference</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">refClass</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span><span class="s">&#34;Could not find the &#34;</span> <span class="o">+</span> <span class="n">KeyedWeakReference</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34; class in the heap dump.&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">keysFound</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Instance</span> <span class="n">instance</span> <span class="o">:</span> <span class="n">refClass</span><span class="o">.</span><span class="na">getInstancesList</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">List</span><span class="o">&lt;</span><span class="n">ClassInstance</span><span class="o">.</span><span class="na">FieldValue</span><span class="o">&gt;</span> <span class="n">values</span> <span class="o">=</span> <span class="n">classInstanceValues</span><span class="o">(</span><span class="n">instance</span><span class="o">);</span>
+            <span class="n">Object</span> <span class="n">keyFieldValue</span> <span class="o">=</span> <span class="n">fieldValue</span><span class="o">(</span><span class="n">values</span><span class="o">,</span> <span class="s">&#34;key&#34;</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">keyFieldValue</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">keysFound</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">String</span> <span class="n">keyCandidate</span> <span class="o">=</span> <span class="n">asString</span><span class="o">(</span><span class="n">keyFieldValue</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">keyCandidate</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">fieldValue</span><span class="o">(</span><span class="n">values</span><span class="o">,</span> <span class="s">&#34;referent&#34;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">keysFound</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">keyCandidate</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span><span class="s">&#34;Could not find weak reference with key &#34;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#34; in &#34;</span> <span class="o">+</span> <span class="n">keysFound</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>代码中可以看到，分析器会先找到内存数据中所有的KeyedWeakReference的集合，然后遍历，根据key值来找到我们观察的对象，然后返回。</p>
+
+<h4 id="2-2-获取泄漏路径-和-支配内存">2.2 获取泄漏路径 和 支配内存</h4>
+
+<p>在找到了相应的检测的泄漏对象之后，我们同时也需要找到该对象实例的导致泄漏的引用路径</p>
+
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>含义</th>
+<th>搜寻过程</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>RootObj</td>
+<td>根对象</td>
+<td>当前节点如果是JAVA_LOCAL，就找当前所属线程作为当前节点的父节点 ；否则直接使用当前节点获取的关联对象作为父节点</td>
+</tr>
+
+<tr>
+<td>ClassObj</td>
+<td>类对象</td>
+<td>遍历类所有关联的静态变量，构建子节点（除开引用排除集合中的变量名）</td>
+</tr>
+
+<tr>
+<td>ClassInstance</td>
+<td>类实例</td>
+<td>遍历类所有关联的变量，构建子节点（除开引用排除集合中的变量名）</td>
+</tr>
+
+<tr>
+<td>ArrayInstance</td>
+<td>集合实例</td>
+<td>遍历集合，构建子节点</td>
+</tr>
+</tbody>
+</table>
+
+<p>在整个堆内存数据中，我们需要将数据区分为上述四种，定位了实例类型，才能更好的计算引用路径。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="kd">private</span> <span class="n">AnalysisResult</span> <span class="nf">findLeakTrace</span><span class="o">(</span><span class="kt">long</span> <span class="n">analysisStartNanoTime</span><span class="o">,</span> <span class="n">Snapshot</span> <span class="n">snapshot</span><span class="o">,</span>
+      <span class="n">Instance</span> <span class="n">leakingRef</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">computeRetainedSize</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//最近路径搜寻
+</span><span class="c1"></span>    <span class="n">listener</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">FINDING_SHORTEST_PATH</span><span class="o">);</span>
+    <span class="n">ShortestPathFinder</span> <span class="n">pathFinder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ShortestPathFinder</span><span class="o">(</span><span class="n">excludedRefs</span><span class="o">);</span>
+    <span class="n">ShortestPathFinder</span><span class="o">.</span><span class="na">Result</span> <span class="n">result</span> <span class="o">=</span> <span class="n">pathFinder</span><span class="o">.</span><span class="na">findPath</span><span class="o">(</span><span class="n">snapshot</span><span class="o">,</span> <span class="n">leakingRef</span><span class="o">);</span>
+    <span class="o">...</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>在上述代码中，首先去提取内存快照数据中的所有GCRoot，然后再从各个GCRoot去向下构建访问路径，形成如下的数据结构（非树），直到我们找到了指定的泄漏节点，
+直接返回</p>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_leaknode.png" />
+    </div>
+    <a href="/imgs/leakcanary_leaknode.png" itemprop="contentUrl"></a>
+      <figcaption><h4>LeakNode</h4>
+      </figcaption>
+  </figure>
+</div>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-Java" data-lang="Java"><span class="n">找到路径之后</span><span class="err">，</span><span class="n">我们还要计算一下该泄漏实例所支配的堆内存</span><span class="err">。</span>
+
+<span class="kd">private</span> <span class="n">AnalysisResult</span> <span class="nf">findLeakTrace</span><span class="o">(</span><span class="kt">long</span> <span class="n">analysisStartNanoTime</span><span class="o">,</span> <span class="n">Snapshot</span> <span class="n">snapshot</span><span class="o">,</span><span class="n">Instance</span> <span class="n">leakingRef</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">computeRetainedSize</span><span class="o">){</span>
+    <span class="c1">//最近路径搜寻
+</span><span class="c1"></span>    <span class="n">listener</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">FINDING_SHORTEST_PATH</span><span class="o">);</span>
+    <span class="n">ShortestPathFinder</span> <span class="n">pathFinder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ShortestPathFinder</span><span class="o">(</span><span class="n">excludedRefs</span><span class="o">);</span>
+    <span class="n">ShortestPathFinder</span><span class="o">.</span><span class="na">Result</span> <span class="n">result</span> <span class="o">=</span> <span class="n">pathFinder</span><span class="o">.</span><span class="na">findPath</span><span class="o">(</span><span class="n">snapshot</span><span class="o">,</span> <span class="n">leakingRef</span><span class="o">);</span>
+    <span class="o">...</span>
+    <span class="c1">//计算该对象可支配的内存
+</span><span class="c1"></span>    <span class="kt">long</span> <span class="n">retainedSize</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">computeRetainedSize</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">listener</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">COMPUTING_DOMINATORS</span><span class="o">);</span>
+      <span class="n">snapshot</span><span class="o">.</span><span class="na">computeDominators</span><span class="o">();</span>
+      <span class="n">Instance</span> <span class="n">leakingInstance</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">leakingNode</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+      <span class="n">retainedSize</span> <span class="o">=</span> <span class="n">leakingInstance</span><span class="o">.</span><span class="na">getTotalRetainedSize</span><span class="o">();</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">SDK_INT</span> <span class="o">&lt;=</span> <span class="n">N_MR1</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">listener</span><span class="o">.</span><span class="na">onProgressUpdate</span><span class="o">(</span><span class="n">COMPUTING_BITMAP_SIZE</span><span class="o">);</span>
+        <span class="n">retainedSize</span> <span class="o">+=</span> <span class="n">computeIgnoredBitmapRetainedSize</span><span class="o">(</span><span class="n">snapshot</span><span class="o">,</span> <span class="n">leakingInstance</span><span class="o">);</span>
+      <span class="o">}</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="n">retainedSize</span> <span class="o">=</span> <span class="n">AnalysisResult</span><span class="o">.</span><span class="na">RETAINED_HEAP_SKIPPED</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">leakDetected</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">excludingKnownLeaks</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="n">leakTrace</span><span class="o">,</span> <span class="n">retainedSize</span><span class="o">,</span>
+        <span class="n">since</span><span class="o">(</span><span class="n">analysisStartNanoTime</span><span class="o">));</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-显示">3 显示</h3>
+
+
+
+<div class="box">
+<figure  itemprop="associatedMedia"
+  itemscope itemtype="http://schema.org/ImageObject" >
+    <div class="img">
+      <img itemprop="thumbnail" src="/imgs/leakcanary_service.png" />
+    </div>
+    <a href="/imgs/leakcanary_service.png" itemprop="contentUrl"></a>
+      <figcaption><h4>分析器继承关系</h4>
+      </figcaption>
+  </figure>
+</div>
+
+
+<p>最后显示比较简单，将内存数据发送给DisplayLeakService在后台处理，主要是将内存信息发送通知，包含延迟意图，用户点击通知会跳转到新的activity来获取详细信息</p>
+
+<h2 id="总结">总结</h2>
+
+<p>LeakCananry源码中最核心的还是对于内存泄漏的分析，和对于haha库的使用，了解其原理，对于以后自定义android内存分析工具也有裨益。</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">WangZoo</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-05-20
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wang-zoo.github.io/tags/leakcanary/">LeakCanary</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/ffmpeg_sdl_videoplayer/">
+            <span class="next-text nav-default">FFmpeg 播放器实现(SDL)</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+
+
+<a href="https://wang-zoo.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        WangZoo
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
